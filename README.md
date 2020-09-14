@@ -10,6 +10,7 @@ to complete for another recipe.
 Project Goals 
 
 The main goals of this project are to:
+
 Develop a user friendly web application which allows users to complete a survey and be provided with a recipe based on their responses.   
 
 Implement a feedback loop to restructure the survey so users will always be provided with an updated survey and suggested a new recipe.
