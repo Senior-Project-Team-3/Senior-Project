@@ -11,6 +11,7 @@ Project Goals
 
 The main goals of this project are to:
 
+
 Develop a user friendly web application which allows users to complete a survey and be provided with a recipe based on their responses.   
 
 Implement a feedback loop to restructure the survey so users will always be provided with an updated survey and suggested a new recipe.
@@ -34,6 +35,7 @@ client data and history from one or more clients, as well as view, update or cre
 
 Data Tracking: All questions and responses per client, as well as time completed, will be tracked. An admin can view and download 
 any clients survey history.
+
 
 Limitations
 Limitations of our project include but are not limited to the following:
