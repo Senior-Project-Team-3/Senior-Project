@@ -61,4 +61,5 @@ Group Member Names:
 Isaiah Doyle, 
 Jared Tebbi,
 Dennis Noakes,
-Joshua Hric
+Joshua Hric,
+Salvatore Rosa
