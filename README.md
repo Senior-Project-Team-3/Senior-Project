@@ -60,4 +60,5 @@ Google Analytics to track the web applications traffic and how users are interac
 Group Member Names:
 Isaiah Doyle, 
 Jared Tebbi,
-Dennis Noakes
+Dennis Noakes,
+Joshua Hric
