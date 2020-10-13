@@ -88,7 +88,6 @@
               "src/assets"
             ],
             "styles": [
-              "../node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -124,6 +123,6 @@
   },
   "defaultProject": "recipe-recommender",
   "cli": {
-    "analytics": false
+    "analytics": "1ae78643-9f8e-488a-9e47-1667220e31f8"
   }
 }
