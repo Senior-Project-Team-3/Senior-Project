@@ -6,13 +6,17 @@ import { AppComponent } from './app.component';
 import { TopRecipesComponent } from './top-recipes/top-recipes.component';
 import { LoginComponent } from './login/login.component';
 import { SurveyComponent } from './survey/survey.component';
+import { LandingComponent } from './landing/landing.component';
+import { HomepageComponent } from './homepage/homepage.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TopRecipesComponent,
     LoginComponent,
-    SurveyComponent
+    SurveyComponent,
+    LandingComponent,
+    HomepageComponent
   ],
   imports: [
     BrowserModule,

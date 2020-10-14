@@ -1,0 +1,14 @@
+#navbar {
+    padding-bottom: 1;
+    padding-top: 1;
+}
+
+a.nav-link {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 120%;
+}
+
+#searchButton {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    margin-right: 1em;
+}
