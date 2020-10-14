@@ -1,4 +1,4 @@
-#loginButton {
+#signupButton {
     color: white;
     background-color: #ec6941;
     border: none;
@@ -12,12 +12,7 @@
     margin-bottom: 0;
 }
 
-#signupButton {
-    float: right;
-    padding: 0;
-}
-
-#resetButton {
+#loginButton {
     padding: 0;
 }
 
@@ -26,7 +21,7 @@
     margin-bottom: 0;
 }
 
-#resetLabel {
+#loginLabel {
     margin-bottom: 0;
 }
 

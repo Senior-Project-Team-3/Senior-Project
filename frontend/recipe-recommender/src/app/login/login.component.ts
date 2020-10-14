@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { faKey, faUser } from '@fortawesome/free-solid-svg-icons';
 
@@ -9,7 +10,7 @@ import { faKey, faUser } from '@fortawesome/free-solid-svg-icons';
 })
 export class LoginComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -17,5 +18,7 @@ export class LoginComponent implements OnInit {
   faKey = faKey;
   faUser = faUser;
 
-
+  goToRegister() {
+    this.router.navigateByUrl('/register')
+  }
 }

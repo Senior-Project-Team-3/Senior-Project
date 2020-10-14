@@ -9,6 +9,7 @@ import { LoginComponent } from './login/login.component';
 import { SurveyComponent } from './survey/survey.component';
 import { LandingComponent } from './landing/landing.component';
 import { HomepageComponent } from './homepage/homepage.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { HomepageComponent } from './homepage/homepage.component';
     LoginComponent,
     SurveyComponent,
     LandingComponent,
-    HomepageComponent
+    HomepageComponent,
+    RegisterComponent
   ],
   imports: [
     AppRoutingModule,
