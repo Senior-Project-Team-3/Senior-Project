@@ -13,7 +13,7 @@ export class LandingComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  btnClick() {
+  enter() {
     this.router.navigateByUrl('/home')
   }
 

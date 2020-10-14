@@ -1,0 +1,31 @@
+#loginButton {
+    color: white;
+    background-color: #ec6941;
+    border: none;
+}
+
+#loginForm {
+    top: 100px;
+}
+
+#underLabels {
+    margin-bottom: 0;
+}
+
+#signupButton {
+    float: right;
+    padding: 0;
+}
+
+#resetButton {
+    padding: 0;
+}
+
+#createLabel {
+    float: right;
+    margin-bottom: 0;
+}
+
+#resetLabel {
+    margin-bottom: 0;
+}
