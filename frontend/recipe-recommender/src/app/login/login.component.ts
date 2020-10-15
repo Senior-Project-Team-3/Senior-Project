@@ -10,13 +10,14 @@ import { faKey, faUser } from '@fortawesome/free-solid-svg-icons';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private router: Router) { }
+  faKey = faKey;
+  faUser = faUser;
+
+  constructor(
+    private router: Router) { }
 
   ngOnInit(): void {
   }
-
-  faKey = faKey;
-  faUser = faUser;
 
   goToRegister() {
     this.router.navigateByUrl('/register')

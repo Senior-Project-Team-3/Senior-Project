@@ -1,9 +1,13 @@
 #desc {
     max-width: 700px;
     margin: 0 auto 30px;
+    color: white;
 }
 
 button {
     margin: 30px;
     width: 150px;
+    color: white;
+    background-color: #ec6941;
+    border: none;
 }

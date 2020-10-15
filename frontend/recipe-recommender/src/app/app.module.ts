@@ -1,15 +1,18 @@
+import { AppRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TopRecipesComponent } from './top-recipes/top-recipes.component';
 import { LoginComponent } from './login/login.component';
 import { SurveyComponent } from './survey/survey.component';
 import { LandingComponent } from './landing/landing.component';
 import { HomepageComponent } from './homepage/homepage.component';
 import { RegisterComponent } from './register/register.component';
+import { MyRecipesComponent } from './my-recipes/my-recipes.component';
+import { RecipeComponent } from './recipe/recipe.component';
 
 @NgModule({
   declarations: [
@@ -19,14 +22,19 @@ import { RegisterComponent } from './register/register.component';
     SurveyComponent,
     LandingComponent,
     HomepageComponent,
-    RegisterComponent
+    RegisterComponent,
+    MyRecipesComponent,
+    RecipeComponent
   ],
   imports: [
     AppRoutingModule,
     BrowserModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    HttpClientModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [
+    AppComponent
+  ]
 })
 export class AppModule { }

@@ -1,1 +1,9 @@
 <p>survey works!</p>
+<!-- <li *ngFor="let recipe of recipes">{{recipe.recipe_name}}</li> -->
+
+<input class="form-control mr-sm-2" type="search" #search placeholder="Search for a recipe" aria-label="Search">
+<button class="btn btn-secondary my-2 my-sm-0" id="searchButton" (click)="recipeSearch(search.value);">Search</button>
+<div id="recipeInfo" *ngIf="recipe.length > 0">
+    {{recipe[0].recipe_name}}<br>{{recipe[0].cook_time}}
+    <br>{{recipe[0].meal_type}}
+</div>
