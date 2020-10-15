@@ -1,10 +1,11 @@
 In the default sakila schema I added a table called "recipe". Then added these 5 entries:
-insert into recipe(recipe_id, recipe_name, cook_time, meal_type)
-values(1, 'cookies', 15, 'chinese');
-values(2, 'pasta', 15, 'italian');
-values(3, 'cheeseburger', 15, 'american');
-values(4, 'tacos', 15, 'mexican');
-values(5, 'sushi', 15, 'japanese');
+
+insert into recipe(recipe_id, recipe_name, cook_time, meal_type)  
+values(1, 'cookies', 15, 'chinese');  
+values(2, 'pasta', 15, 'italian');  
+values(3, 'cheeseburger', 15, 'american');  
+values(4, 'tacos', 15, 'mexican');  
+values(5, 'sushi', 15, 'japanese');  
 
 Then go to index.js to configure your DB connection.
 
