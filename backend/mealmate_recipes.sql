@@ -25,11 +25,10 @@ DROP TABLE IF EXISTS `recipes`;
 CREATE TABLE `recipes` (
   `name` varchar(100) NOT NULL,
   `recipe_id` int NOT NULL,
-  `minuites` int DEFAULT NULL,
+  `minutes` int DEFAULT NULL,
   `contributor_id` int DEFAULT NULL,
   `submitted` date DEFAULT NULL,
   `tags` varchar(1500) DEFAULT NULL,
-  `nutrition` varchar(1500) DEFAULT NULL,
   `rec_step_id_fk` int DEFAULT NULL,
   `description` varchar(1500) DEFAULT NULL,
   `ingredients` varchar(1500) DEFAULT NULL,
