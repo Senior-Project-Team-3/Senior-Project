@@ -10,7 +10,7 @@ export class DataService {
 
   constructor(private httpClient: HttpClient) { }
 
-  public getRecipe(recipeName) {
+  public getRecipe(recipeName: String) {
     return this.httpClient.get(this.REST_API_SERVER + '/recipes/' + recipeName + '/search');
   }
 }
