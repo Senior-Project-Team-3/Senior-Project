@@ -19,17 +19,6 @@ db.connect((err) => {
     console.log("Database Connected");
 });
 
-router.get('/recipes', function(req, res) {
-    let sql = "SELECT * FROM recipe WHERE recipe_name = 'pasta'";
-    let query = db.query(sql, (err, results) => {
-        if (err) {
-            throw err;
-        }
-        console.log(results);
-        res.send(results);
-    });
-});
-
 router.get('/recipes/:recipe_name/search', function(req, res) {
     var recipe_name = req.params.recipe_name;
     console.log(req.params.recipe_name)

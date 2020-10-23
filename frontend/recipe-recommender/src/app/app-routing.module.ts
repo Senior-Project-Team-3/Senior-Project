@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomepageComponent } from './homepage/homepage.component';
 import { LandingComponent } from './landing/landing.component';
 import { LoginComponent } from './login/login.component';
+import { MyRecipesComponent } from './my-recipes/my-recipes.component';
 import { RecipeComponent } from './recipe/recipe.component';
 import { RegisterComponent } from './register/register.component';
 import { SurveyComponent } from './survey/survey.component';
@@ -17,7 +18,8 @@ const routes: Routes = [
   { path: 'survey', component: SurveyComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'recipe', component: RecipeComponent }
+  { path: 'recipe', component: RecipeComponent },
+  { path: 'my-recipes', component: MyRecipesComponent }
 ];
 
 @NgModule({
