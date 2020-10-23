@@ -68,3 +68,4 @@ Tech Stack - Version
 Node.js - 12.19.0
 Express - 4.17.1
 Angular - 10.1.6
+Bootstrap - 4 or greater
