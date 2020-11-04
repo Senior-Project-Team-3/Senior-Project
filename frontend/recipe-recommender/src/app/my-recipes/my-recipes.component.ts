@@ -8,8 +8,18 @@ import { Component, OnInit } from '@angular/core';
 export class MyRecipesComponent implements OnInit {
 
   constructor() { }
+  
+  recipes = [];
 
   ngOnInit(): void {
+    this.myRecipeSearch();
+  }
+
+  myRecipeSearch() {
+    this.dataService.getTopRecipes().subscribe((data: any[]) => {
+      console.log(data);
+      this.recipes = data;
+    })
   }
 
 }

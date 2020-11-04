@@ -1,2 +1,17 @@
 <p>my-recipes works!</p>
 OK!!!
+
+<div id="recipeInfo2" *ngIf="recipes.length > 0">
+    <div class="card-deck" style="margin: 2px;">
+        
+        <div class="card w-25" style="width: 18rem;" *ngFor="let recipe of recipes;">
+            <img class="card-img-top" src="./../../assets/food1.png" alt="Card image cap" style="background-color: orange;">
+            <div class="card-body" style="background-color: orange;">
+                <h5 class="card-title">{{recipe.name}}</h5>
+                <p class="card-text"> Meal Type: {{recipe.meal_type}} <br> Cook Time: {{recipe.minutes}}</p>
+                <a href="http://localhost:4200" class="btn btn-primary stretched-link"> Do a thing</a>
+            </div>
+        </div>
+        
+    </div>
+</div>
