@@ -33,7 +33,12 @@ router.get('/recipes/:recipe_name/search', function(req, res) {
 })
 
 router.get('/recipes/review/top_rated', function(req, res) {
-    let sql = "select * from recipes INNER JOIN nutrition ON recipes.recipe_id = nutrition.recipe_id INNER JOIN steps ON recipes.recipe_id = steps.recipe_id limit 1;"
+    let sql =   "select * from recipes " + 
+                "INNER JOIN nutrition " + 
+                "ON recipes.recipe_id = nutrition.recipe_id " + 
+                "INNER JOIN steps " + 
+                "ON recipes.recipe_id = steps.recipe_id " + 
+                "limit 8;"
     let query = db.query(sql, (err, results) => {
         if (err) {
             throw err;
