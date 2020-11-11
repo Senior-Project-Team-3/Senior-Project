@@ -1,11 +1,19 @@
-/* .card {
-    height: 500px;
-} */
+.card {
+    background-color: orange;
+}
 
 /* .carousel{
     height: 500px;
 } */
 
-/* .card-img-top {
-    height: 150px;
-} */
+.card-img-top {
+    height: 300px;
+}
+
+.card-body {
+    height: 250px;
+}
+
+#noRecipes {
+    height: auto;
+}

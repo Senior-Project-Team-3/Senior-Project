@@ -1,9 +1,7 @@
-<p>my-recipes works!</p>
-
 <!-- <div class="container my-4"> -->
 
     <!--Carousel Wrapper-->
-    <div id="multi-item-example" class="carousel slide carousel-multi-item" data-ride="carousel" data-interval="false">
+    <div *ngIf="recipes.length != 0" id="multi-item-example" class="carousel slide carousel-multi-item" data-ride="carousel" data-interval="false" >
 
       <!--Controls-->
         <div class="controls-top">
@@ -28,10 +26,12 @@
                 <!-- Card 1 -->
                 <div class="col-md-4" *ngIf="recipes.length != 0">
                     <div class="card h-100">
-                        <img class="card-img-top" src= {{recipes[i*3].imageLink}} alt="Card image cap" style="background-color: orange;">
-                        <div class="card-body" style="background-color: orange;">
+                        <img class="card-img-top" src= {{recipes[i*3].imageLink}} alt="Card image cap">
+                        <div class="card-body">
                             <h5 class="card-title">{{recipes[i*3].name}} </h5>
-                            <p class="card-text"> Meal Type: {{i}} : {{i*3}} <br> Cook Time: {{recipes[i*3].minutes}}</p>
+                            <p class="card-text"> Slide # : Card # | {{i}} : {{i*3}} <br> Cook Time: {{recipes[i*3].minutes}} minutes </p>
+                        </div>
+                        <div class="card-footer">
                             <a href="http://localhost:4200" class="btn btn-primary stretched-link"> Do a thing</a>
                         </div>
                     </div>
@@ -41,10 +41,12 @@
                 <!-- Card 2 -->
                 <div class="col-md-4 clearfix">
                     <div class="card h-100" *ngIf="i * 3 + 1 < recipes.length">
-                        <img class="card-img-top" src= {{recipes[i*3+1].imageLink}} alt="Card image cap" style="background-color: orange;">
-                        <div class="card-body" style="background-color: orange;">
+                        <img class="card-img-top" src= {{recipes[i*3+1].imageLink}} alt="Card image cap">
+                        <div class="card-body">
                             <h5 class="card-title">{{recipes[i*3+1].name}}</h5>
-                            <p class="card-text"> Meal Type: {{i}} : {{i*3+1}} <br> Cook Time: {{recipes[i*3+1].minutes}}</p>
+                            <p class="card-text"> Slide # : Card # | {{i}} : {{i*3+1}} <br> Cook Time: {{recipes[i*3+1].minutes}} minutes</p>
+                        </div>
+                        <div class="card-footer">
                             <a href="http://localhost:4200" class="btn btn-primary stretched-link"> Do a thing</a>
                         </div>
                     </div>
@@ -54,10 +56,12 @@
                 <!-- Card 3 -->
                 <div class="col-md-4 clearfix">
                     <div class="card h-100" *ngIf="i * 3 + 2 < recipes.length" >
-                        <img class="card-img-top" src= {{recipes[i*3+2].imageLink}} alt="Card image cap" style="background-color: orange;">
-                        <div class="card-body" style="background-color: orange;">
+                        <img class="card-img-top" src= {{recipes[i*3+2].imageLink}} alt="Card image cap">
+                        <div class="card-body">
                             <h5 class="card-title">{{recipes[i*3+2].name}}</h5>
-                            <p class="card-text"> Meal Type: {{i}} : {{i*3+2}} <br> Cook Time: {{recipes[i*2+2].minutes}}</p>
+                            <p class="card-text"> Slide # : Card # | {{i}} : {{i*3+2}} <br> Cook Time: {{recipes[i*2+2].minutes}} minutes </p>
+                        </div>
+                        <div class="card-footer">
                             <a href="http://localhost:4200" class="btn btn-primary stretched-link"> Do a thing</a>
                         </div>
                     </div>
@@ -67,6 +71,7 @@
             </div>
         </div>
     </div>
+    
     <!--/.Slides-->
 
       <!--Controls-->
@@ -78,4 +83,17 @@
 
     </div>
     <!--/.Carousel Wrapper-->
+
+    <div *ngIf="recipes.length == 0" class="row w-100">
+        <div class="col-4 mx-auto">
+            <div class="card text-center">
+                <div id="noRecipes" class="card-body">
+                    <h5 class="card-title"> Oops! No previously recommended recipes. <br> <br> Please go take a survey for some suggestions. </h5>
+                </div>
+                <div class="card-footer">
+                    <a href="http://localhost:4200/survey" class="btn btn-primary"> Take a survey</a>
+                </div>
+            </div>
+        </div>
+    </div>
 <!-- </div> -->
