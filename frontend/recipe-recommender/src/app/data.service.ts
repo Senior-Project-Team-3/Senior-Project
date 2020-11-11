@@ -13,4 +13,8 @@ export class DataService {
   public getRecipe(recipeName: String) {
     return this.httpClient.get(this.REST_API_SERVER + '/recipes/' + recipeName + '/search');
   }
+
+  public getTopRecipes() {
+    return this.httpClient.get(this.REST_API_SERVER + '/recipes/review/top_rated');
+  }
 }
