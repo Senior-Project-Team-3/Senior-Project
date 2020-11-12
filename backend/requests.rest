@@ -1,11 +1,31 @@
-GET http://localhost:3000/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmltIiwiaWF0IjoxNjA1MTMxMTczfQ.ukVzG4fr7h9yp-w1r21fqt9o79K_M2ghKYLPn9xJOXc
+### This GET authenticates and displays the content of the JWT token created by the initial JWT or the JWT refresh token
 
-###
+GET http://localhost:3000/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmltIiwiaWF0IjoxNjA1MjEyMzE2LCJleHAiOjE2MDUyMTIzNDZ9.EU6nCzDe-WnyQE2BX5vDlTgmmxf7kbRD1tMdpwLfc5c
+
+### This DELETE looks to prevent the JWT refresh token from creating addition access tokens
+
+DELETE http://localhost:3000/logout
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmltIiwiaWF0IjoxNjA1MjEyMjUxfQ.qgRyXXVa5mE5sSrwxRMesKubXzUPptfZNBzMT-aRKkU"
+}
+
+### Once the JWT refresh token is entered into "token", you can generate additional time-based access tokens
+
+POST http://localhost:3000/token
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmltIiwiaWF0IjoxNjA1MjEyMjUxfQ.qgRyXXVa5mE5sSrwxRMesKubXzUPptfZNBzMT-aRKkU"
+}
+
+### This POST request is used to generate the inital JWT access token and JWT refresh access token
 
 POST http://localhost:3000/login
 Content-Type: application/json
 
 {
-    "username": "Jim"
+    "username": "Jim" //Enter the username you are searching for to encode the JWT
 }
