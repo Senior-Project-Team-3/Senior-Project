@@ -2,15 +2,12 @@ const express = require('express');
 const mysql = require('mysql');
 const router = express.Router();
 
-/**
- * Configure thise section for your local DB
- */
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'db'
-})
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_SCHEMA
+});
 
 db.connect((err) => {
     if (err) {
@@ -33,12 +30,12 @@ router.get('/recipes/:recipe_name/search', function(req, res) {
 })
 
 router.get('/recipes/review/top_rated', function(req, res) {
-    let sql =   "select * from recipes " + 
-                "INNER JOIN nutrition " + 
-                "ON recipes.recipe_id = nutrition.recipe_id " + 
-                "INNER JOIN steps " + 
-                "ON recipes.recipe_id = steps.recipe_id " + 
-                "limit 8;"
+    let sql = "select * from recipes " +
+        "INNER JOIN nutrition " +
+        "ON recipes.recipe_id = nutrition.recipe_id " +
+        "INNER JOIN steps " +
+        "ON recipes.recipe_id = steps.recipe_id " +
+        "limit 8;"
     let query = db.query(sql, (err, results) => {
         if (err) {
             throw err;
