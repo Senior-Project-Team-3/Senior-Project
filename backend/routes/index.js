@@ -63,4 +63,10 @@ router.get('/recipes/random/:amount', function(req, res) {
     });
 });
 
+router.put('/survey_results/:user_id', function(req, res) {
+    var user_id = req.params.user_id;
+    console.log(req.body)
+    res.sendStatus(200);
+});
+
 module.exports = router;

@@ -1,44 +1,44 @@
-<div class="jumbotron mx-auto">
-    <div class="container-fluid" id="questionContainer">{{questions.get(currQuestion)}}</div>
-    <div class="container-fluid" id="responseContainer" *ngFor="let response of responses.get(currQuestion)" id="checkboxes">
-        <label>
-            <input type="checkbox">
-            {{response}}
-            </label>
+<div class="card mx-auto" id="surveyCard" *ngIf="isComplete == false">
+    <div class="card-body">
+        <div *ngIf="isInitial">
+            <h5 class="card-title">{{ initialSurveyQuestions[currentQuestion] }}</h5>
+            <div *ngFor="let option of initialSurveyOptions[currentQuestion]">
+                <div *ngIf="isRadio">
+                    <label for="radio_{{option}}">
+                        <input id="radio_{{option}}" type="radio" [value]="option" name="radios" [(ngModel)]="radioSelected">
+                        {{ option }}
+                    </label>
+                </div>
+                <div *ngIf="isRadio == false">
+                    <label for="checkbox_{{option}}">
+                        <input id="checkbox_{{option}}" type="checkbox" name="checkboxes" [(ngModel)]="option.checked">
+                        {{ option.title }}
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="isInitial == false">
+            <h5 class="card-title">{{ returnSurveyQuestions[currentQuestion] }}</h5>
+            <div *ngFor="let option of returnSurveyOptions[currentQuestion]">
+                <div *ngIf="isRadio">
+                    <label for="radio_{{option}}">
+                        <input id="radio_{{option}}" type="radio" [value]="option" name="radios" [(ngModel)]="radioSelected">
+                        {{ option }}
+                    </label>
+                </div>
+                <div *ngIf="isRadio == false">
+
+                </div>
+            </div>
+        </div>
+        <div *ngIf="isRadio">
+            <button type="button" class="btn btn-primary" id="continueButton" (click)="submitRadio()">Next</button>
+        </div>
+        <div *ngIf="isRadio == false">
+            <button type="button" class="btn btn-primary" id="continueButton" (click)="submitCheckbox()">Next</button>
+        </div>
     </div>
-    <button class="btn btn-link" style="float: right;">Continue</button>
+</div>
+<div *ngIf="isComplete">
 
 </div>
-
-
-<!-- <div class="jumbotron mx-auto">
-    <div class="container-fluid" id="questionContainer">{{questions.get(currQuestion)}}</div>
-    <form [formGroup]="form" (ngSubmit)="submitForm()" novalidate>
-        <div *ngFor="let response of responses.get(currQuestion)">
-            <label>
-                <input type="checkbox" [value]="response" (change)="onCheckboxChange($event)" />
-                {{response}}
-            </label>
-        </div>
-        <input type="submit" value="Submit">
-    </form> -->
-<!-- <form [formGroup]="form" (ngSubmit)="submitForm()" novalidate> -->
-
-<!-- <div *ngFor="let data of Data; let i=index">
-            <label>
-                <input type="checkbox" [value]="data.value" (change)="onCheckboxChange($event)" />
-                {{data.name}}
-            </label>
-        </div>
-        <input type="submit" value="Submit">
-    </form> -->
-<!-- </div> -->
-
-
-
-<!-- <input class="form-control mr-sm-2" type="search" #search placeholder="Search for a recipe" aria-label="Search">
-<button class="btn btn-secondary my-2 my-sm-0" id="searchButton" (click)="recipeSearch(search.value);">Search</button>
-<div id="recipeInfo" *ngIf="recipe.length > 0">
-    {{recipe[0].recipe_name}}<br>{{recipe[0].cook_time}}
-    <br>{{recipe[0].meal_type}}
-</div> -->
