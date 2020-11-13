@@ -17,4 +17,8 @@ export class DataService {
   public getTopRecipes() {
     return this.httpClient.get(this.REST_API_SERVER + '/recipes/review/top_rated');
   }
+
+  public getRandomRecipes(amount: number) {
+    return this.httpClient.get(this.REST_API_SERVER + '/recipes/random/' + amount);
+  }
 }

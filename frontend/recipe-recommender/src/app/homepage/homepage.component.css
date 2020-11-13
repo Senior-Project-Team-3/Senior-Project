@@ -12,6 +12,7 @@ h1 {
 
 p {
     color: white;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
 button {
@@ -19,4 +20,5 @@ button {
     color: white;
     background-color: #ec6941;
     border: none;
+    margin-bottom: 25px;
 }

@@ -45,4 +45,22 @@ router.get('/recipes/review/top_rated', function(req, res) {
     });
 });
 
+router.get('/recipes/random/:amount', function(req, res) {
+    var amount = req.params.amount;
+    let sql = "SELECT * FROM recipes AS t1 " +
+        "JOIN (SELECT recipe_id FROM recipes ORDER BY RAND() LIMIT " + amount + " ) as t2 " +
+        "ON t1.recipe_id=t2.recipe_id " +
+        "INNER JOIN nutrition " +
+        "ON t1.recipe_id = nutrition.recipe_id " +
+        "INNER JOIN steps " +
+        "ON t1.recipe_id = steps.recipe_id;"
+    let query = db.query(sql, (err, results) => {
+        if (err) {
+            throw err;
+        }
+        console.log(results);
+        res.send(results);
+    });
+});
+
 module.exports = router;
