@@ -69,3 +69,13 @@ Node.js - 12.19.0
 Express - 4.17.1
 Angular - 10.1.6
 Bootstrap - 4 or greater
+
+SETTING UP DB CREDENTIALS
+Windows:
+1. Search for "Edit the system environment variables" in control panel.
+2. Click on "Environment Variables..."
+3. Select "New..."
+4. Set "Variable name:" to "DB_HOST".
+5. Set "Variable value:" to the appropriate value.
+6. Repeat for "DB_USER", "DB_PASSWORD" & "DB_SCHEMA".
+7. Click "OK" > "OK & start new terminal before running server.
