@@ -79,3 +79,9 @@ Windows:
 5. Set "Variable value:" to the appropriate value.
 6. Repeat for "DB_USER", "DB_PASSWORD" & "DB_SCHEMA".
 7. Click "OK" > "OK & start new terminal before running server.
+-OR-
+1. Run "npm install dotenv"
+2. Add "require('dotenv').config();" at top of App.js if it is not there already
+3. Create file named ".env" in backend folder if it does not exist
+4. Add line "DB_HOST = '<host_name>'" and set <host_name> accordingly
+5. Repeat for "DB_USER", "DB_PASSWORD" & "DB_SCHEMA"
