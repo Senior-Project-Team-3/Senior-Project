@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { DataService } from '../data.service';
 
@@ -36,7 +37,10 @@ export class SurveyComponent implements OnInit {
   errorMessage: string;
   recommendedRecipe = [];
   
-  constructor(private dataService: DataService) {
+  constructor(
+    private dataService: DataService,
+    private router: Router
+    ) {
   }
 
   ngOnInit(): void {
@@ -319,5 +323,9 @@ export class SurveyComponent implements OnInit {
       //   console.log(data);
       // });
     }
+  }
+
+  goToRecipe(recipe_id: number) {
+    this.router.navigateByUrl('/recipe/' + recipe_id);
   }
 }
