@@ -31,6 +31,9 @@
                 </div>
             </div>
         </div>
+        <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+            {{errorMessage}}
+        </div>
         <div *ngIf="isRadio">
             <button type="button" class="btn btn-primary" id="continueButton" (click)="submitRadio()">Next</button>
         </div>
@@ -40,5 +43,14 @@
     </div>
 </div>
 <div *ngIf="isComplete">
-
+    <div class="card h-100" *ngFor="let recipe of recommendedRecipe">
+        <img class="card-img-top" src={{recipe.imageLink}} alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">{{recipe.name | uppercase}} </h5>
+            <p class="card-text"></p>
+        </div>
+        <div class="card-footer">
+            <a href="http://localhost:4200" class="btn btn-primary stretched-link"> Do a thing</a>
+        </div>
+    </div>
 </div>
