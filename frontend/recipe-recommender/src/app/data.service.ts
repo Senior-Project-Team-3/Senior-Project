@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -16,5 +16,13 @@ export class DataService {
 
   public getTopRecipes() {
     return this.httpClient.get(this.REST_API_SERVER + '/recipes/review/top_rated');
+  }
+
+  public getRandomRecipes(amount: number) {
+    return this.httpClient.get(this.REST_API_SERVER + '/recipes/random/' + amount);
+  }
+
+  public putSurveyResults(results: String, userID: number) {
+    return this.httpClient.put(this.REST_API_SERVER + '/survey_results/' + userID, {"data": results});
   }
 }

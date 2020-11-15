@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { DataService } from '../data.service';
 
@@ -10,79 +10,322 @@ import { DataService } from '../data.service';
 })
 export class SurveyComponent implements OnInit {
 
-  recipe = [];
-
-  form: FormGroup;
-  // Data: Array<any> = [
-  //   { name: 'Pear', value: 'pear' },
-  //   { name: 'Plum', value: 'plum' },
-  //   { name: 'Kiwi', value: 'kiwi' },
-  //   { name: 'Apple', value: 'apple' },
-  //   { name: 'Lime', value: 'lime' }
-  // ];
-
-  // Hold our questions
-  questions = new Map();
-  // Hold posssible responses to question
-  responses = new Map();
-  // Keep track of which question the user is on
-  currQuestion: number;
-
-
-
+  // Holds the questions
+  initialSurveyQuestions = [];
+  returnSurveyQuestions = [];
+  // Holds the selectable options
+  initialSurveyOptions = [];
+  returnSurveyOptions = [];
+  // Holds the users answers
+  // initialSurveyAnswers = [];
+  initialSurveyAnswers: any;
+  returnSurveyAnswers = [];
+  // Holds booleans that indicates if a questions is multiple choice(checkbox) or single choice(radio).
+  //    For example, if our question array is [single choice, multiple choice, single choice], 
+  //    this should be [true, false, true]
+  radioIndicators = [];
+  // Indicates the question the user is currently on
+  currentQuestion: number;
+  // Indicates if the current survey is the users initial survey
+  isInitial: boolean;
+  // Indicates if the current question is single or multiple choice
+  isRadio: boolean;
+  // Holds the options selected by the user when they finish a question
+  radioSelected: any;
+  // Indicate end of survey
+  isComplete: boolean;
+  errorMessage: string;
+  recommendedRecipe = [];
+  
   constructor(
     private dataService: DataService,
-    private formBuilder: FormBuilder) {
-      this.form = this.formBuilder.group({
-        checkArray: this.formBuilder.array([], Validators.required)
-      })
-     }
-
-  ngOnInit(): void {
-    this.getSurveyData();
-    this.currQuestion = 1;
+    private router: Router
+    ) {
   }
 
-  onCheckboxChange(e) {
-    const checkArray: FormArray = this.form.get('checkArray') as FormArray;
+  ngOnInit(): void {
+    this.currentQuestion = 0;
+    this.isComplete = false;
+    // Check if user has taken previous surveys...
+    // this.populateReturnSurvey();
+    // If not, get the initial survey ready.
+    this.populateInitialSurvey();
+  }
 
-    if (e.target.checked) {
-      checkArray.push(new FormControl(e.target.value));
+  populateInitialSurvey() {
+    this.isInitial = true;
+    this.isRadio = true;
+    this.initialSurveyAnswers = {
+      "vegetarian": null,
+      "proteins": null,
+      "cuisines": null,
+      "cookTime": null,
+      "appliances": null,
+      "intolerant": null,
+      "intolerances": null
+    };
+
+    this.initialSurveyQuestions[0] = "Are you a vegetarian?";
+    this.initialSurveyOptions[0] = ['Yes', 'No'];
+
+    // Only ask if answer to 0 is "No"
+    this.initialSurveyQuestions[1] = "What main source of meat do you prefer?";
+    this.initialSurveyOptions[1] = [
+      {
+        title: 'Beef',
+        checked: false,
+      },
+      {
+        title: 'Chicken',
+        checked: false,
+      },
+      {
+        title: 'Pork',
+        checked: false,
+      },
+      {
+        title: 'No Preference',
+        checked: false,
+      },
+    ];
+
+    this.initialSurveyQuestions[2] = "What cuisines do you like?";
+    // We can expand on this list
+    this.initialSurveyOptions[2] = [
+      {
+        title: 'Mexican',
+        checked: false,
+      },
+      {
+        title: 'Chinese',
+        checked: false,
+      },
+      {
+        title: 'American',
+        checked: false,
+      },
+      {
+        title: 'Italian',
+        checked: false,
+      },
+      {
+        title: 'Japanese',
+        checked: false,
+      },
+      {
+        title: 'Spanish',
+        checked: false,
+      },
+      {
+        title: 'No Preference',
+        checked: false,
+      },
+    ];
+
+    this.initialSurveyQuestions[3] = "Which length of cooking do you prefer?";
+    this.initialSurveyOptions[3] = ['15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', '4-hours-or-less', 'No Preference'];
+    
+    // Unsure how to implement this effectively
+    // this.initialSurveyQuestions[4] = "Do you care about nutrition in the recipe?";
+    // this.initialSurveyOptions[4] = "Yes, No";
+    
+    this.initialSurveyQuestions[4] = "What appliances do you have access to?";
+    this.initialSurveyOptions[4] = [
+      {
+        title: 'Oven',
+        checked: false,
+      },
+      {
+        title: 'Food Processor',
+        checked: false,
+      },
+      {
+        title: 'Microwave',
+        checked: false,
+      },
+      {
+        title: 'Stove',
+        checked: false,
+      },
+      {
+        title: 'Grill',
+        checked: false,
+      },
+      {
+        title: 'Pressure Cooker',
+        checked: false,
+      },
+      {
+        title: 'Crock-Pot',
+        checked: false,
+      },
+    ];
+    
+    this.initialSurveyQuestions[5] = "Do you have an allergy or intolerance?";
+    this.initialSurveyOptions[5] = ['Yes', 'No'];
+    
+    // Only ask if answer to 5 is "Yes"
+    this.initialSurveyQuestions[6] = "Please select your allergies/intolerances:";
+    this.initialSurveyOptions[6] = [
+      {
+        title: 'Peanut',
+        checked: false,
+      },
+      {
+        title: 'Tree Nut',
+        checked: false,
+      },
+      {
+        title: 'Lactose',
+        checked: false,
+      },
+      {
+        title: 'Gluten',
+        checked: false,
+      },
+      {
+        title: 'Wheat',
+        checked: false,
+      },
+    ];
+
+    // Always this for initial survey
+    this.radioIndicators = [true, false, false, true, false, true, false];
+  }
+
+  /**
+   * This function will tell the backend to generate a new survey. The backend should provide
+   * a question, option, and radioIndicator array. A survey can take a bit of time, so the 
+   * backend should ?store these questions in the DB? and when the user is done, reference the 
+   * stored questions to relate to their new survey results
+   */
+  populateReturnSurvey() {
+    this.isInitial = false;
+  }
+
+  getNextQuestion() {
+    this.currentQuestion++;
+    this.radioSelected = undefined;
+    this.errorMessage = undefined;
+
+    if (this.isInitial) {
+
+      // Survey complete
+      if (this.currentQuestion == this.initialSurveyQuestions.length) {
+        // Finish the survey
+        this.completeSurvey();
+        return;
+      }
+
+      // Check for dependant questions...
+      // Skip preferred source of meat for vegetarians
+      if (this.currentQuestion == 1 && this.initialSurveyAnswers.vegetarian == 'Yes') {
+        this.getNextQuestion();
+        return;
+      }
+      // Skip allergy intolerence question for those who select no
+      if (this.currentQuestion == 6 && this.initialSurveyAnswers.intolerant == 'No') {
+        this.initialSurveyAnswers[this.currentQuestion] = null;
+        this.getNextQuestion();
+        return;
+      }
+
     } else {
-      let i: number = 0;
-      checkArray.controls.forEach((item: FormControl) => {
-        if (item.value == e.target.value) {
-          checkArray.removeAt(i);
-          return;
-        }
-        i++;
-      });
+
+      // Survey complete
+      if (this.currentQuestion == this.returnSurveyQuestions.length) {
+        // Finish the survey
+        this.completeSurvey();
+        return;
+      }
+    }
+    
+    // Check if next question is single or multiple choice
+    if (this.radioIndicators[this.currentQuestion]) {
+      this.isRadio = true;
+    } else {
+      this.isRadio = false;
     }
   }
 
-  // Pass selections along, continue to next question
-  submitForm() {
-    console.log(this.form.value);
-    
-
-    this.currQuestion++;
+  // Place radio selection into answers array, continue to next question
+  submitRadio() {
+      console.log(this.radioSelected);
+      if (this.radioSelected == undefined) {
+        this.errorMessage = "You must select an option before continuing";
+        return;
+      }
+      if (this.isInitial) {
+        // this.initialSurveyAnswers[this.currentQuestion] = this.radioSelected;
+        if (this.currentQuestion == 0) {
+          this.initialSurveyAnswers.vegetarian = this.radioSelected;
+        }
+        if (this.currentQuestion == 3) {
+          this.initialSurveyAnswers.cookTime = this.radioSelected;
+        }
+        if (this.currentQuestion == 5) {
+          this.initialSurveyAnswers.intolerant = this.radioSelected;
+        }
+      } else {
+        this.returnSurveyAnswers[this.currentQuestion] = this.radioSelected;
+    }
+    this.getNextQuestion();
   }
 
-  // Here we should pass along user info, if logged in, to grab previous
-  // responses from backened and generate a new survey. Otherwise, just 
-  // provide the generic survey for unregistered users.
-  getSurveyData() {
-    this.questions.set(1, "What are you in the mood for tonight?");
-    this.responses.set(1, ["Mexican", "Chinese", "Italian"]);
-    this.questions.set(2, "How comfortable are you in the kitchen?")
-    this.responses.set(2, ["Not at all", "A little", "Average", "Very"])
-    
+  submitCheckbox() {
+    let answersList = this.initialSurveyOptions[this.currentQuestion].filter(item => item.checked);
+    let answers = [];
+    for (let i = 0; i < answersList.length; i++) {
+      answers[i] = answersList[i].title;
+    }
+    if (answers.length == 0) {
+      this.errorMessage = "You must select an option before continuing";
+      return;
+    }
+    console.log(answers);
+    if (this.isInitial) {
+      // this.initialSurveyAnswers[this.currentQuestion] = answers;
+      if (this.currentQuestion == 1) {
+        if (answers.includes("No Preference")) {
+          this.initialSurveyAnswers.proteins = ["No Preference"];
+        } else {
+          this.initialSurveyAnswers.proteins = answers;
+        }
+      }
+      if (this.currentQuestion == 2) {
+        if (answers.includes("No Preference")) {
+          this.initialSurveyAnswers.cuisines = ["No Preference"];
+        } else {
+          this.initialSurveyAnswers.cuisines = answers;
+        }
+      }         
+      if (this.currentQuestion == 4) {
+        this.initialSurveyAnswers.appliances = answers;
+      }
+      if (this.currentQuestion == 6) {
+        this.initialSurveyAnswers.intolerances = answers;
+      }
+    } else {
+      this.returnSurveyAnswers[this.currentQuestion] = answers;
+    }
+    this.getNextQuestion();
+  }
+  
+  completeSurvey() {
+    this.isComplete = true;
+    if (this.isInitial) {
+      this.dataService.putSurveyResults(JSON.stringify(this.initialSurveyAnswers), 10).subscribe((data: any[]) => {
+        console.log(data);
+        this.recommendedRecipe = data;
+      });
+    } else {
+      // this.dataService.putSurveyResults(this.returnSurveyAnswers, 10).subscribe((data: any[]) => {
+      //   console.log(data);
+      // });
+    }
   }
 
-  // recipeSearch(input: String) {
-  //   this.dataService.getRecipe(input).subscribe((data: any[]) => {
-  //     console.log(data);
-  //     this.recipe = data;
-  //   })
-  // }
+  goToRecipe(recipe_id: number) {
+    this.router.navigateByUrl('/recipe/' + recipe_id);
+  }
 }
