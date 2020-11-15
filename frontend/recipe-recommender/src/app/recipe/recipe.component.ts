@@ -19,6 +19,7 @@ export class RecipeComponent implements OnInit {
 
   ngOnInit(): void {
     this.getRecipe(this.router.url.split('/').pop());
+    //Edit things here
   }
 
   getRecipe(id: String) {
@@ -27,5 +28,7 @@ export class RecipeComponent implements OnInit {
       this.recipe = data;
     })
   }
+
+
   
 }

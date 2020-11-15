@@ -8,9 +8,8 @@
         <h4>Description: {{recipe[0].description}}</h4>
         <h4 id="shorterdate">{{recipe[0].submitted}}</h4>
             <script>
-                    document.getElementById("shorterdate").innerHTML = "Submitted on: " + str.substring(0, 9);
+                    document.getElementById("shorterdate").innerHTML.replace(recipe[0].submitted,"Submitted on: " + recipe[0].submitted.substring(0, 9));
             </script>
-        
         <h4>Prep time: {{recipe[0].minutes}} Minutes.</h4>
     </div>
 
