@@ -1,1 +1,30 @@
-<p>recipe works!</p>
+<div style="width:100%;">
+    <div style="float:left;">
+        <img src="{{recipe[0].imageLink}}" alt="{{recipe[0].name}}">
+    </div>
+    <div style="float:center;">
+        <h1 style="text-transform:capitalize; text-align: left;">
+            {{recipe[0].name}}</h1>
+        <h4>Description: {{recipe[0].description}}</h4>
+        <h4 id="shorterdate">{{recipe[0].submitted}}</h4>
+            <script>
+                    document.getElementById("shorterdate").innerHTML = "Submitted on: " + str.substring(0, 9);
+            </script>
+        
+        <h4>Prep time: {{recipe[0].minutes}} Minutes.</h4>
+    </div>
+
+    
+
+    <table>
+        <tr>
+        </tr>
+    </table>
+</div>
+
+<script>
+    function shortDate(str) {
+        newstr = str.substring(0, 9);
+        document.getElementById("<h4>Submitted on: " + newstr +"</h4>")
+    }
+</script>

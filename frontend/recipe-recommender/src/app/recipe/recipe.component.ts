@@ -10,6 +10,7 @@ import { DataService } from '../data.service';
 export class RecipeComponent implements OnInit {
 
   recipe = {}
+  ingredients = {}
 
   constructor(
     private router: Router,
@@ -26,4 +27,5 @@ export class RecipeComponent implements OnInit {
       this.recipe = data;
     })
   }
+  
 }
