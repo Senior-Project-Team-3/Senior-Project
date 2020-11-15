@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
@@ -69,6 +71,29 @@ app.get('/recipes/random/:amount', function(req, res) {
         if (err) {
             throw err;
         }
+        console.log(results);
+        res.send(results);
+    });
+});
+
+app.get('/recipes/:user_id/my_recipes', function(req, res) {
+    var user_id = req.params.user_id;
+    console.log(req.params.user_id);
+    let sql =   "select * from reviews " +
+                "INNER JOIN recipes " + 
+                "ON reviews.recipe_id = recipes.recipe_id " + 
+                "INNER JOIN nutrition " +
+                "ON reviews.recipe_id = nutrition.recipe_id " + 
+                "INNER JOIN steps " +
+                "ON reviews.recipe_id = steps.recipe_id " + 
+                "where review_user_id_fk = " + user_id +
+                " limit 5;";
+    let query = db.query(sql, (err, results) => {
+        if (err) {
+            console.log("testing");
+            throw err;
+        }
+        console.log("testing");
         console.log(results);
         res.send(results);
     });
