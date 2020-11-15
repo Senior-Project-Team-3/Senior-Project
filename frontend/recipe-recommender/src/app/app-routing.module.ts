@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'survey', component: SurveyComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'recipe', component: RecipeComponent },
+  { path: 'recipe/:recipe_id', component: RecipeComponent },
   { path: 'my-recipes', component: MyRecipesComponent }
 ];
 

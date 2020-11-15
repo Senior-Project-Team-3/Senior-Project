@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-
+import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router'
-
+import { DataService } from '../data.service';
 @Component({
   selector: 'app-recipe',
   templateUrl: './recipe.component.html',
@@ -9,15 +9,21 @@ import { ActivatedRoute } from '@angular/router'
 })
 export class RecipeComponent implements OnInit {
 
-  recipe = []
+  recipe = {}
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(
+    private router: Router,
+    private dataService: DataService
+    ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.recipe = params['data'];
-      console.log(params['data'])
-    })
+    this.getRecipe(this.router.url.split('/').pop());
   }
 
+  getRecipe(id: String) {
+    this.dataService.recipe(id).subscribe((data: any) => {
+      console.log(data);
+      this.recipe = data;
+    })
+  }
 }

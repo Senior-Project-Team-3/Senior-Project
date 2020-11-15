@@ -8,10 +8,14 @@
         <div class="col-sm-3" *ngFor="let recipe of recipes" style="padding-bottom:15px;">
             <p>{{ recipe.name | uppercase }} </p>
             <img src="{{ recipe.imageLink }}" class="img-responsive" style="width:70%">
+            <div class="card-footer">
+                <a href="http://localhost:4200/recipe/{{ recipe.recipe_id }}" class="btn btn-primary stretched-link"></a>
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="container-fluid bg-3 text-center">
-        <h5>Ready to get a recommendation?</h5>
-        <button type="button" class="btn btn-light" (click)="goToSurvey();">Take a Survey</button>
-    </div>
+<div class="container-fluid bg-3 text-center">
+    <h5>Ready to get a recommendation?</h5>
+    <button type="button" class="btn btn-light" (click)="goToSurvey();">Take a Survey</button>
+</div>
