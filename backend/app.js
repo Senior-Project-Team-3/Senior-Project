@@ -30,9 +30,6 @@ db.connect((err) => {
     console.log("Database Connected");
 });
 
-/* Later task: store refresh token(s) in database or redis cache */
-let refreshTokens = []
-
 /* data structure refreshTokens[] is drawing from */
 const posts = [
     {
@@ -43,6 +40,9 @@ const posts = [
         title: 'Post 2'
     }
 ]
+
+/* Later task: store refresh token(s) in database or redis cache */
+let refreshTokens = []
 
 /* This GET request is retrieves user data only mataching the authentication */
 app.get('/posts', authenticateToken, (req, res) => {

@@ -23,7 +23,6 @@ Content-Type: application/json
 
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNTU0MDEzMn0.VrGeXOtUi2Sz6W3gedTb85jaiRSGHuwOpMJU54wI-gQ"
-
 }
 
 ### This POST request is used to generate the inital JWT access token and JWT refresh access token
