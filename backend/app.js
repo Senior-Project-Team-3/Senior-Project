@@ -3,10 +3,15 @@ const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const app = express();
+const expjwt = require('express-jwt');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const { request } = require('express');
 
 app.use(express.json())
+app.use(cors());
+app.use(cookieParser());
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -50,38 +55,57 @@ app.get('/posts', authenticateToken, (req, res) => {
 })
 
 /* This POST request recieves the refresh JWT and creates time-based access tokens*/
-app.post('/token', (req,res) => {
+app.post('/refresh', (req,res) => {
     const refreshToken = req.body.token /* Looks the body of the JWT refresh token */
     if(refreshToken == null) return res.sendStatus(401) /* checking if token not null */
     if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403) /* checking if the JWT refresh token exists in the storage */
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) =>{
         if (err) return res.sendStatus(403)
         const accessToken = generateAccessToken({ name: user.name }) /* Generating new access token */
-        res.json({ accessToken: accessToken })  /* Output JWT access token information */  
+        //res.json({ accessToken: accessToken })  /* Output JWT access token information */
+        res.cookie('refreshAccessToken', accessToken, {
+            //expires: new Date(Date.now() + expiration),
+            secure: false, // set to true if your using https
+            httpOnly: true,
+        }).send('Refresh Success!');  
     })
 
 })
 
+/* Used to view all cookies created */
+app.get('/home',(req,res)=>{
+    res.send(req.cookies)
+})
+
+/* Used to clear all cookies created */
+app.get('/clear', (req, res)=>{ 
+    res.clearCookie('accessToken')
+    res.clearCookie('refreshToken')
+    res.clearCookie('refreshAccessToken')
+    res.send('cookies cleared'); 
+}); 
+
 /* Working version of app.post('/login') */
-app.post('/testLogin',(req,res) => {
+app.post('/home',(req,res) => {
     const username = req.body.username 
     const user = { name: username } /* Passing the body of the token as the user*/
 
     const accessToken  = generateAccessToken(user) /* Creating time-based user access token */
     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET) /* Created a signed refresh JWT */
     refreshTokens.push(refreshToken) /* Adding the refresh JWT to the refreshTokens array */
-    res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
-})
-/* Non-working version, but solution found in app.post('/testLogin') */
-/*app.post('/login',(req,res) => {
-    const username = req.body.username 
-    const user = { name: username } /* Passing the body of the token as the user*/ 
-    
-    //const accessToken  = generateAccessToken(user) /* Creating time-based user access token */
-    //const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET) /* Created a signed refresh JWT */
-    //refreshTokens.push(refreshToken) /* Adding the refresh JWT to the refreshTokens array */
     //res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
-//})
+    res.cookie('accessToken',accessToken, {
+        //expires: new Date(Date.now() + expiration),
+        secure: false, // set to true if your using https
+        httpOnly: true,
+    })
+    res.cookie('refreshToken',refreshToken, {
+        //expires: new Date(Date.now() + expiration),
+        secure: false, // set to true if your using https
+        httpOnly: true,
+    })
+    res.send('Success!');
+})
 
 /* This DELETE is used to stop the JWT refresh token from creating addition time-based access JWT */
 app.delete('/logout', (req, res) => {
@@ -106,7 +130,7 @@ function authenticateToken(req, res, next)
 
 /* This function is used to generate the time-based access tokens */
 function generateAccessToken(user){
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' })
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '40s'})
 }
 
 app.use(bodyParser.urlencoded());

@@ -3,7 +3,7 @@
 ### This GET authenticates and displays the content of the JWT token created by the initial JWT or the JWT refresh token
 
 GET http://localhost:3000/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiIiwiaWF0IjoxNjA1NTc0MDI1LCJleHAiOjE2MDU1NzQwNTV9.i97HQaxDIvFO15LdyOFxvG0O_0D_vubsxM-uoBkDewg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNTc4Mjc0NywiZXhwIjoxNjA1NzgyODQ3fQ.Vr17w17MMmz5rs1l34onRXDDoJtld3yRy0zdFuGLblM
 
 
 ### This DELETE looks to prevent the JWT refresh token from creating addition access tokens
@@ -12,24 +12,32 @@ DELETE http://localhost:3000/logout
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNTU0MDEzMn0.VrGeXOtUi2Sz6W3gedTb85jaiRSGHuwOpMJU54wI-gQ"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNTc4NjA5MH0.A0nBZz7EI0zv9Z54Phh5_n__qwlb-psOrA2BhWA4dAc"
 
 }
 
-### Once the JWT refresh token is entered into "token", you can generate additional time-based access tokens
+### Once the JWT refresh token is entered into "token", you can generate additional time-based access tokens as a cookie
 
-POST http://localhost:3000/token
+POST http://localhost:3000/refresh
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNTU0MDEzMn0.VrGeXOtUi2Sz6W3gedTb85jaiRSGHuwOpMJU54wI-gQ"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNTc4NzY1N30.r6ZRXV_dvegLHaEVRMTTrbTurmD_s5_bG2q_KG6kXpI"
 }
 
-### This POST request is used to generate the inital JWT access token and JWT refresh access token
+### This POST request is used to generate the inital JWT access token and JWT refresh access token as a cookie
 
-POST http://localhost:3000/testLogin
+POST http://localhost:3000/home
 Content-Type: application/json
 
 {
-    "username": ""
+    "username": "Kyle"
 }
+
+### This GET is used to display all cookies created
+
+GET http://localhost:3000/home
+
+### This GET is used to clear all cookies created
+
+GET http://localhost:3000/clear
