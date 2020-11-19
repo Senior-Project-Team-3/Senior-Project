@@ -107,6 +107,7 @@ app.post('/home',(req,res) => {
     res.send('Success!');
 })
 
+
 /* This DELETE is used to stop the JWT refresh token from creating addition time-based access JWT */
 app.delete('/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token !== req.body.token) /* Comparing body token for possible removal */

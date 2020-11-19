@@ -38,6 +38,7 @@ Content-Type: application/json
 
 GET http://localhost:3000/home
 
+
 ### This GET is used to clear all cookies created
 
 GET http://localhost:3000/clear
