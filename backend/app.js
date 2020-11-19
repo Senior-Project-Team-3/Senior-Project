@@ -1,11 +1,11 @@
 require('dotenv').config()
 const express = require('express');
 const mysql = require('mysql');
-const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
 const jwt = require('jsonwebtoken');
 const { request } = require('express');
-
+app.use(cookieParser());
 app.use(express.json())
 
 app.use((req, res, next) => {
@@ -50,37 +50,37 @@ app.get('/posts', authenticateToken, (req, res) => {
 })
 
 /* This POST request recieves the refresh JWT and creates time-based access tokens*/
-app.post('/token', (req,res) => {
+app.post('/token', (req, res) => {
     const refreshToken = req.body.token /* Looks the body of the JWT refresh token */
-    if(refreshToken == null) return res.sendStatus(401) /* checking if token not null */
+    if (refreshToken == null) return res.sendStatus(401) /* checking if token not null */
     if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403) /* checking if the JWT refresh token exists in the storage */
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) =>{
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(403)
         const accessToken = generateAccessToken({ name: user.name }) /* Generating new access token */
-        res.json({ accessToken: accessToken })  /* Output JWT access token information */  
+        res.json({ accessToken: accessToken })  /* Output JWT access token information */
     })
 
 })
 
 /* Working version of app.post('/login') */
-app.post('/testLogin',(req,res) => {
-    const username = req.body.username 
+app.post('/testLogin', (req, res) => {
+    const username = req.body.username
     const user = { name: username } /* Passing the body of the token as the user*/
 
-    const accessToken  = generateAccessToken(user) /* Creating time-based user access token */
+    const accessToken = generateAccessToken(user) /* Creating time-based user access token */
     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET) /* Created a signed refresh JWT */
     refreshTokens.push(refreshToken) /* Adding the refresh JWT to the refreshTokens array */
-    res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
+    res.json({ accessToken: accessToken, refreshToken: refreshToken }) /* Passing access and refresh JWT */
 })
 /* Non-working version, but solution found in app.post('/testLogin') */
 /*app.post('/login',(req,res) => {
     const username = req.body.username 
-    const user = { name: username } /* Passing the body of the token as the user*/ 
-    
-    //const accessToken  = generateAccessToken(user) /* Creating time-based user access token */
-    //const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET) /* Created a signed refresh JWT */
-    //refreshTokens.push(refreshToken) /* Adding the refresh JWT to the refreshTokens array */
-    //res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
+    const user = { name: username } /* Passing the body of the token as the user*/
+
+//const accessToken  = generateAccessToken(user) /* Creating time-based user access token */
+//const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET) /* Created a signed refresh JWT */
+//refreshTokens.push(refreshToken) /* Adding the refresh JWT to the refreshTokens array */
+//res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
 //})
 
 /* This DELETE is used to stop the JWT refresh token from creating addition time-based access JWT */
@@ -90,14 +90,13 @@ app.delete('/logout', (req, res) => {
 })
 
 /* This function is used to authenticate the JWT as a non-null and verified */
-function authenticateToken(req, res, next)
-{
+function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1] /* Bearer portion of the token and returns undefined if no token found */
     if (token == null) return res.sendStatus(401) /* Outputing 401 Error to user when token is null */
 
     /* verifying the JWT with callback functionality */
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET,(err, user) => {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(403) /* notifies user that the token is no longer valid */
         req.user = user                     /* setting the valid user token */
         next()
@@ -105,10 +104,10 @@ function authenticateToken(req, res, next)
 }
 
 /* This function is used to generate the time-based access tokens */
-function generateAccessToken(user){
+function generateAccessToken(user) {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' })
 }
-
+var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
@@ -125,7 +124,7 @@ app.use(bodyParser.json());
 //     })
 // })
 
-app.get('/recipes/review/top_rated', function(req, res) {
+app.get('/recipes/review/top_rated', function (req, res) {
     let sql = "select * from recipes " +
         "INNER JOIN nutrition " +
         "ON recipes.recipe_id = nutrition.recipe_id " +
@@ -141,7 +140,7 @@ app.get('/recipes/review/top_rated', function(req, res) {
     });
 });
 
-app.get('/recipes/random/:amount', function(req, res) {
+app.get('/recipes/random/:amount', function (req, res) {
     var amount = req.params.amount;
     let sql = "SELECT * FROM recipes AS t1 " +
         "JOIN (SELECT recipe_id FROM recipes ORDER BY RAND() LIMIT " + amount + " ) as t2 " +
@@ -159,18 +158,18 @@ app.get('/recipes/random/:amount', function(req, res) {
     });
 });
 
-app.get('/recipes/:user_id/my_recipes', function(req, res) {
+app.get('/recipes/:user_id/my_recipes', function (req, res) {
     var user_id = req.params.user_id;
     console.log(req.params.user_id);
-    let sql =   "select * from reviews " +
-                "INNER JOIN recipes " + 
-                "ON reviews.recipe_id = recipes.recipe_id " + 
-                "INNER JOIN nutrition " +
-                "ON reviews.recipe_id = nutrition.recipe_id " + 
-                "INNER JOIN steps " +
-                "ON reviews.recipe_id = steps.recipe_id " + 
-                "where review_user_id_fk = " + user_id +
-                " limit 5;";
+    let sql = "select * from reviews " +
+        "INNER JOIN recipes " +
+        "ON reviews.recipe_id = recipes.recipe_id " +
+        "INNER JOIN nutrition " +
+        "ON reviews.recipe_id = nutrition.recipe_id " +
+        "INNER JOIN steps " +
+        "ON reviews.recipe_id = steps.recipe_id " +
+        "where review_user_id_fk = " + user_id +
+        " limit 5;";
     let query = db.query(sql, (err, results) => {
         if (err) {
             console.log("testing");
@@ -182,10 +181,11 @@ app.get('/recipes/:user_id/my_recipes', function(req, res) {
     });
 });
 
-app.put('/survey_results/:user_id', function(req, res) {
+app.put('/survey_results/:user_id', function (req, res) {
     var user_id = req.params.user_id;
     console.log(req.body.data);
     let results = JSON.parse(req.body.data);
+    let newUser = "";
     // console.log(results);
     // This is for initial survey so far...
     let vegetarian = results.vegetarian;
@@ -284,11 +284,31 @@ app.put('/survey_results/:user_id', function(req, res) {
         sql = sql.slice(0, n) + sql.slice(n).replace("AND", "LIMIT 1;");
     }
     console.log(sql);
+
+    // This query returns a recomended recipe and creates a user in the database.
+    //results has the information about the recommended recipe.
     let query = db.query(sql, (err, results) => {
         if (err) {
             throw err;
         }
         console.log(results);
+        // grab the recipe ID for the recip from results and use that to create a user
+        var userRecipeID = results[0]['recipe_id'];
+        // the procedure in the database creates a user,
+        // saves the user id and recipe id in a table
+        // and returns the user ID for the new user
+        sql1 = 'CALL createUser(' + userRecipeID + ')';
+        let newUser = '';
+        db.query(sql1, (err, resultsForUser) => {
+            if (err) {
+                throw err;
+            }
+            /** 
+             * TO DO : now that we have a new user, we can store it in the cookies.
+             */
+            newUser = resultsForUser[0]['@userID'];
+            console.log(resultsForUser);
+        });
         res.send(results);
     });
 });
