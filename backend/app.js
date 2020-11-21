@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express');
 const mysql = require('mysql');
 const cookieParser = require('cookie-parser');
+var session = require('express-session')
 const app = express();
 const jwt = require('jsonwebtoken');
 const { request } = require('express');
@@ -11,10 +12,14 @@ app.use(express.json())
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS, PUT, PATCH, DELETE");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept");
+    res.header('Access-Control-Allow-Credentials', true);
     next();
 });
-
+app.get('/',function(req,res) {
+    res.cookie('mycookie','express');
+    res.send('cookies inserted...');
+})
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -161,6 +166,7 @@ app.get('/recipes/random/:amount', function (req, res) {
 app.get('/recipes/:user_id/my_recipes', function (req, res) {
     var user_id = req.params.user_id;
     console.log(req.params.user_id);
+    console.log(req.cookies);
     let sql = "select * from reviews " +
         "INNER JOIN recipes " +
         "ON reviews.recipe_id = recipes.recipe_id " +
@@ -181,7 +187,7 @@ app.get('/recipes/:user_id/my_recipes', function (req, res) {
     });
 });
 
-app.put('/survey_results/:user_id', function (req, res) {
+app.put('/survey_results/:user_id', function (req, res, next) {
     var user_id = req.params.user_id;
     console.log(req.body.data);
     let results = JSON.parse(req.body.data);
@@ -287,7 +293,8 @@ app.put('/survey_results/:user_id', function (req, res) {
 
     // This query returns a recomended recipe and creates a user in the database.
     //results has the information about the recommended recipe.
-    let query = db.query(sql, (err, results) => {
+    //let query = 
+    db.query(sql, (err, results) => {
         if (err) {
             throw err;
         }
@@ -309,8 +316,22 @@ app.put('/survey_results/:user_id', function (req, res) {
             newUser = resultsForUser[0]['@userID'];
             console.log(resultsForUser);
         });
-        res.send(results);
+        //res.send(results);
+        // let mc = req.cookies._mc;
+        // let id = new Date().getTime().toString();
+        // res.cookie("_mc", id);
+        //req.cookies._mc = id;
+        //res.send(JSON.stringify(req.cookies)).send(results);
+        //res.cookie('name', 'GeeksForGeeks').send('Cookie-Parser').send(results);
+        //console.log(req.cookies); 
+        console.log(JSON.stringify(res.headers));
+        res.cookie('mycookies', 'express').send(results);
+        console.log(res.getHeaderNames());
+        console.log(JSON.stringify(req.headers));
+        // console.log('cookies:' ,req.cookies);
+        //var cookie = req.cookies.cookieName;
     });
+   
 });
 
 app.listen(3000, () => console.log("Server Connected on Port 3000"))
