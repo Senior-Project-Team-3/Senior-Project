@@ -3,15 +3,19 @@ const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const app = express();
-const expjwt = require('express-jwt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { request } = require('express');
 
 app.use(express.json())
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:4200', //need to update to production url
+    credentials: true
+}));
 app.use(cookieParser());
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -65,6 +69,7 @@ app.post('/refresh', (req,res) => {
         //res.json({ accessToken: accessToken })  /* Output JWT access token information */
         res.cookie('refreshAccessToken', accessToken, {
             //expires: new Date(Date.now() + expiration),
+            //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
             secure: false, // set to true if your using https
             httpOnly: true,
         }).send('Refresh Success!');  
@@ -73,8 +78,14 @@ app.post('/refresh', (req,res) => {
 })
 
 /* Used to view all cookies created */
-app.get('/home',(req,res)=>{
+app.get('/',(req,res)=>{
     res.send(req.cookies)
+
+     // Cookies that have not been signed
+    console.log('Cookies: ', req.cookies)
+  
+    // Cookies that have been signed
+    console.log('Signed Cookies: ', req.signedCookies)
 })
 
 /* Used to clear all cookies created */
@@ -86,7 +97,7 @@ app.get('/clear', (req, res)=>{
 }); 
 
 /* Working version of app.post('/login') */
-app.post('/home',(req,res) => {
+app.post('/survey',(req,res) => {
     const username = req.body.username 
     const user = { name: username } /* Passing the body of the token as the user*/
 
@@ -94,17 +105,25 @@ app.post('/home',(req,res) => {
     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET) /* Created a signed refresh JWT */
     refreshTokens.push(refreshToken) /* Adding the refresh JWT to the refreshTokens array */
     //res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
-    res.cookie('accessToken',accessToken, {
+    res.cookie('accessTokenCookie',accessToken, {
         //expires: new Date(Date.now() + expiration),
+        //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
         secure: false, // set to true if your using https
         httpOnly: true,
     })
-    res.cookie('refreshToken',refreshToken, {
+    res.cookie('refreshTokenCookie',refreshToken, {
         //expires: new Date(Date.now() + expiration),
+        //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
         secure: false, // set to true if your using https
         httpOnly: true,
     })
     res.send('Success!');
+})
+
+app.use('/testing', (req, res) =>{
+    const cookieToken = req.cookies.accessTokenCookie
+
+    res.status(200).json(posts)
 })
 
 
@@ -134,8 +153,20 @@ function generateAccessToken(user){
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '40s'})
 }
 
-app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
+
+/*
+app.use('/home', (req, res) => {
+    var cookie = getcookie(req);
+    console.log(cookie);
+});
+
+function getcookie(req) {
+    var cookie = req.headers.cookie;
+    //user=someone; session=QyhYzXhkTZawIb5qSl3KKyPVN //(this is my cookie i get)
+    return cookie.split('; ');
+}
+*/
+
 
 // app.get('/recipes/:recipe_name/search', function(req, res) {
 //     var recipe_name = req.params.recipe_name;

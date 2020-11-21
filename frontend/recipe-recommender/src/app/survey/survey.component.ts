@@ -312,6 +312,35 @@ export class SurveyComponent implements OnInit {
   }
   
   completeSurvey() {
+    /* This post call us used past the access and refresh tokens generated */
+    //FETCH METHOD that works to pass the user a cookie
+    const userInfo = "Kyle"
+    const urlPOST = 'http://localhost:3000/survey' // /auth/login
+    const optionsPOST = {
+      method: 'POST',
+      body: JSON.stringify({userInfo}), // {} is used to store objects
+      header: {'Content-Type': 'application/json'},
+      credentials: 'include' //need to fix promise errors, but this allows for cookies to be created
+    }
+    fetch(urlPOST,optionsPOST)
+      .then (console.error)
+    
+    /* Further method needs to fix bugs to GET request from server
+    .then(fetchUsers)
+    .then (console.log)
+    .then (console.error)
+
+    function fetchUser() {
+      const urlGET = 'http://localhost:3000/posts'
+      method: 'GET',
+      const optionsGET = {
+        credentials: 'include'
+      }
+      fetch(urlGET, optionsGET)
+      .then(response => response.json())
+      .then (console.error)
+    }*/
+
     this.isComplete = true;
     if (this.isInitial) {
       this.dataService.putSurveyResults(JSON.stringify(this.initialSurveyAnswers), 10).subscribe((data: any[]) => {
