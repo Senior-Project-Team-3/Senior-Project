@@ -340,7 +340,7 @@ export class SurveyComponent implements OnInit {
     //   .then(response => response.json())
     //   .then (console.error)
     // }*/
-
+    console.log(document.cookie)
     this.isComplete = true;
     if (this.isInitial) {
       this.dataService.putSurveyResults(JSON.stringify(this.initialSurveyAnswers), 10).subscribe((data: any[]) => {
