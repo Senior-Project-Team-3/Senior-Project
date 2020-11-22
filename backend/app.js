@@ -172,7 +172,9 @@ function authenticateToken(req, res, next)
 
 /* This function is used to generate the time-based access tokens */
 function generateAccessToken(user){
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '40s'})
+    ///return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '40s'})
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+
 }
 
 
