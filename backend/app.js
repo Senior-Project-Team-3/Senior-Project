@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { request } = require('express');
+var userid ="shouild be overwritten";
 
 app.use(express.json())
 app.use(cors({
@@ -17,8 +18,29 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
+//const secret = "zWkh]M7J_?3F:@kXEr,)kKHk" // JWT secret key
+const secret = process.env.ACCESS_TOKEN_SECRET
+
+createuser = function(userRecipeID) {
+    sql1 = 'CALL createUser(' + userRecipeID + ')';
+    db.query(sql1, (err, resultsForUser, fields) => {
+        if (err) {
+            throw err;
+        } 
+        console.log(userid)
+        userid = JSON.stringify(resultsForUser[0][0]).split(':')[1].split('}')[0]
+        console.log("Writing survey data into database and creating a user")
+        });
+}
+
+createjwt = function () {
+        console.log(userid)
+        return jwt.sign({"userid": userid}, secret);
+}
+
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Credentials", "true");
+    //res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS, PUT, PATCH, DELETE");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
@@ -216,26 +238,32 @@ app.get('/recipes/random/:amount', function(req, res) {
 });
 
 app.get('/recipes/:user_id/my_recipes', function(req, res) {
-    var user_id = req.params.user_id;
-    console.log(req.params.user_id);
-    let sql =   "select * from reviews " +
-                "INNER JOIN recipes " + 
-                "ON reviews.recipe_id = recipes.recipe_id " + 
-                "INNER JOIN nutrition " +
-                "ON reviews.recipe_id = nutrition.recipe_id " + 
-                "INNER JOIN steps " +
-                "ON reviews.recipe_id = steps.recipe_id " + 
-                "where review_user_id_fk = " + user_id +
-                " limit 5;";
-    let query = db.query(sql, (err, results) => {
-        if (err) {
-            console.log("testing");
-            throw err;
-        }
-        console.log("testing");
-        console.log(results);
-        res.send(results);
-    });
+    console.log(req.cookies)
+    if (req.cookies.jwtoken) {  // jwtoken cookie is set
+        try {
+            decoded = jwt.verify(req.cookies.jwtoken, secret);
+            var userID = decoded.userid;
+            let sql = 'call selectRecipesRecommendedToUserByUserId('+userID+');'
+            let query = db.query(sql, (err, results) => {
+                if (err) {
+                    console.log(err);
+                    throw err;
+                    }
+                console.log(results);
+                res.send(results);
+            });
+          } catch(err) {
+            // bad token
+            console.log("Invalid token")
+            // res.status(401).send("Invalid token")
+            res.status(200).send("\n\nGeneric recipes\n\n");
+          }
+    }
+    else {
+        //cookies are not set and is a new user
+        /** TO DO: tell them to take a survey  */
+        res.status(200).send("\n\nGeneric recipes\n\n");
+    }
 });
 
 app.put('/survey_results/:user_id', function(req, res) {
@@ -344,8 +372,18 @@ app.put('/survey_results/:user_id', function(req, res) {
         if (err) {
             throw err;
         }
-        console.log(results);
-        res.send(results);
+        console.log(results)
+        // grab the recipe ID for the recipe from results and use that to create a user
+        var userRecipeID = results[0]['recipe_id']
+        //creates a user in the database and sets the global variable userid
+        //to current users id
+        createuser(userRecipeID)
+        // used a timeout to ensure that the functions above run
+        //before setting a coookie and sending the results(recommended recipe)
+        setTimeout(()=>{
+            res.cookie('jwtoken', jwt.sign({"userid": userid}, secret))
+            res.send(results);
+        },200)
     });
 });
 
