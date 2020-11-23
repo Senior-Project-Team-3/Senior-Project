@@ -14,7 +14,7 @@ app.use(cors({
     credentials: true
 }));
 app.use(cookieParser());
-app.use(bod yParser.urlencoded());
+app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
