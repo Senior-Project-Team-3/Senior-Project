@@ -312,34 +312,34 @@ export class SurveyComponent implements OnInit {
   }
   
   completeSurvey() {
-    /* This post call us used past the access and refresh tokens generated */
-    //FETCH METHOD that works to pass the user a cookie
+    /* This post call us used past the access and refresh tokens generated */    
     const userInfo = "Kyle"
-    const urlPOST = 'http://localhost:3000/survey' // /auth/login
-    const optionsPOST = {
+    const urlSurv = 'http://localhost:3000/survey' // /auth/login
+    const optionsSurv = {
       method: 'POST',
-      body: JSON.stringify({userInfo}), // {} is used to store objects
       header: {'Content-Type': 'application/json'},
-      credentials: 'include' //need to fix promise errors, but this allows for cookies to be created
+      body: JSON.stringify({ 'username': userInfo }), // {} is used to store objects
+      credentials: 'include' as RequestCredentials
     }
-    fetch(urlPOST,optionsPOST)
-      .then (console.error)
-    
-    /* Further method needs to fix bugs to GET request from server
-    .then(fetchUsers)
-    .then (console.log)
-    .then (console.error)
+    console.log('Survey POST Completed')
+    fetch(urlSurv,optionsSurv)
+      .catch (console.error)
+    /*  .then (fetchUser)
+      .then (console.log)
+      .catch (console.error)
 
     function fetchUser() {
-      const urlGET = 'http://localhost:3000/posts'
-      method: 'GET',
-      const optionsGET = {
-        credentials: 'include'
+      const urlRec = 'http://localhost:3000/recipe'
+      const optionsRec = {
+        method: 'POST',
+        credentials: 'include' as RequestCredentials
       }
-      fetch(urlGET, optionsGET)
-      .then(response => response.json())
-      .then (console.error)
-    }*/
+      console.log('Recipe POST completed. Username: ' + userInfo)
+      fetch(urlRec, optionsRec) //return fetch(urlRec, optionsRec)
+        //.then (response => response.json()) /* This needs to be debugged, but can display decripted results */
+        //.catch (console.error)
+    //}
+    //console.log('Testing complete')
 
     this.isComplete = true;
     if (this.isInitial) {

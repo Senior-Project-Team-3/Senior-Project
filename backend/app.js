@@ -6,19 +6,19 @@ const app = express();
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const { request } = require('express');
+//const { request } = require('express');
 
 app.use(express.json())
 app.use(cors({
-    origin: 'http://localhost:4200', //need to update to production url
+    origin: process.env.FRONT_END_URL, //need to update to production url
     credentials: true
 }));
 app.use(cookieParser());
-app.use(bodyParser.urlencoded());
+app.use(bod yParser.urlencoded());
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", 'http://localhost:4200'); //causing error in survey.components.ts and a huge security hole
     res.header("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS, PUT, PATCH, DELETE");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
@@ -45,7 +45,8 @@ let refreshTokens = []
 /* data structure refreshTokens[] is drawing from */
 const posts = [
     {
-        username: 'Kyle'
+        username: 'Kyle',
+        title: 'Post 1'
     },
     {
         username: 'Jim',
@@ -53,8 +54,27 @@ const posts = [
     }
 ]
 
+/* Used to clear all cookies created */
+app.get('/clear', (req, res)=>{ 
+    res.clearCookie('accessTokenCookie')
+    res.clearCookie('refreshTokenCookie')
+    res.clearCookie('refreshAccessToken')
+    res.clearCookie('usernameCookie')
+    res.send('cookies cleared'); 
+});
+
+/* Used to view all cookies created */
+app.get('/',(req,res)=>{
+    res.send(req.cookies)
+
+     // Logging signed and unsigned cookies
+    console.log('Cookies: ', req.cookies)
+    console.log('Signed Cookies: ', req.signedCookies)
+})
+
 /* This GET request is retrieves user data only mataching the authentication */
-app.get('/posts', authenticateToken, (req, res) => {
+app.get('/posts', authenticateToken, (req,res) => {
+    //res.json(posts)
     res.json(posts.filter(post => post.username === req.user.name)) /* Only returning the posts the user has access to */
 })
 
@@ -62,39 +82,18 @@ app.get('/posts', authenticateToken, (req, res) => {
 app.post('/refresh', (req,res) => {
     const refreshToken = req.body.token /* Looks the body of the JWT refresh token */
     if(refreshToken == null) return res.sendStatus(401) /* checking if token not null */
-    if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403) /* checking if the JWT refresh token exists in the storage */
+    if (!refreshTokens.includes(refreshToken)) return res.Status(403).send('/n') /* checking if the JWT refresh token exists in the storage */
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) =>{
-        if (err) return res.sendStatus(403)
+        if (err) return res.Status(403).send('/n')
         const accessToken = generateAccessToken({ name: user.name }) /* Generating new access token */
         //res.json({ accessToken: accessToken })  /* Output JWT access token information */
         res.cookie('refreshAccessToken', accessToken, {
-            //expires: new Date(Date.now() + expiration),
-            //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
             secure: false, // set to true if your using https
             httpOnly: true,
         }).send('Refresh Success!');  
     })
 
 })
-
-/* Used to view all cookies created */
-app.get('/',(req,res)=>{
-    res.send(req.cookies)
-
-     // Cookies that have not been signed
-    console.log('Cookies: ', req.cookies)
-  
-    // Cookies that have been signed
-    console.log('Signed Cookies: ', req.signedCookies)
-})
-
-/* Used to clear all cookies created */
-app.get('/clear', (req, res)=>{ 
-    res.clearCookie('accessToken')
-    res.clearCookie('refreshToken')
-    res.clearCookie('refreshAccessToken')
-    res.send('cookies cleared'); 
-}); 
 
 /* Working version of app.post('/login') */
 app.post('/survey',(req,res) => {
@@ -103,35 +102,52 @@ app.post('/survey',(req,res) => {
 
     const accessToken  = generateAccessToken(user) /* Creating time-based user access token */
     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET) /* Created a signed refresh JWT */
+    const usernameToken = jwt.sign(user , process.env.ACCESS_TOKEN_SECRET)
     refreshTokens.push(refreshToken) /* Adding the refresh JWT to the refreshTokens array */
     //res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
+    res.cookie('usernameCookie', usernameToken, {
+        secure: false,
+        httpOnly: true
+    })
     res.cookie('accessTokenCookie',accessToken, {
-        //expires: new Date(Date.now() + expiration),
-        //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
         secure: false, // set to true if your using https
-        httpOnly: true,
+        httpOnly: true
     })
     res.cookie('refreshTokenCookie',refreshToken, {
-        //expires: new Date(Date.now() + expiration),
-        //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
         secure: false, // set to true if your using https
-        httpOnly: true,
+        httpOnly: true
     })
-    res.send('Success!');
+    res.send('Success! ' + user.username);
 })
 
-app.use('/testing', (req, res) =>{
-    const cookieToken = req.cookies.accessTokenCookie
-
-    res.status(200).json(posts)
-})
-
+app.post("/recipe", (req, res) => {
+    console.log(req.cookies)
+    if (req.cookies.usernameCookie) {  // jwtoken cookie is set
+        try {
+            decoded = jwt.verify(req.cookies.usernameCookie, process.env.ACCESS_TOKEN_SECRET);
+            res.status(200).send("\nRecipes for user " + decoded.name + '\n');
+          } catch(err) {
+            // bad token
+            console.log("Invalid token")
+            // res.status(401).send("Invalid token")
+            res.status(200).send("\nGeneric recipes\n");
+          }
+    }
+    else {
+        res.status(200).send("\nGeneric recipes\n");
+    }
+});
 
 /* This DELETE is used to stop the JWT refresh token from creating addition time-based access JWT */
 app.delete('/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token !== req.body.token) /* Comparing body token for possible removal */
     res.sendStatus(204)
 })
+
+/* This function is used to generate the time-based access tokens */
+function generateAccessToken(user){
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRATION})
+}
 
 /* This function is used to authenticate the JWT as a non-null and verified */
 function authenticateToken(req, res, next)
@@ -147,26 +163,6 @@ function authenticateToken(req, res, next)
         next()
     })
 }
-
-/* This function is used to generate the time-based access tokens */
-function generateAccessToken(user){
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '40s'})
-}
-
-
-/*
-app.use('/home', (req, res) => {
-    var cookie = getcookie(req);
-    console.log(cookie);
-});
-
-function getcookie(req) {
-    var cookie = req.headers.cookie;
-    //user=someone; session=QyhYzXhkTZawIb5qSl3KKyPVN //(this is my cookie i get)
-    return cookie.split('; ');
-}
-*/
-
 
 // app.get('/recipes/:recipe_name/search', function(req, res) {
 //     var recipe_name = req.params.recipe_name;

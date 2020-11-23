@@ -3,8 +3,16 @@
 ### This GET authenticates and displays the content of the JWT token created by the initial JWT or the JWT refresh token
 
 GET http://localhost:3000/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNTc4Mjc0NywiZXhwIjoxNjA1NzgyODQ3fQ.Vr17w17MMmz5rs1l34onRXDDoJtld3yRy0zdFuGLblM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNjA0MDMzOH0.AuiC-W6D16fdmkHQlCSxYFdJJWx1DHprMHO6fYp3T1c
 
+### This GET is used to display all cookies created
+
+GET http://localhost:3000
+
+
+### This GET is used to clear all cookies created
+
+GET http://localhost:3000/clear
 
 ### This DELETE looks to prevent the JWT refresh token from creating addition access tokens
 
@@ -12,7 +20,7 @@ DELETE http://localhost:3000/logout
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNTc4NjA5MH0.A0nBZz7EI0zv9Z54Phh5_n__qwlb-psOrA2BhWA4dAc"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNjAyNjMzNX0.uwPy9uplbtCpg3kWix6mOPnTzDQhc1I2jruCGGmR34c"
 
 }
 
@@ -22,23 +30,18 @@ POST http://localhost:3000/refresh
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNTc4NzY1N30.r6ZRXV_dvegLHaEVRMTTrbTurmD_s5_bG2q_KG6kXpI"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiS3lsZSIsImlhdCI6MTYwNjAyODYwOH0._fHTFeYf9Z7H1HbxGu-D-D-peodqSUj5_ladLCX87RI"
 }
 
 ### This POST request is used to generate the inital JWT access token and JWT refresh access token as a cookie
 
-POST http://localhost:3000/home
+POST http://localhost:3000/survey
 Content-Type: application/json
 
 {
     "username": "Kyle"
 }
 
-### This GET is used to display all cookies created
+### This POST is used to show recipe response
 
-GET http://localhost:3000/home
-
-
-### This GET is used to clear all cookies created
-
-GET http://localhost:3000/clear
+POST http://localhost:3000/recipe

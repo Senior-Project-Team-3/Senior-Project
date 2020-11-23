@@ -31,7 +31,7 @@ export class MyRecipesComponent implements OnInit {
       console.log(data);
       console.log("test");
       console.log(data[0]);
-      this.recipes = data;
+      this.recipes = data[0];
       console.log(Math.ceil(this.recipes.length/3));
       console.log(this.recipes);
       for (let index = 0; index < (3 - (this.recipes.length % 3) + this.recipes.length)/3 ; index++) {
