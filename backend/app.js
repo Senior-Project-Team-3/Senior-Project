@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", 'http://localhost:4200'); //causing error in survey.components.ts and a huge security hole
+    res.header("Access-Control-Allow-Origin", process.env.FRONT_END_URL); //causing error in survey.components.ts and a huge security hole
     res.header("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS, PUT, PATCH, DELETE");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
