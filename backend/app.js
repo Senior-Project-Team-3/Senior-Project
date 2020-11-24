@@ -38,6 +38,18 @@ createjwt = function () {
         return jwt.sign({"userid": userid}, secret);
 }
 
+insertUserReconnemdedRecipe = function(returningUserId, userRecipeID) {
+    sql1 = 'CALL insertUserAndRecipe('+returningUserId+','+userRecipeID+');';
+    db.query(sql1, (err, resultsForUser, fields) => {
+        if (err) {
+            throw err;
+        } 
+        //console.log(userid)
+        //userid = JSON.stringify(resultsForUser[0][0]).split(':')[1].split('}')[0]
+        console.log("Writing recipe data for returning user in db")
+        });
+}
+
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Credentials", "true");
     //res.header("Access-Control-Allow-Origin", "*");
@@ -379,11 +391,26 @@ app.put('/survey_results/:user_id', function(req, res) {
         var userRecipeID = results[0]['recipe_id']
         //creates a user in the database and sets the global variable userid
         //to current users id
-        createuser(userRecipeID)
+        var returningUser = false;
+        if(req.cookies.jwtoken){ // cookies are set 
+            returningUser = true;
+            decoded = jwt.verify(req.cookies.jwtoken, secret);
+            var returnUserID = decoded.userid;
+            insertUserReconnemdedRecipe(returnUserID,userRecipeID)
+            console.log('cookeis are set')
+        }
+        if(!returningUser){ // cookies are not set 
+            createuser(userRecipeID)
+            console.log('cookeis are not set')
+        }
+        
         // used a timeout to ensure that the functions above run
         //before setting a coookie and sending the results(recommended recipe)
         setTimeout(()=>{
-            res.cookie('jwtoken', jwt.sign({"userid": userid}, secret))
+            console.log(returningUser)
+            if(!returningUser){ // if cookies are not set create user and set cookies
+                res.cookie('jwtoken', jwt.sign({"userid": userid}, secret))
+            }
             res.send(results);
         },200)
     });
