@@ -403,7 +403,6 @@ app.put('/survey_results/:user_id', function(req, res) {
             createuser(userRecipeID)
             console.log('cookeis are not set')
         }
-        
         // used a timeout to ensure that the functions above run
         //before setting a coookie and sending the results(recommended recipe)
         setTimeout(()=>{
