@@ -44,10 +44,57 @@ insertUserReconnemdedRecipe = function(returningUserId, userRecipeID) {
         if (err) {
             throw err;
         } 
-        //console.log(userid)
-        //userid = JSON.stringify(resultsForUser[0][0]).split(':')[1].split('}')[0]
+        
         console.log("Writing recipe data for returning user in db")
         });
+}
+
+saveUserPreferences = function(userid,vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances){
+   /**user id */ console.log("User: " + userid);
+   /**queston ID: 1 */ console.log("Vegetarian?: " + vegetarian); // can be yes or no 
+   /**queston ID: 2 */ console.log("Proteins: " + proteins); //list of proteins , could be null 
+    /**queston ID: 3 */console.log("Cuisines: " + cuisines); //list of cusines
+    /**queston ID: 4 */console.log("Cook time: " + cookTime); 
+    /**queston ID: 5 */console.log("Appliances: " + appliances);// list of appliances
+    /**queston ID: 6 */console.log("Intolerant?: " + intolerant); // yes or no
+    /**queston ID: 7 */console.log("Intolerances: " + intolerances); // if intolreant is yes, list of inrolerances
+    if(intolerant === 'No'){
+        intolerances = 'No'
+    } else{
+        intolerances = objToString(intolerances)
+    }
+    if (vegetarian === 'Yes'){
+        proteins = 'No'
+    } else{
+        proteins = objToString(proteins)
+    }
+    cuisines = objToString(cuisines)
+    appliances = objToString(appliances)
+
+    setTimeout(()=> {
+        sql1 = "CALL saveUserPreferences("+ userid + ','+ JSON.stringify(vegetarian) +',' + JSON.stringify(proteins) +','+ 
+        JSON.stringify(cuisines)+',"'+cookTime+'",'+ JSON.stringify(appliances) +','+ JSON.stringify(intolerant) +','+ 
+        JSON.stringify(intolerances) + ")";
+        console.log(sql1)
+        db.query(sql1, (err, resultsForUser, fields) => {
+        if (err) {
+            throw err;
+        } 
+        console.log("Writing user preferences data for user in db")
+        });
+
+    },200)
+
+}
+
+function objToString (obj) {
+    var str = '';
+    for (var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+            str +=':' + obj[p];
+        }
+    }
+    return str;
 }
 
 app.use((req, res, next) => {
@@ -389,26 +436,29 @@ app.put('/survey_results/:user_id', function(req, res) {
         console.log(results)
         // grab the recipe ID for the recipe from results and use that to create a user
         var userRecipeID = results[0]['recipe_id']
-        //creates a user in the database and sets the global variable userid
-        //to current users id
+        // used to know if the person taking the survey is a new user or a returning user.
         var returningUser = false;
-        if(req.cookies.jwtoken){ // cookies are set 
+        if(req.cookies.jwtoken){ // cookies are set. save recomeneded recipe in db  
             returningUser = true;
             decoded = jwt.verify(req.cookies.jwtoken, secret);
             var returnUserID = decoded.userid;
+            userid = returnUserID;
             insertUserReconnemdedRecipe(returnUserID,userRecipeID)
-            console.log('cookeis are set')
+            console.log('cookies are set. this is a returning user')
         }
         if(!returningUser){ // cookies are not set 
             createuser(userRecipeID)
-            console.log('cookeis are not set')
+            console.log('cookeis are not set. creating a new user in the db')
         }
         // used a timeout to ensure that the functions above run
         //before setting a coookie and sending the results(recommended recipe)
         setTimeout(()=>{
             console.log(returningUser)
-            if(!returningUser){ // if cookies are not set create user and set cookies
-                res.cookie('jwtoken', jwt.sign({"userid": userid}, secret))
+            if(!returningUser){ // will only set the cookies if its a new user taking the survey
+                // cookie set to expire in a year 
+                res.cookie('jwtoken', jwt.sign({"userid": userid}, secret), {expire: 31556952000})
+                // save the users preferences in the database 
+                saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
             }
             res.send(results);
         },200)
