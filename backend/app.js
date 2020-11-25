@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { request } = require('express');
-var userid ="shouild be overwritten";
+var userid = "shouild be overwritten";
 
 app.use(express.json())
 app.use(cors({
@@ -26,72 +26,80 @@ createuser = function(userRecipeID) {
     db.query(sql1, (err, resultsForUser, fields) => {
         if (err) {
             throw err;
-        } 
+        }
         console.log(userid)
         userid = JSON.stringify(resultsForUser[0][0]).split(':')[1].split('}')[0]
         console.log("Writing survey data into database and creating a user")
-        });
+    });
 }
 
-createjwt = function () {
-        console.log(userid)
-        return jwt.sign({"userid": userid}, secret);
+createjwt = function() {
+    console.log(userid)
+    return jwt.sign({ "userid": userid }, secret);
 }
 
 insertUserReconnemdedRecipe = function(returningUserId, userRecipeID) {
-    sql1 = 'CALL insertUserAndRecipe('+returningUserId+','+userRecipeID+');';
+    sql1 = 'CALL insertUserAndRecipe(' + returningUserId + ',' + userRecipeID + ');';
     db.query(sql1, (err, resultsForUser, fields) => {
         if (err) {
             throw err;
-        } 
-        
+        }
+
         console.log("Writing recipe data for returning user in db")
-        });
+    });
 }
 
-saveUserPreferences = function(userid,vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances){
-   /**user id */ console.log("User: " + userid);
-   /**queston ID: 1 */ console.log("Vegetarian?: " + vegetarian); // can be yes or no 
-   /**queston ID: 2 */ console.log("Proteins: " + proteins); //list of proteins , could be null 
-    /**queston ID: 3 */console.log("Cuisines: " + cuisines); //list of cusines
-    /**queston ID: 4 */console.log("Cook time: " + cookTime); 
-    /**queston ID: 5 */console.log("Appliances: " + appliances);// list of appliances
-    /**queston ID: 6 */console.log("Intolerant?: " + intolerant); // yes or no
-    /**queston ID: 7 */console.log("Intolerances: " + intolerances); // if intolreant is yes, list of inrolerances
-    if(intolerant === 'No'){
+saveUserPreferences = function(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances) {
+    /**user id */
+    console.log("User: " + userid);
+    /**queston ID: 1 */
+    console.log("Vegetarian?: " + vegetarian); // can be yes or no 
+    /**queston ID: 2 */
+    console.log("Proteins: " + proteins); //list of proteins , could be null 
+    /**queston ID: 3 */
+    console.log("Cuisines: " + cuisines); //list of cusines
+    /**queston ID: 4 */
+    console.log("Cook time: " + cookTime);
+    /**queston ID: 5 */
+    console.log("Appliances: " + appliances); // list of appliances
+    /**queston ID: 6 */
+    console.log("Intolerant?: " + intolerant); // yes or no
+    /**queston ID: 7 */
+    console.log("Intolerances: " + intolerances); // if intolreant is yes, list of inrolerances
+    if (intolerant === 'No') {
         intolerances = 'No'
-    } else{
+    } else {
         intolerances = objToString(intolerances)
     }
-    if (vegetarian === 'Yes'){
+    if (vegetarian === 'Yes') {
         proteins = 'No'
-    } else{
+    } else {
         proteins = objToString(proteins)
     }
     cuisines = objToString(cuisines)
     appliances = objToString(appliances)
 
-    setTimeout(()=> {
-        sql1 = "CALL saveUserPreferences("+ userid + ','+ JSON.stringify(vegetarian) +',' + JSON.stringify(proteins) +','+ 
-        JSON.stringify(cuisines)+',"'+cookTime+'",'+ JSON.stringify(appliances) +','+ JSON.stringify(intolerant) +','+ 
-        JSON.stringify(intolerances) + ")";
+    setTimeout(() => {
+        sql1 = "CALL saveUserPreferences(" + userid + ',' + JSON.stringify(vegetarian) + ',' + JSON.stringify(proteins) + ',' +
+            JSON.stringify(cuisines) + ',"' + cookTime + '",' + JSON.stringify(appliances) + ',' + JSON.stringify(intolerant) + ',' +
+            JSON.stringify(intolerances) + ")";
         console.log(sql1)
         db.query(sql1, (err, resultsForUser, fields) => {
-        if (err) {
-            throw err;
-        } 
-        console.log("Writing user preferences data for user in db")
+            if (err) {
+                throw err;
+            }
+            console.log("Writing user preferences data for user in db")
         });
 
-    },200)
+    }, 200)
 
 }
 
-function objToString (obj) {
+function objToString(obj) {
     var str = '';
     for (var p in obj) {
         if (obj.hasOwnProperty(p)) {
-            str +=':' + obj[p];
+            str += ':' + obj[p];
         }
     }
     return str;
@@ -124,8 +132,7 @@ db.connect((err) => {
 let refreshTokens = []
 
 /* data structure refreshTokens[] is drawing from */
-const posts = [
-    {
+const posts = [{
         username: 'Kyle'
     },
     {
@@ -140,59 +147,59 @@ app.get('/posts', authenticateToken, (req, res) => {
 })
 
 /* This POST request recieves the refresh JWT and creates time-based access tokens*/
-app.post('/refresh', (req,res) => {
+app.post('/refresh', (req, res) => {
     const refreshToken = req.body.token /* Looks the body of the JWT refresh token */
-    if(refreshToken == null) return res.sendStatus(401) /* checking if token not null */
+    if (refreshToken == null) return res.sendStatus(401) /* checking if token not null */
     if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403) /* checking if the JWT refresh token exists in the storage */
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) =>{
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(403)
         const accessToken = generateAccessToken({ name: user.name }) /* Generating new access token */
-        //res.json({ accessToken: accessToken })  /* Output JWT access token information */
+            //res.json({ accessToken: accessToken })  /* Output JWT access token information */
         res.cookie('refreshAccessToken', accessToken, {
             //expires: new Date(Date.now() + expiration),
             //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
             secure: false, // set to true if your using https
             httpOnly: true,
-        }).send('Refresh Success!');  
+        }).send('Refresh Success!');
     })
 
 })
 
 /* Used to view all cookies created */
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
     res.send(req.cookies)
 
-     // Cookies that have not been signed
+    // Cookies that have not been signed
     console.log('Cookies: ', req.cookies)
-  
+
     // Cookies that have been signed
     console.log('Signed Cookies: ', req.signedCookies)
 })
 
 /* Used to clear all cookies created */
-app.get('/clear', (req, res)=>{ 
+app.get('/clear', (req, res) => {
     res.clearCookie('accessToken')
     res.clearCookie('refreshToken')
     res.clearCookie('refreshAccessToken')
-    res.send('cookies cleared'); 
-}); 
+    res.send('cookies cleared');
+});
 
 /* Working version of app.post('/login') */
-app.post('/survey',(req,res) => {
-    const username = req.body.username 
+app.post('/survey', (req, res) => {
+    const username = req.body.username
     const user = { name: username } /* Passing the body of the token as the user*/
 
-    const accessToken  = generateAccessToken(user) /* Creating time-based user access token */
+    const accessToken = generateAccessToken(user) /* Creating time-based user access token */
     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET) /* Created a signed refresh JWT */
     refreshTokens.push(refreshToken) /* Adding the refresh JWT to the refreshTokens array */
-    //res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
-    res.cookie('accessTokenCookie',accessToken, {
+        //res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
+    res.cookie('accessTokenCookie', accessToken, {
         //expires: new Date(Date.now() + expiration),
         //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
         secure: false, // set to true if your using https
         httpOnly: true,
     })
-    res.cookie('refreshTokenCookie',refreshToken, {
+    res.cookie('refreshTokenCookie', refreshToken, {
         //expires: new Date(Date.now() + expiration),
         //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
         secure: false, // set to true if your using https
@@ -201,7 +208,7 @@ app.post('/survey',(req,res) => {
     res.send('Success!');
 })
 
-app.use('/testing', (req, res) =>{
+app.use('/testing', (req, res) => {
     const cookieToken = req.cookies.accessTokenCookie
 
     res.status(200).json(posts)
@@ -215,22 +222,21 @@ app.delete('/logout', (req, res) => {
 })
 
 /* This function is used to authenticate the JWT as a non-null and verified */
-function authenticateToken(req, res, next)
-{
+function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1] /* Bearer portion of the token and returns undefined if no token found */
     if (token == null) return res.sendStatus(401) /* Outputing 401 Error to user when token is null */
 
     /* verifying the JWT with callback functionality */
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET,(err, user) => {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(403) /* notifies user that the token is no longer valid */
-        req.user = user                     /* setting the valid user token */
+        req.user = user /* setting the valid user token */
         next()
     })
 }
 
 /* This function is used to generate the time-based access tokens */
-function generateAccessToken(user){
+function generateAccessToken(user) {
     ///return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '40s'})
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
 
@@ -300,27 +306,26 @@ app.get('/recipes/random/:amount', function(req, res) {
 
 app.get('/recipes/:user_id/my_recipes', function(req, res) {
     console.log(req.cookies)
-    if (req.cookies.jwtoken) {  // jwtoken cookie is set
+    if (req.cookies.jwtoken) { // jwtoken cookie is set
         try {
             decoded = jwt.verify(req.cookies.jwtoken, secret);
             var userID = decoded.userid;
-            let sql = 'call selectRecipesRecommendedToUserByUserId('+userID+');'
+            let sql = 'call selectRecipesRecommendedToUserByUserId(' + userID + ');'
             let query = db.query(sql, (err, results) => {
                 if (err) {
                     console.log(err);
                     throw err;
-                    }
+                }
                 console.log(results);
                 res.send(results);
             });
-          } catch(err) {
+        } catch (err) {
             // bad token
             console.log("Invalid token")
-            // res.status(401).send("Invalid token")
+                // res.status(401).send("Invalid token")
             res.status(200).send("\n\nGeneric recipes\n\n");
-          }
-    }
-    else {
+        }
+    } else {
         //cookies are not set and is a new user
         /** TO DO: tell them to take a survey  */
         res.status(200).send("\n\nGeneric recipes\n\n");
@@ -434,34 +439,34 @@ app.put('/survey_results/:user_id', function(req, res) {
             throw err;
         }
         console.log(results)
-        // grab the recipe ID for the recipe from results and use that to create a user
+            // grab the recipe ID for the recipe from results and use that to create a user
         var userRecipeID = results[0]['recipe_id']
-        // used to know if the person taking the survey is a new user or a returning user.
+            // used to know if the person taking the survey is a new user or a returning user.
         var returningUser = false;
-        if(req.cookies.jwtoken){ // cookies are set. save recomeneded recipe in db  
+        if (req.cookies.jwtoken) { // cookies are set. save recomeneded recipe in db  
             returningUser = true;
             decoded = jwt.verify(req.cookies.jwtoken, secret);
             var returnUserID = decoded.userid;
             userid = returnUserID;
-            insertUserReconnemdedRecipe(returnUserID,userRecipeID)
+            insertUserReconnemdedRecipe(returnUserID, userRecipeID)
             console.log('cookies are set. this is a returning user')
         }
-        if(!returningUser){ // cookies are not set 
+        if (!returningUser) { // cookies are not set 
             createuser(userRecipeID)
             console.log('cookeis are not set. creating a new user in the db')
         }
         // used a timeout to ensure that the functions above run
         //before setting a coookie and sending the results(recommended recipe)
-        setTimeout(()=>{
+        setTimeout(() => {
             console.log(returningUser)
-            if(!returningUser){ // will only set the cookies if its a new user taking the survey
+            if (!returningUser) { // will only set the cookies if its a new user taking the survey
                 // cookie set to expire in a year 
-                res.cookie('jwtoken', jwt.sign({"userid": userid}, secret), {expire: 31556952000})
-                // save the users preferences in the database 
+                res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
+                    // save the users preferences in the database 
                 saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
             }
             res.send(results);
-        },200)
+        }, 200)
     });
 });
 
