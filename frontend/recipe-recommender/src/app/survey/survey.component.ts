@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { DataService } from '../data.service';
 
@@ -16,7 +17,8 @@ export class SurveyComponent implements OnInit {
   initialSurveyOptions = [];
   returnSurveyOptions = [];
   // Holds the users answers
-  initialSurveyAnswers = [];
+  // initialSurveyAnswers = [];
+  initialSurveyAnswers: any;
   returnSurveyAnswers = [];
   // Holds booleans that indicates if a questions is multiple choice(checkbox) or single choice(radio).
   //    For example, if our question array is [single choice, multiple choice, single choice], 
@@ -32,8 +34,13 @@ export class SurveyComponent implements OnInit {
   radioSelected: any;
   // Indicate end of survey
   isComplete: boolean;
+  errorMessage: string;
+  recommendedRecipe = [];
   
-  constructor(private dataService: DataService) {
+  constructor(
+    private dataService: DataService,
+    private router: Router
+    ) {
   }
 
   ngOnInit(): void {
@@ -48,6 +55,15 @@ export class SurveyComponent implements OnInit {
   populateInitialSurvey() {
     this.isInitial = true;
     this.isRadio = true;
+    this.initialSurveyAnswers = {
+      "vegetarian": null,
+      "proteins": null,
+      "cuisines": null,
+      "cookTime": null,
+      "appliances": null,
+      "intolerant": null,
+      "intolerances": null
+    };
 
     this.initialSurveyQuestions[0] = "Are you a vegetarian?";
     this.initialSurveyOptions[0] = ['Yes', 'No'];
@@ -61,10 +77,6 @@ export class SurveyComponent implements OnInit {
       },
       {
         title: 'Chicken',
-        checked: false,
-      },
-      {
-        title: 'Steak',
         checked: false,
       },
       {
@@ -105,7 +117,7 @@ export class SurveyComponent implements OnInit {
         checked: false,
       },
       {
-        title: 'All',
+        title: 'No Preference',
         checked: false,
       },
     ];
@@ -193,6 +205,8 @@ export class SurveyComponent implements OnInit {
 
   getNextQuestion() {
     this.currentQuestion++;
+    this.radioSelected = undefined;
+    this.errorMessage = undefined;
 
     if (this.isInitial) {
 
@@ -205,12 +219,13 @@ export class SurveyComponent implements OnInit {
 
       // Check for dependant questions...
       // Skip preferred source of meat for vegetarians
-      if (this.currentQuestion == 1 && this.initialSurveyAnswers[0] == 'Yes') {
+      if (this.currentQuestion == 1 && this.initialSurveyAnswers.vegetarian == 'Yes') {
         this.getNextQuestion();
         return;
       }
       // Skip allergy intolerence question for those who select no
-      if (this.currentQuestion == 6 && this.initialSurveyAnswers[5] == 'No') {
+      if (this.currentQuestion == 6 && this.initialSurveyAnswers.intolerant == 'No') {
+        this.initialSurveyAnswers[this.currentQuestion] = null;
         this.getNextQuestion();
         return;
       }
@@ -236,8 +251,21 @@ export class SurveyComponent implements OnInit {
   // Place radio selection into answers array, continue to next question
   submitRadio() {
       console.log(this.radioSelected);
+      if (this.radioSelected == undefined) {
+        this.errorMessage = "You must select an option before continuing";
+        return;
+      }
       if (this.isInitial) {
-        this.initialSurveyAnswers[this.currentQuestion] = this.radioSelected;
+        // this.initialSurveyAnswers[this.currentQuestion] = this.radioSelected;
+        if (this.currentQuestion == 0) {
+          this.initialSurveyAnswers.vegetarian = this.radioSelected;
+        }
+        if (this.currentQuestion == 3) {
+          this.initialSurveyAnswers.cookTime = this.radioSelected;
+        }
+        if (this.currentQuestion == 5) {
+          this.initialSurveyAnswers.intolerant = this.radioSelected;
+        }
       } else {
         this.returnSurveyAnswers[this.currentQuestion] = this.radioSelected;
     }
@@ -250,27 +278,54 @@ export class SurveyComponent implements OnInit {
     for (let i = 0; i < answersList.length; i++) {
       answers[i] = answersList[i].title;
     }
+    if (answers.length == 0) {
+      this.errorMessage = "You must select an option before continuing";
+      return;
+    }
     console.log(answers);
     if (this.isInitial) {
-      this.initialSurveyAnswers[this.currentQuestion] = answers;
+      // this.initialSurveyAnswers[this.currentQuestion] = answers;
+      if (this.currentQuestion == 1) {
+        if (answers.includes("No Preference")) {
+          this.initialSurveyAnswers.proteins = ["No Preference"];
+        } else {
+          this.initialSurveyAnswers.proteins = answers;
+        }
+      }
+      if (this.currentQuestion == 2) {
+        if (answers.includes("No Preference")) {
+          this.initialSurveyAnswers.cuisines = ["No Preference"];
+        } else {
+          this.initialSurveyAnswers.cuisines = answers;
+        }
+      }         
+      if (this.currentQuestion == 4) {
+        this.initialSurveyAnswers.appliances = answers;
+      }
+      if (this.currentQuestion == 6) {
+        this.initialSurveyAnswers.intolerances = answers;
+      }
     } else {
       this.returnSurveyAnswers[this.currentQuestion] = answers;
     }
     this.getNextQuestion();
   }
-
+  
   completeSurvey() {
     this.isComplete = true;
     if (this.isInitial) {
-      let kd = JSON.stringify(this.initialSurveyAnswers);
-      console.log(kd);
-      this.dataService.putSurveyResults(kd, 10).subscribe((data: any[]) => {
+      this.dataService.putSurveyResults(JSON.stringify(this.initialSurveyAnswers), 10).subscribe((data: any[]) => {
         console.log(data);
+        this.recommendedRecipe = data;
       });
     } else {
       // this.dataService.putSurveyResults(this.returnSurveyAnswers, 10).subscribe((data: any[]) => {
       //   console.log(data);
       // });
     }
+  }
+
+  goToRecipe(recipe_id: number) {
+    this.router.navigateByUrl('/recipe/' + recipe_id);
   }
 }

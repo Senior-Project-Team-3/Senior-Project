@@ -7,7 +7,9 @@ initial taste preferences and skill level. Users will complete a survey and base
 Everytime a user returns they will be asked about their previous suggested meal, and based on their feedback, will be given an updated survey 
 to complete for another recipe. 
 
-Project Goals 
++++++++++++++++++++++++++++++++++++
+
+Project Goals:
 
 The main goals of this project are to:
 
@@ -18,7 +20,10 @@ Implement a feedback loop to restructure the survey so users will always be prov
 
 Help with discovering and trying different recipes based on personal food tastes.
 
-Product Features
++++++++++++++++++++++++++++++++++++
+
+Product Features:
+
 App: Our application will be fully functional on Chrome (both desktop and Android). 
 Survey: The survey will be a closed-ended (Dynamic) Survey. The survey will have the ability to change which items and 
 response options users receive based on prior choices. The question order and choices change using adaptive logic(numerical algorithms).
@@ -36,8 +41,10 @@ client data and history from one or more clients, as well as view, update or cre
 Data Tracking: All questions and responses per client, as well as time completed, will be tracked. An admin can view and download 
 any clients survey history.
 
++++++++++++++++++++++++++++++++++++
 
-Limitations
+Limitations:
+
 Limitations of our project include but are not limited to the following:
 
 The application cannot differentiate users with multiple profiles
@@ -50,22 +57,60 @@ the right recipe
 
 User identification methods without requiring a registered account
 
-Resources
++++++++++++++++++++++++++++++++++++
+
+Resources:
+
 A database comprised of over 170,000 recipes, with each providing unique tags according to ingredients, time to make, and specific cuisines 
 
 https://www.kaggle.com/shuyangli94/food-com-recipes-and-user-interactions/tasks?taskId=164
 
 Google Analytics to track the web applications traffic and how users are interacting with the website. 
 
++++++++++++++++++++++++++++++++++++
+
 Group Member Names:
-Isaiah Doyle, 
+
+Isaiah Doyle,
+
 Jared Tebbi,
+
 Dennis Noakes,
+
 Joshua Hric,
+
 Salvatore Rosa
 
-Tech Stack - Version
++++++++++++++++++++++++++++++++++++
+
+Tech Stack - Version:
+
 Node.js - 12.19.0
+
 Express - 4.17.1
+
 Angular - 10.1.6
+
 Bootstrap - 4 or greater
+
++++++++++++++++++++++++++++++++++++
+
+SETTING UP DB CREDENTIALS:
+
+Windows:
+1. Search for "Edit the system environment variables" in control panel.
+2. Click on "Environment Variables..."
+3. Select "New..."
+4. Set "Variable name:" to "DB_HOST".
+5. Set "Variable value:" to the appropriate value.
+6. Repeat for "DB_USER", "DB_PASSWORD" & "DB_SCHEMA".
+7. Click "OK" > "OK & start new terminal before running server.
+
+-OR-
+
+Windows/Mac/Linux:
+1. Run "npm install dotenv"
+2. Add "require('dotenv').config();" at top of App.js if it is not there already
+3. Create file named ".env" in backend folder if it does not exist
+4. Add line "DB_HOST = '<host_name>'" and set <host_name> accordingly
+5. Repeat for "DB_USER", "DB_PASSWORD" & "DB_SCHEMA"

@@ -1,29 +1,33 @@
-<div style="width:100%;">
-    <div style="float:left;">
-        <img src="{{recipe[0].imageLink}}" alt="{{recipe[0].name}}">
+<div id="container;">
+    <div id="container1;">
+        <div id="container3">
+            <div id="div3">
+                <h1 style="text-transform:capitalize; text-align: left;">
+                    {{recipe[0].name}}</h1>
+                <h4>Description: {{recipe[0].description}}</h4>
+                <h4>Submitted on: {{recipe[0].submitted}}</h4>
+                <h4>Prep time: {{recipe[0].minutes}} Minutes.</h4>
+                <h4>Steps: </h4>
+                <h4>
+                    <ol>
+                        <li *ngFor="let ingredient of recipe[2]; index as i;">{{recipe[2][i]}}</li>
+                    </ol>
+                </h4>
+            </div>
+        </div>
+        <div id="div1">
+            <img src="{{recipe[0].imageLink}}" alt="{{recipe[0].name}}">
+        </div>
     </div>
-    <div style="float:center;">
-        <h1 style="text-transform:capitalize; text-align: left;">
-            {{recipe[0].name}}</h1>
-        <h4>Description: {{recipe[0].description}}</h4>
-        <h4 id="shorterdate">{{recipe[0].submitted}}</h4>
-            <script>
-                    document.getElementById("shorterdate").innerHTML.replace(recipe[0].submitted,"Submitted on: " + recipe[0].submitted.substring(0, 9));
-            </script>
-        <h4>Prep time: {{recipe[0].minutes}} Minutes.</h4>
+    <div id="container2">
+        <div id="div2">
+            <h4>Ingredients: </h4>
+            <h4>
+                <ul>
+                    <li *ngFor="let ingredient of recipe[1]; index as i;">{{recipe[1][i]}}</li>
+                </ul>
+            </h4>
+        </div>
     </div>
 
-    
-
-    <table>
-        <tr>
-        </tr>
-    </table>
 </div>
-
-<script>
-    function shortDate(str) {
-        newstr = str.substring(0, 9);
-        document.getElementById("<h4>Submitted on: " + newstr +"</h4>")
-    }
-</script>
