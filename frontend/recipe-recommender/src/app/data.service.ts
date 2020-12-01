@@ -34,4 +34,8 @@ export class DataService {
     console.log(userID);
     return this.httpClient.get(this.REST_API_SERVER + '/recipes/' + userID + '/my_recipes', { withCredentials: true});
   }
+
+  public getUserRecentRecipe() {
+    return this.httpClient.get(this.REST_API_SERVER + '/review/user/recent', { withCredentials: true});
+  }
 }
