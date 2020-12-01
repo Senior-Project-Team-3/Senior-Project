@@ -26,6 +26,10 @@ export class DataService {
     return this.httpClient.put(this.REST_API_SERVER + '/survey_results/' + userID, {"data": results}, { withCredentials: true});
   }
 
+  public putReviewResults(results: String, userID: number) {
+    return this.httpClient.put(this.REST_API_SERVER + '/review_results/' + userID, {"data": results}, { withCredentials: true});
+  }
+
   public getMyRecipes(userID: String) {
     console.log(userID);
     return this.httpClient.get(this.REST_API_SERVER + '/recipes/' + userID + '/my_recipes', { withCredentials: true});

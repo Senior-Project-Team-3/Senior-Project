@@ -1,0 +1,71 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewpoint" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script defer src="/frontend/recipe-recommender/src/app/homepage/homepage.component.ts"></script>
+</head>
+
+<body>
+
+    <div class="card mx-auto" id="reviewCard" *ngIf="isComplete == false">
+        <div class="card-body">
+            <div *ngIf="isInitial">
+                <h5 class="card-title">{{ reviewSurveyQuestions[currentQuestion] }}</h5>
+                <div *ngFor="let option of reviewSurveyOptions[currentQuestion]">
+                    <div *ngIf="isRadio">
+                        <label for="radio_{{option}}">
+                        <input id="radio_{{option}}" type="radio" [value]="option" name="radios" [(ngModel)]="radioSelected">
+                        {{ option }}
+                    </label>
+                    </div>
+                    <div *ngIf="isRadio == false">
+                        <label for="checkbox_{{option}}">
+                        <input id="checkbox_{{option}}" type="checkbox" name="checkboxes" [(ngModel)]="option.checked">
+                        {{ option.title }}
+                    </label>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="isInitial == false">
+                <h5 class="card-title">{{ returnSurveyQuestions[currentQuestion] }}</h5>
+                <div *ngFor="let option of returnSurveyOptions[currentQuestion]">
+                    <div *ngIf="isRadio">
+                        <label for="radio_{{option}}">
+                        <input id="radio_{{option}}" type="radio" [value]="option" name="radios" [(ngModel)]="radioSelected">
+                        {{ option }}
+                    </label>
+                    </div>
+                    <div *ngIf="isRadio == false">
+
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+                {{errorMessage}}
+            </div>
+            <div *ngIf="isRadio">
+                <button type="button" class="btn btn-primary" id="continueButton" (click)="submitRadio()">Next</button>
+            </div>
+            <div *ngIf="isRadio == false">
+                <button type="button" class="btn btn-primary" id="continueButton" (click)="submitCheckbox()">Next</button>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="isComplete">
+        <div class="card mx-auto" id="recommendationCard" *ngFor="let recipe of recommendedRecipe">
+            <img class="card-img-top" src={{recipe.imageLink}} alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">{{recipe.name | uppercase}} </h5>
+                <p class="card-text"></p>
+            </div>
+            <div class="card-footer">
+                <a class="btn btn-primary stretched-link" (click)="goToRecipe(recipe.recipe_id)">View Recipe</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

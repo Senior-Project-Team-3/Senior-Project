@@ -1,0 +1,16 @@
+#reviewCard {
+    width: 75%;
+    margin-top: 50px;
+}
+
+#recommendationCard {
+    width: 50%;
+    height: 60%;
+    margin-top: 50px;
+}
+
+#continueButton {
+    color: white;
+    background-color: #ec6941;
+    border: none;
+}
