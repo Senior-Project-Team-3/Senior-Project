@@ -470,4 +470,10 @@ app.put('/survey_results/:user_id', function(req, res) {
     });
 });
 
+app.put('/review_results/:userID', function(req, res) {
+    var user_id = req.params.user_id;
+    console.log(req.body.data);
+    let results = JSON.parse(req.body.data);
+});
+
 app.listen(3000, () => console.log("Server Connected on Port 3000"))
