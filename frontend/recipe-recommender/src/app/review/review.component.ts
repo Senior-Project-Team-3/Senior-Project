@@ -92,7 +92,7 @@ export class ReviewComponent implements OnInit {
     this.reviewSurveyQuestions[7] = 'Would you like to change your preferences?';
     this.reviewSurveyOptions[7] = ['Yes','No'];
 
-    this.reviewSurveyOptions[8] = "What cuisines do you like?";
+    this.reviewSurveyQuestions[8] = "What cuisines do you like?";
     // We can expand on this list
     this.reviewSurveyOptions[8] = [
       {
