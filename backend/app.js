@@ -476,4 +476,32 @@ app.put('/review_results/:userID', function(req, res) {
     let results = JSON.parse(req.body.data);
 });
 
+app.get('/review/user/recent', function(req,res) {
+    console.log(req.cookies)
+    if (req.cookies.jwtoken) { // jwtoken cookie is set
+        try {
+            decoded = jwt.verify(req.cookies.jwtoken, secret);
+            var userID = decoded.userid;
+            let sql = 'call selectRecentRecipeForGivenUserID(' + userID + ');'
+            let query = db.query(sql, (err, results) => {
+                if (err) {
+                    console.log(err);
+                    throw err;
+                }
+                console.log(results);
+                res.send(results);
+            });
+        } catch (err) {
+            // bad token
+            console.log("Invalid token")
+                // res.status(401).send("Invalid token")
+            res.status(200).send("\n\nGeneric recipes\n\n");
+        }
+    } else {
+        //cookies are not set and is a new user
+        /** TO DO: tell them to take a survey  */
+        res.status(200).send("\n\nGeneric recipes\n\n");
+    }
+});
+
 app.listen(3000, () => console.log("Server Connected on Port 3000"))
