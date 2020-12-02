@@ -476,6 +476,28 @@ app.put('/review_results/:userID', function(req, res) {
     console.log(req.body.data)
     let results = JSON.parse(req.body.data)
 
+    let rating = results.rating
+    let realCookTime = results.realCookTime
+    let substitutes = results.substitutes
+    let prefMatch = results.prefMatch
+    let difficulty = results.difficulty
+    let improvement = results.improvement
+    let recommend = results.recommend
+    let prefChange = results.prefChange
+    let newCuisine = results.newCuisine
+    let newCookTime = results.newCookTime
+
+    console.log("Rating: " + rating)
+    console.log("Real Cook Time: " + realCookTime)
+    console.log("Substitutes: " + substitutes)
+    console.log("Preferences Match: " + prefMatch)
+    console.log("Difficulty: " + difficulty)
+    console.log("Improvement: " + improvement)
+    console.log("Recommend: " + recommend)
+    console.log("Preference Change: " + prefChange)
+    console.log("New Cuisine: " + newCuisine)
+    console.log("New Cook Time: " + newCookTime)
+
     let sql = "select * from recipes " +
         "INNER JOIN nutrition " +
         "ON recipes.recipe_id = nutrition.recipe_id " +
@@ -489,28 +511,6 @@ app.put('/review_results/:userID', function(req, res) {
         console.log(results);
         res.send(results);
     });
-
-    // let rating = results.rating
-    // let realCookTime = results.realCookTime
-    // let substitutes = results.substitutes
-    // let prefMatch = results.prefMatch
-    // let difficulty = results.difficulty
-    // let improvement = results.improvement
-    // let recommend = results.recommend
-    // let prefChange = results.prefChange
-    // let newCuisine = results.newCuisine
-    // let newCookTime = results.newCookTime
-
-    // console.log("Rating: " + rating)
-    // console.log("Real Cook Time: " + realCookTime)
-    // console.log("Substitutes: " + substitutes)
-    // console.log("Preferences Match: " + prefMatch)
-    // console.log("Difficulty: " + difficulty)
-    // console.log("Improvement: " + improvement)
-    // console.log("Recommend: " + recommend)
-    // console.log("Preference Change: " + prefChange)
-    // console.log("New Cuisine: " + newCuisine)
-    // console.log("New Cook Time: " + newCookTime)
 
     // let sql = "select name, minutes, recipes.recipe_id, imageLink, tags " +
     //     "from mealmateSQL.recipes " +

@@ -46,7 +46,7 @@ export class ReviewComponent implements OnInit {
   ngOnInit(): void {
     this.currentQuestion = 0;
     this.isComplete = false;
-    //this.dataService.getUserRecentRecipe()
+    this.dataService.getRecipe()
     // Check if user has taken previous surveys...
     // this.populateReturnSurvey();
     // If not, get the initial survey ready.
@@ -69,7 +69,7 @@ export class ReviewComponent implements OnInit {
       "newCookTime": null,
     };
 
-    this.reviewSurveyQuestions[0] = "Are  How did you like your last meal? How did you like {recipe.name}?";
+    this.reviewSurveyQuestions[0] = "How did you like your last meal? How did you like {recipe.name}?";
     this.reviewSurveyOptions[0] = ['1', '2','3','4','5'];
 
     this.reviewSurveyQuestions[1] = "What was your total cooking time? {recipe.name} cook time is listed as {recipe.minutes}, was this accurate? If not, how long did it take? ";
@@ -155,8 +155,8 @@ export class ReviewComponent implements OnInit {
         return;
       }   
 
-      if(this.currentQuestion == 7 && this.reviewSurveyAnswers.prefChange == 'No'){
-        this.getNextQuestion();
+      if(this.currentQuestion == 8 && this.reviewSurveyAnswers.prefChange == 'No'){
+        this.completeSurvey();
         return;
       }
     } else {
