@@ -471,12 +471,97 @@ app.put('/survey_results/:user_id', function(req, res) {
 });
 
 app.put('/review_results/:userID', function(req, res) {
-    var user_id = req.params.user_id;
-    console.log(req.body.data);
-    let results = JSON.parse(req.body.data);
+    var user_id = req.params.user_id
+    console.log(req.body.data)
+    let results = JSON.parse(req.body.data)
+
+    let rating = results.rating
+    let realCookTime = results.realCookTime
+    let substitutes = results.substitutes
+    let prefMatch = results.preference
+    let difficulty = results.prefMatch
+    let improvement = results.improvement
+    let recommend = results.recommend
+    let prefChange = results.prefChange
+    let newCuisine = results.newCuisine
+    let newCookTime = results.newCookTime
+
+    console.log("Proteins: " + rating)
+    console.log("Real Cook Time: " + realCookTime)
+    console.log("Substitutes: " + substitutes)
+    console.log("Preferences Match: " + prefMatch)
+    console.log("Difficulty: " + difficulty)
+    console.log("Improvement: " + improvement)
+    console.log("Recommend: " + recommend)
+    console.log("Preference Change: " + prefChange)
+    console.log("New Cuisine: " + newCuisine)
+    console.log("New Cook Time: " + newCookTime)
+
+    let sql = "select name, minutes, recipes.recipe_id, imageLink, tags " +
+        "from mealmateSQL.recipes " +
+        "join mealmateSQL.steps on mealmateSQL.steps.recipe_id = mealmateSQL.recipes.recipe_id " +
+        "join mealmateSQL.nutrition on mealmateSQL.nutrition.recipe_id = mealmateSQL.recipes.recipe_id where ";
+    
+    sql += "mealmateSQL.recipes.tags like \"%" + rating + "%\" AND "
+    sql += "mealmateSQL.recipes.tags like \"%" + realCookTime + "%\" AND "
+    sql += "mealmateSQL.recipes.tags like \"%" + substitutes + "%\" AND "
+    sql += "mealmateSQL.recipes.tags like \"%" + prefMatch + "%\" AND "
+    sql += "mealmateSQL.recipes.tags like \"%" + difficulty + "%\" AND "
+    sql += "mealmateSQL.recipes.tags like \"%" + improvement + "%\" AND "
+    sql += "mealmateSQL.recipes.tags like \"%" + recommend + "%\" AND "
+    sql += "mealmateSQL.recipes.tags like \"%" + prefChange + "%\" AND "
+    if (String(newCuisine) !== "No Preference") {
+        let splitCuisines = String(newCuisine).split(',');
+        for (let i = 0; i < splitCuisines.length; i++) {
+            let element = splitCuisines[i];
+            // console.log(element);
+            if (i == splitCuisines.length - 1) {
+                sql += "mealmateSQL.recipes.tags like \"%" + element.toLowerCase() + "%\" AND "
+            } else {
+                sql += "mealmateSQL.recipes.tags like \"%" + element.toLowerCase() + "%\" OR "
+            }
+        }
+    }
+    sql += "mealmateSQL.recipes.tags like \"%" + newCookTime + "%\" AND "
+
+    console.log(sql);
+    let query = db.query(sql, (err, results) => {
+        if (err) {
+            throw err;
+        }
+        console.log(results)
+            // grab the recipe ID for the recipe from results and use that to create a user
+        var userRecipeID = results[0]['recipe_id']
+            // used to know if the person taking the survey is a new user or a returning user.
+        var returningUser = false;
+        if (req.cookies.jwtoken) { // cookies are set. save recomeneded recipe in db  
+            returningUser = true;
+            decoded = jwt.verify(req.cookies.jwtoken, secret);
+            var returnUserID = decoded.userid;
+            userid = returnUserID;
+            insertUserReconnemdedRecipe(returnUserID, userRecipeID)
+            console.log('cookies are set. this is a returning user')
+        }
+        if (!returningUser) { // cookies are not set 
+            createuser(userRecipeID)
+            console.log('cookeis are not set. creating a new user in the db')
+        }
+        // used a timeout to ensure that the functions above run
+        //before setting a coookie and sending the results(recommended recipe)
+        setTimeout(() => {
+            console.log(returningUser)
+            if (!returningUser) { // will only set the cookies if its a new user taking the survey
+                // cookie set to expire in a year 
+                res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
+                    // save the users preferences in the database 
+                saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
+            }
+            res.send(results);
+        }, 200)
+    });
 });
 
-app.get('/review/user/recent', function(req,res) {
+app.put('/review/user/recent', function(req,res) {
     console.log(req.cookies)
     if (req.cookies.jwtoken) { // jwtoken cookie is set
         try {

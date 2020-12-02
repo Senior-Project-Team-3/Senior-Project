@@ -36,6 +36,6 @@ export class DataService {
   }
 
   public getUserRecentRecipe() {
-    return this.httpClient.get(this.REST_API_SERVER + '/review/user/recent', { withCredentials: true});
+    return this.httpClient.put(this.REST_API_SERVER + '/review/user/recent', { withCredentials: true});
   }
 }

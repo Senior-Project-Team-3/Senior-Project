@@ -46,25 +46,26 @@ export class ReviewComponent implements OnInit {
   ngOnInit(): void {
     this.currentQuestion = 0;
     this.isComplete = false;
+    this.dataService.getUserRecentRecipe()
     // Check if user has taken previous surveys...
     // this.populateReturnSurvey();
     // If not, get the initial survey ready.
-    this.populateInitialSurvey();
+    this.populateInitialSurvey()
   }
 
   populateInitialSurvey() {
-    this.isInitial = true;
-    this.isRadio = true;
+    this.isInitial = true
+    this.isRadio = true
     this.reviewSurveyAnswers = {
       "rating": null,
       "realCookTime": null,
       "substitutes": null,
-      "preference": null,
       "prefMatch": null,
+      "difficulty": null,
       "improvement": null,
       "recommend": null,
       "prefChange": null,
-      "newcuisine": null,
+      "newCuisine": null,
       "newCookTime": null,
     };
 
@@ -186,10 +187,10 @@ export class ReviewComponent implements OnInit {
           this.reviewSurveyAnswers.substitutes = this.radioSelected;
         }
         if (this.currentQuestion == 3) {
-          this.reviewSurveyAnswers.preference = this.radioSelected;
+          this.reviewSurveyAnswers.prefMatch = this.radioSelected;
         }
         if (this.currentQuestion == 4) {
-          this.reviewSurveyAnswers.prefMatch = this.radioSelected;
+          this.reviewSurveyAnswers.difficulty = this.radioSelected;
         }
         if (this.currentQuestion == 5) {
           this.reviewSurveyAnswers.improvement = this.radioSelected;
@@ -202,7 +203,7 @@ export class ReviewComponent implements OnInit {
           this.reviewSurveyAnswers.prefChange = this.radioSelected;
         }
         if (this.currentQuestion == 9) {
-          this.reviewSurveyAnswers.prefChange = this.radioSelected;
+          this.reviewSurveyAnswers.newCookTime = this.radioSelected;
           /*TODO: call new recipe recommendation */
         }
       } else {
@@ -226,9 +227,9 @@ export class ReviewComponent implements OnInit {
       // this.initialSurveyAnswers[this.currentQuestion] = answers;
       if (this.currentQuestion == 8) {
         if (answers.includes("No Preference")) {
-          this.reviewSurveyAnswers.proteins = ["No Preference"];
+          this.reviewSurveyAnswers.newCuisine = ["No Preference"];
         } else {
-          this.reviewSurveyAnswers.proteins = answers;
+          this.reviewSurveyAnswers.newCuisine = answers;
         }
       }    
       /*if (this.currentQuestion == 4) {
