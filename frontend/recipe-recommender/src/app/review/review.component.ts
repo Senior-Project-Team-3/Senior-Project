@@ -46,7 +46,7 @@ export class ReviewComponent implements OnInit {
   ngOnInit(): void {
     this.currentQuestion = 0;
     this.isComplete = false;
-    this.dataService.getUserRecentRecipe()
+    //this.dataService.getUserRecentRecipe()
     // Check if user has taken previous surveys...
     // this.populateReturnSurvey();
     // If not, get the initial survey ready.
@@ -147,17 +147,24 @@ export class ReviewComponent implements OnInit {
     this.currentQuestion++;
     this.radioSelected = undefined;
     this.errorMessage = undefined;
+    if (this.isInitial) {
+      // Survey complete
+      if (this.currentQuestion == this.reviewSurveyQuestions.length) {
+        // Finish the survey
+        this.completeSurvey();
+        return;
+      }   
 
-    // Survey complete
-    if (this.currentQuestion == this.reviewSurveyQuestions.length) {
-      // Finish the survey
-      this.completeSurvey();
-      return;
-    }   
-
-    if(this.currentQuestion == 7 && this.reviewSurveyAnswers.prefChange == 'No'){
-      this.completeSurvey();
-      return;
+      if(this.currentQuestion == 7 && this.reviewSurveyAnswers.prefChange == 'No'){
+        this.getNextQuestion();
+        return;
+      }
+    } else {
+      if (this.currentQuestion == this.reviewSurveyQuestions.length) {
+        // Finish the survey
+        this.completeSurvey();
+        return;
+      }  
     }
 
     // Check if next question is single or multiple choice

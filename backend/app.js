@@ -471,6 +471,7 @@ app.put('/survey_results/:user_id', function(req, res) {
 });
 
 app.put('/review_results/:userID', function(req, res) {
+    console.log('entering the results endpoint')
     var user_id = req.params.user_id
     console.log(req.body.data)
     let results = JSON.parse(req.body.data)
@@ -478,15 +479,15 @@ app.put('/review_results/:userID', function(req, res) {
     let rating = results.rating
     let realCookTime = results.realCookTime
     let substitutes = results.substitutes
-    let prefMatch = results.preference
-    let difficulty = results.prefMatch
+    let prefMatch = results.prefMatch
+    let difficulty = results.difficulty
     let improvement = results.improvement
     let recommend = results.recommend
     let prefChange = results.prefChange
     let newCuisine = results.newCuisine
     let newCookTime = results.newCookTime
 
-    console.log("Proteins: " + rating)
+    console.log("Rating: " + rating)
     console.log("Real Cook Time: " + realCookTime)
     console.log("Substitutes: " + substitutes)
     console.log("Preferences Match: " + prefMatch)
@@ -522,7 +523,7 @@ app.put('/review_results/:userID', function(req, res) {
             }
         }
     }
-    sql += "mealmateSQL.recipes.tags like \"%" + newCookTime + "%\" AND "
+    sql += "mealmateSQL.recipes.tags like \"%" + newCookTime
 
     console.log(sql);
     let query = db.query(sql, (err, results) => {
@@ -534,7 +535,9 @@ app.put('/review_results/:userID', function(req, res) {
         var userRecipeID = results[0]['recipe_id']
             // used to know if the person taking the survey is a new user or a returning user.
         var returningUser = false;
+        console.log('checking for cookie')
         if (req.cookies.jwtoken) { // cookies are set. save recomeneded recipe in db  
+            console.log('reading in cookie')
             returningUser = true;
             decoded = jwt.verify(req.cookies.jwtoken, secret);
             var returnUserID = decoded.userid;
@@ -554,7 +557,7 @@ app.put('/review_results/:userID', function(req, res) {
                 // cookie set to expire in a year 
                 res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
                     // save the users preferences in the database 
-                saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
+                saveUserPreferences(userid, newCuisine, newCookTime)
             }
             res.send(results);
         }, 200)
