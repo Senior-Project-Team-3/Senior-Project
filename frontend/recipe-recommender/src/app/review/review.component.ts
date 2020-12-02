@@ -46,7 +46,7 @@ export class ReviewComponent implements OnInit {
   ngOnInit(): void {
     this.currentQuestion = 0;
     this.isComplete = false;
-    this.dataService.getRecipe()
+    //this.dataService.getRecipe()
     // Check if user has taken previous surveys...
     // this.populateReturnSurvey();
     // If not, get the initial survey ready.
