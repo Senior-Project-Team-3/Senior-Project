@@ -46,12 +46,30 @@ export class ReviewComponent implements OnInit {
   ngOnInit(): void {
     this.currentQuestion = 0;
     this.isComplete = false;
-    //this.dataService.getRecipe()
+    this.dataService.getRecipe(this.router.url.split('/').pop());
+    var recipeID = this.router.url.split('/').pop()
+    console.log(recipeID)
     // Check if user has taken previous surveys...
     // this.populateReturnSurvey();
     // If not, get the initial survey ready.
     this.populateInitialSurvey()
   }
+
+  /*
+  getRecipe(id: String) {
+    this.dataService.recipe(id).subscribe((data: any) => {
+      console.log(data);
+      data[0].submitted = this.dateSubmit(data[0].submitted);
+      this.ingredients = data[0].ingredients;
+      data[0].ingredients = this.ingredients.replace(/'/g, "");
+      this.steps = data[0].steps_text;
+      data[0].steps_text = this.steps.replace(/'/g, "");
+      data[1] = this.arrayItize(data[0].ingredients);
+      data[2] = this.arrayItize(data[0].steps_text);
+      this.recipe = data;
+    })
+  }
+  */
 
   populateInitialSurvey() {
     this.isInitial = true
