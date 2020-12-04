@@ -127,4 +127,9 @@ export class MyRecipesComponent implements OnInit {
     console.log(recipeId);
     this.router.navigateByUrl('/recipe/' + recipeId);
   }
+
+  goToReview(recipeId) {
+    console.log(recipeId);
+    this.router.navigateByUrl('/review');
+  }
 }
