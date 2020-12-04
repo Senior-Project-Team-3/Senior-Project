@@ -36,6 +36,7 @@ export class ReviewComponent implements OnInit {
   isComplete: boolean;
   errorMessage: string;
   recommendedRecipe = [];
+  recipe = [];
   
   constructor(
     private dataService: DataService,
@@ -44,6 +45,7 @@ export class ReviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getRecipe(this.router.url.split('/').pop());
     this.currentQuestion = 0;
     this.isComplete = false;
     this.dataService.getRecipe(this.router.url.split('/').pop());
@@ -52,7 +54,9 @@ export class ReviewComponent implements OnInit {
     // Check if user has taken previous surveys...
     // this.populateReturnSurvey();
     // If not, get the initial survey ready.
-    this.populateInitialSurvey()
+    
+    setTimeout(() => this.populateInitialSurvey(), 100);
+    // this.populateInitialSurvey()
   }
 
   /*
@@ -86,11 +90,13 @@ export class ReviewComponent implements OnInit {
       "newCuisine": null,
       "newCookTime": null,
     };
+    console.log(this.recipe[0]);
 
-    this.reviewSurveyQuestions[0] = "How did you like your last meal? How did you like {recipe.name}?";
+    this.reviewSurveyQuestions[0] = "How did you like your last meal? How did you like " + this.recipe[0].name + "?";
     this.reviewSurveyOptions[0] = ['1', '2','3','4','5'];
 
-    this.reviewSurveyQuestions[1] = "What was your total cooking time? {recipe.name} cook time is listed as {recipe.minutes}, was this accurate? If not, how long did it take? ";
+    this.reviewSurveyQuestions[1] = "What was your total cooking time? " + this.recipe[0].name + " cook time is listed as " +
+      this.recipe[0].minutes + ", was this accurate? If not, how long did it take? ";
     this.reviewSurveyOptions[1] = ['15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', '4-hours-or-less'];
 
     this.reviewSurveyQuestions[2] = 'Did you use any substitutes?';
@@ -298,7 +304,7 @@ export class ReviewComponent implements OnInit {
     console.log(document.cookie)
     this.isComplete = true;
     if (this.isInitial) {
-      this.dataService.putReviewResults(JSON.stringify(this.reviewSurveyAnswers), 10).subscribe((data: any[]) => {
+      this.dataService.putReviewResults(JSON.stringify(this.reviewSurveyAnswers), this.recipe[0].recipe_id).subscribe((data: any[]) => {
         console.log(data);
         this.recommendedRecipe = data;
       });
@@ -307,6 +313,13 @@ export class ReviewComponent implements OnInit {
       //   console.log(data);
       // });
     }
+  }
+
+  getRecipe(id: String) {
+    this.dataService.recipe(id).subscribe((data: any) => {
+      console.log(data);
+      this.recipe = data;
+    })
   }
 
   goToRecipe(recipe_id: number) {
