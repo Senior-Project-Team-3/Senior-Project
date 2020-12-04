@@ -21,6 +21,12 @@ app.use(bodyParser.json());
 //const secret = "zWkh]M7J_?3F:@kXEr,)kKHk" // JWT secret key
 const secret = process.env.ACCESS_TOKEN_SECRET
 
+/**
+ * Creates a new user in the mealmateSQL and sets the global variable userid 
+ * to a unique id generated in the database.
+ * 
+ * @param {Number} userRecipeID the recipe id from the recipe that was recommended to the user. 
+ */
 createuser = function(userRecipeID) {
     sql1 = 'CALL createUser(' + userRecipeID + ')';
     db.query(sql1, (err, resultsForUser, fields) => {
@@ -33,11 +39,22 @@ createuser = function(userRecipeID) {
     });
 }
 
+/**  
+ * Returns a jwt signed token that stores the clients user id.
+ * 
+ * @returns {jwtoken} a jwt signed token.
+*/
 createjwt = function() {
     console.log(userid)
     return jwt.sign({ "userid": userid }, secret);
 }
 
+/**
+ * Inserts the recommended recipe for the user into the mealmateSQL database.
+ * 
+ * @param {String} returningUserId the users id stored in the cookies.
+ * @param {Number} userRecipeID tthe recipe id from the recipe that was recommended to the user. 
+ */
 insertUserReconnemdedRecipe = function(returningUserId, userRecipeID) {
     sql1 = 'CALL insertUserAndRecipe(' + returningUserId + ',' + userRecipeID + ');';
     db.query(sql1, (err, resultsForUser, fields) => {
@@ -49,6 +66,18 @@ insertUserReconnemdedRecipe = function(returningUserId, userRecipeID) {
     });
 }
 
+/**
+ * Saves the user Preferences in the mealmateSQL database.
+ * 
+ * @param {String} userid the user id stored in the clients cookies 
+ * @param {String} vegetarian the users answer to the vegeratian question from the survey
+ * @param {Object} proteins An array of selected proteins by the user 
+ * @param {Object} cuisines An array of selected cuisines by the user 
+ * @param {String} cookTime the users answer to the cook time question from the survey
+ * @param {Object} appliances An array of selected appliances by the user 
+ * @param {String} intolerant the users answer to the intolerant question from the survey
+ * @param {Object} intolerances An array of selected intolerances by the user 
+ */
 saveUserPreferences = function(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances) {
     console.log("User: " + userid); /**user id */
     console.log("Vegetarian?: " + vegetarian); // can be yes or no /**queston ID: 1 */
@@ -88,9 +117,17 @@ saveUserPreferences = function(userid, vegetarian, proteins, cuisines, cookTime,
 
 }
 
+/**
+ * Updates a user's Preferences in the mealmateSQL database. 
+ * 
+ * @param {String} userIDCookies the user's id stored in the clients cookies
+ * @param {Object} newCuisine An array that has the user's new prefered cusines   
+ * @param {Object} newProtein An array that has the user's new prefered cusines  
+ * @param {String} newCookTime the user's new prefered cook time
+ */
 updateUserPreferences = function(userIDCookies, newCuisine, newProtein, newCookTime){
-    newCuisine = objToString(newCuisine).split(':')[1]
-    //newPortein = objToString(newProtein).split(":")[1]
+    newCuisine = objToString(newCuisine).split(':')
+    //newPortein = objToString(newProtein).split(":")
     console.log("NEW_CUSINE: " + newCuisine)
     setTimeout(() => {
         sql = "CALL updateUserPreferences(" + userIDCookies + ',' + JSON.stringify(newCuisine) + ',' +
@@ -106,6 +143,12 @@ updateUserPreferences = function(userIDCookies, newCuisine, newProtein, newCookT
     }, 200)
 }
 
+/**
+ * Turns an object into a string 
+ * 
+ * @param {Object} obj 
+ * @returns {String} A string 
+ */
 function objToString(obj) {
     var str = '';
     for (var p in obj) {
@@ -254,20 +297,6 @@ function generateAccessToken(user) {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
 
 }
-
-
-/*
-app.use('/home', (req, res) => {
-    var cookie = getcookie(req);
-    console.log(cookie);
-});
-
-function getcookie(req) {
-    var cookie = req.headers.cookie;
-    //user=someone; session=QyhYzXhkTZawIb5qSl3KKyPVN //(this is my cookie i get)
-    return cookie.split('; ');
-}
-*/
 
 
 app.get('/recipes/:recipe_name/search', function(req, res) {
