@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 
 import {faChevronLeft, faChevronRight, faAngleDoubleLeft, faAngleDoubleRight} from '@fortawesome/free-solid-svg-icons'
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-my-recipes',
   templateUrl: './my-recipes.component.html',
@@ -24,7 +25,10 @@ export class MyRecipesComponent implements OnInit {
 
   loading = true;
 
-  constructor(private dataService: DataService) { }
+  constructor(
+    private dataService: DataService,
+    private router: Router
+    ) { }
   
 
   ngOnInit(): void {
@@ -117,5 +121,10 @@ export class MyRecipesComponent implements OnInit {
 
     }
     
+  }
+
+  goToRecipe(recipeId) {
+    console.log(recipeId);
+    this.router.navigateByUrl('/recipe/' + recipeId);
   }
 }
