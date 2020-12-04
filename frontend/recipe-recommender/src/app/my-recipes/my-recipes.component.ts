@@ -42,7 +42,7 @@ export class MyRecipesComponent implements OnInit {
       this.loading = true;
       console.log(data);
       console.log(data[0]);
-      this.recipes = data;
+      this.recipes = data[0];
       if(window.innerWidth < 768) {
         this.slideLength = 1;
       }
