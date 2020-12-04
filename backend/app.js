@@ -259,18 +259,18 @@ function getcookie(req) {
 */
 
 
- app.get('/recipes/:recipe_name/search', function(req, res) {
-     var recipe_name = req.params.recipe_name;
-     console.log(req.params.recipe_name)
-     let sql = "SELECT * FROM recipe WHERE recipe_name = '" + recipe_name + "'";
-     let query = db.query(sql, (err, results) => {
-         if (err) {
-             throw err;
-         }
-         console.log(results);
-         res.send(results);
-     })
- })
+app.get('/recipes/:recipe_name/search', function(req, res) {
+    var recipe_name = req.params.recipe_name;
+    console.log(req.params.recipe_name)
+    let sql = "SELECT * FROM recipe WHERE recipe_name = '" + recipe_name + "'";
+    let query = db.query(sql, (err, results) => {
+        if (err) {
+            throw err;
+        }
+        console.log(results);
+        res.send(results);
+    })
+})
 
 app.get('/recipes/review/top_rated', function(req, res) {
     let sql = "select * from recipes " +
@@ -288,16 +288,16 @@ app.get('/recipes/review/top_rated', function(req, res) {
     });
 });
 
-app.get('/recipe/:recipe_id', function(req, res)  {
+app.get('/recipe/:recipe_id', function(req, res) {
     var recipe_id = req.params.recipe_id;
     console.log(recipe_id);
     console.log(req.params.recipe_id)
     let sql = "SELECT * FROM recipes " +
-    "INNER JOIN nutrition " +
-    "ON recipes.recipe_id = nutrition.recipe_id " +
-    "INNER JOIN steps " +
-    "ON recipes.recipe_id = steps.recipe_id " +
-    "WHERE recipes.recipe_id = " + recipe_id;
+        "INNER JOIN nutrition " +
+        "ON recipes.recipe_id = nutrition.recipe_id " +
+        "INNER JOIN steps " +
+        "ON recipes.recipe_id = steps.recipe_id " +
+        "WHERE recipes.recipe_id = " + recipe_id;
     let query = db.query(sql, (err, results) => {
         if (err) {
             throw err;
@@ -491,9 +491,9 @@ app.put('/survey_results/:user_id', function(req, res) {
     });
 });
 
-app.put('/review_results/:userID', function(req, res) {
+app.put('/review_results/:recipe_id', function(req, res) {
     console.log('entering the results endpoint')
-    var user_id = req.params.user_id
+    var recipe_id = req.params.recipe_id
     console.log(req.body.data)
     let results = JSON.parse(req.body.data)
 
@@ -537,7 +537,7 @@ app.put('/review_results/:userID', function(req, res) {
     //     "from mealmateSQL.recipes " +
     //     "join mealmateSQL.steps on mealmateSQL.steps.recipe_id = mealmateSQL.recipes.recipe_id " +
     //     "join mealmateSQL.nutrition on mealmateSQL.nutrition.recipe_id = mealmateSQL.recipes.recipe_id where ";
-    
+
     // sql += "mealmateSQL.recipes.tags like \"%" + rating + "%\" AND "
     // sql += "mealmateSQL.recipes.tags like \"%" + realCookTime + "%\" AND "
     // sql += "mealmateSQL.recipes.tags like \"%" + substitutes + "%\" AND "
@@ -596,10 +596,10 @@ app.put('/review_results/:userID', function(req, res) {
     //         }
     //         res.send(results);
     //     }, 200)
-   // });
+    // });
 });
 
-app.put('/review/user/recent', function(req,res) {
+app.put('/review/user/recent', function(req, res) {
     console.log(req.cookies)
     if (req.cookies.jwtoken) { // jwtoken cookie is set
         try {
