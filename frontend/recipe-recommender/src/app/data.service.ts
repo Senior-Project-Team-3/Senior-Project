@@ -29,4 +29,9 @@ export class DataService {
   public putSurveyResults(results: String, userID: number) {
     return this.httpClient.put(this.REST_API_SERVER + '/survey_results/' + userID, {"data": results});
   }
+
+  public getMyRecipes(userID: String) {
+    console.log(userID);
+    return this.httpClient.get(this.REST_API_SERVER + '/recipes/' + userID + '/my_recipes');
+  }
 }

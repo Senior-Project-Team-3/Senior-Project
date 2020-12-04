@@ -25,12 +25,18 @@ export class MyRecipesComponent implements OnInit {
   }
 
   myRecipeSearch() {
-    this.dataService.getTopRecipes().subscribe((data: any[]) => {
+    
+    console.log("test");
+    this.dataService.getMyRecipes('38094').subscribe((data: any[]) => {
       console.log(data);
+      console.log("test");
+      console.log(data[0]);
       this.recipes = data;
+      console.log(Math.ceil(this.recipes.length/3));
+      console.log(this.recipes);
       for (let index = 0; index < (3 - (this.recipes.length % 3) + this.recipes.length)/3 ; index++) {
         this.recipesSmall.push("test");
-      }
+      } 
     })
     
   }
