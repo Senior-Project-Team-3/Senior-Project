@@ -50,22 +50,15 @@ insertUserReconnemdedRecipe = function(returningUserId, userRecipeID) {
 }
 
 saveUserPreferences = function(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances) {
-    /**user id */
-    console.log("User: " + userid);
-    /**queston ID: 1 */
-    console.log("Vegetarian?: " + vegetarian); // can be yes or no 
-    /**queston ID: 2 */
-    console.log("Proteins: " + proteins); //list of proteins , could be null 
-    /**queston ID: 3 */
-    console.log("Cuisines: " + cuisines); //list of cusines
-    /**queston ID: 4 */
-    console.log("Cook time: " + cookTime);
-    /**queston ID: 5 */
-    console.log("Appliances: " + appliances); // list of appliances
-    /**queston ID: 6 */
-    console.log("Intolerant?: " + intolerant); // yes or no
-    /**queston ID: 7 */
-    console.log("Intolerances: " + intolerances); // if intolreant is yes, list of inrolerances
+    console.log("User: " + userid); /**user id */
+    console.log("Vegetarian?: " + vegetarian); // can be yes or no /**queston ID: 1 */
+    console.log("Proteins: " + proteins); //list of proteins , could be null /**queston ID: 2 */
+    console.log("Cuisines: " + cuisines); //list of cusines  /**queston ID: 3 */
+    console.log("Cook time: " + cookTime);  /**queston ID: 4 */
+    console.log("Appliances: " + appliances); // list of appliances /**queston ID: 5 */
+    console.log("Intolerant?: " + intolerant); // yes or no /**queston ID: 6 */
+    console.log("Intolerances: " + intolerances); // if intolreant is yes, list of inrolerances  /**queston ID: 7 */
+
     if (intolerant === 'No') {
         intolerances = 'No'
     } else {
@@ -93,6 +86,24 @@ saveUserPreferences = function(userid, vegetarian, proteins, cuisines, cookTime,
 
     }, 200)
 
+}
+
+updateUserPreferences = function(userIDCookies, newCuisine, newProtein, newCookTime){
+    newCuisine = objToString(newCuisine).split(':')[1]
+    //newPortein = objToString(newProtein).split(":")[1]
+    console.log("NEW_CUSINE: " + newCuisine)
+    setTimeout(() => {
+        sql = "CALL updateUserPreferences(" + userIDCookies + ',' + JSON.stringify(newCuisine) + ',' +
+        JSON.stringify(newProtein) + ',' + JSON.stringify(newCookTime) + ")";
+        console.log(sql)
+        // db.query(sql, (err, resultsForUser, fields) => {
+        //     if (err) {
+        //         throw err;
+        //     }
+        //     console.log("Writing user preferences data for user in db")
+        // });
+
+    }, 200)
 }
 
 function objToString(obj) {
@@ -504,9 +515,10 @@ app.put('/review_results/:recipe_id', function(req, res) {
     let difficulty = results.difficulty
     let improvement = results.improvement
     let recommend = results.recommend
-    let prefChange = results.prefChange
-    let newCuisine = results.newCuisine
-    let newCookTime = results.newCookTime
+    let prefChange = results.prefChange // if yes: update user preferences if no: just query DB to recommmend recipe 
+    let newProtein = 'testProtein' // variable used for updating user preferences 
+    let newCuisine = results.newCuisine // variable used for updating user preferences 
+    let newCookTime = results.newCookTime // variable used for updating user preferences 
 
     console.log("Rating: " + rating)
     console.log("Real Cook Time: " + realCookTime)
@@ -518,6 +530,12 @@ app.put('/review_results/:recipe_id', function(req, res) {
     console.log("Preference Change: " + prefChange)
     console.log("New Cuisine: " + newCuisine)
     console.log("New Cook Time: " + newCookTime)
+
+    if (prefChange === 'Yes'){
+        decoded = jwt.verify(req.cookies.jwtoken, secret);
+        var userIDCookies = decoded.userid;
+        updateUserPreferences(userIDCookies, newCuisine, newProtein, newCookTime);
+    }
 
     let sql = "select * from recipes " +
         "INNER JOIN nutrition " +
