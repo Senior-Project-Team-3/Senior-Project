@@ -9,11 +9,11 @@
 
 <body>
 
-    <div class="card mx-auto" id="surveyCard" *ngIf="isComplete == false">
+    <div class="card mx-auto" id="reviewCard" *ngIf="isComplete == false">
         <div class="card-body">
             <div *ngIf="isInitial">
-                <h5 class="card-title">{{ initialSurveyQuestions[currentQuestion] }}</h5>
-                <div *ngFor="let option of initialSurveyOptions[currentQuestion]">
+                <h5 class="card-title">{{ reviewSurveyQuestions[currentQuestion] }}</h5>
+                <div *ngFor="let option of reviewSurveyOptions[currentQuestion]">
                     <div *ngIf="isRadio">
                         <label for="radio_{{option}}">
                         <input id="radio_{{option}}" type="radio" [value]="option" name="radios" [(ngModel)]="radioSelected">

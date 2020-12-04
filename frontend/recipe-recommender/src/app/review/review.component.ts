@@ -5,20 +5,20 @@ import { DataService } from '../data.service';
 
 @Component({
   selector: 'app-survey',
-  templateUrl: './survey.component.html',
-  styleUrls: ['./survey.component.css']
+  templateUrl: './review.component.html',
+  styleUrls: ['./review.component.css']
 })
-export class SurveyComponent implements OnInit {
+export class ReviewComponent implements OnInit {
 
   // Holds the questions
-  initialSurveyQuestions = [];
+  reviewSurveyQuestions = [];
   returnSurveyQuestions = [];
   // Holds the selectable options
-  initialSurveyOptions = [];
+  reviewSurveyOptions = [];
   returnSurveyOptions = [];
   // Holds the users answers
   // initialSurveyAnswers = [];
-  initialSurveyAnswers: any;
+  reviewSurveyAnswers: any;
   returnSurveyAnswers = [];
   // Holds booleans that indicates if a questions is multiple choice(checkbox) or single choice(radio).
   //    For example, if our question array is [single choice, multiple choice, single choice], 
@@ -46,52 +46,74 @@ export class SurveyComponent implements OnInit {
   ngOnInit(): void {
     this.currentQuestion = 0;
     this.isComplete = false;
+    this.dataService.getRecipe(this.router.url.split('/').pop());
+    var recipeID = this.router.url.split('/').pop()
+    console.log(recipeID)
     // Check if user has taken previous surveys...
     // this.populateReturnSurvey();
     // If not, get the initial survey ready.
-    this.populateInitialSurvey();
+    this.populateInitialSurvey()
   }
 
+  /*
+  getRecipe(id: String) {
+    this.dataService.recipe(id).subscribe((data: any) => {
+      console.log(data);
+      data[0].submitted = this.dateSubmit(data[0].submitted);
+      this.ingredients = data[0].ingredients;
+      data[0].ingredients = this.ingredients.replace(/'/g, "");
+      this.steps = data[0].steps_text;
+      data[0].steps_text = this.steps.replace(/'/g, "");
+      data[1] = this.arrayItize(data[0].ingredients);
+      data[2] = this.arrayItize(data[0].steps_text);
+      this.recipe = data;
+    })
+  }
+  */
+
   populateInitialSurvey() {
-    this.isInitial = true;
-    this.isRadio = true;
-    this.initialSurveyAnswers = {
-      "vegetarian": null,
-      "proteins": null,
-      "cuisines": null,
-      "cookTime": null,
-      "appliances": null,
-      "intolerant": null,
-      "intolerances": null
+    this.isInitial = true
+    this.isRadio = true
+    this.reviewSurveyAnswers = {
+      "rating": null,
+      "realCookTime": null,
+      "substitutes": null,
+      "prefMatch": null,
+      "difficulty": null,
+      "improvement": null,
+      "recommend": null,
+      "prefChange": null,
+      "newCuisine": null,
+      "newCookTime": null,
     };
 
-    this.initialSurveyQuestions[0] = "Are you a vegetarian?";
-    this.initialSurveyOptions[0] = ['Yes', 'No'];
+    this.reviewSurveyQuestions[0] = "How did you like your last meal? How did you like {recipe.name}?";
+    this.reviewSurveyOptions[0] = ['1', '2','3','4','5'];
 
-    // Only ask if answer to 0 is "No"
-    this.initialSurveyQuestions[1] = "What main source of meat do you prefer?";
-    this.initialSurveyOptions[1] = [
-      {
-        title: 'Beef',
-        checked: false,
-      },
-      {
-        title: 'Chicken',
-        checked: false,
-      },
-      {
-        title: 'Pork',
-        checked: false,
-      },
-      {
-        title: 'No Preference',
-        checked: false,
-      },
-    ];
+    this.reviewSurveyQuestions[1] = "What was your total cooking time? {recipe.name} cook time is listed as {recipe.minutes}, was this accurate? If not, how long did it take? ";
+    this.reviewSurveyOptions[1] = ['15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', '4-hours-or-less'];
 
-    this.initialSurveyQuestions[2] = "What cuisines do you like?";
+    this.reviewSurveyQuestions[2] = 'Did you use any substitutes?';
+    this.reviewSurveyOptions[2] = ['Yes/if so what','No'];
+
+    this.reviewSurveyQuestions[3] = 'Did the recipes match your preferences?';
+    this.reviewSurveyOptions[3] = ['Yes','Mostly','Kind Of','Not Really','No'];
+    
+    this.reviewSurveyQuestions[4] = 'How difficult was the recipe to follow?';
+    this.reviewSurveyOptions[4] = ['Easy','Somewhat','Difficult','Impossible'];
+    
+    this.reviewSurveyQuestions[5] = 'Could the recipe be improved?';
+    this.reviewSurveyOptions[5] = ['Yes (with reason?)', 'No'];
+    
+    this.reviewSurveyQuestions[6] = 'Would you recommend this recipe to a friend?';
+    this.reviewSurveyOptions[6] = ['Yes (if yes ask if they want to provide a review?)','No'];
+
+    this.reviewSurveyQuestions[7] = 'Would you like to change your preferences?';
+    this.reviewSurveyOptions[7] = ['Yes','No'];
+
+    this.reviewSurveyQuestions[8] = "What cuisines do you like?";
     // We can expand on this list
-    this.initialSurveyOptions[2] = [
+    this.reviewSurveyOptions[8] = [
       {
         title: 'Mexican',
         checked: false,
@@ -122,75 +144,11 @@ export class SurveyComponent implements OnInit {
       },
     ];
 
-    this.initialSurveyQuestions[3] = "Which length of cooking do you prefer?";
-    this.initialSurveyOptions[3] = ['15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', '4-hours-or-less', 'No Preference'];
-    
-    // Unsure how to implement this effectively
-    // this.initialSurveyQuestions[4] = "Do you care about nutrition in the recipe?";
-    // this.initialSurveyOptions[4] = "Yes, No";
-    
-    this.initialSurveyQuestions[4] = "What appliances do you have access to?";
-    this.initialSurveyOptions[4] = [
-      {
-        title: 'Oven',
-        checked: false,
-      },
-      {
-        title: 'Food Processor',
-        checked: false,
-      },
-      {
-        title: 'Microwave',
-        checked: false,
-      },
-      {
-        title: 'Stove',
-        checked: false,
-      },
-      {
-        title: 'Grill',
-        checked: false,
-      },
-      {
-        title: 'Pressure Cooker',
-        checked: false,
-      },
-      {
-        title: 'Crock-Pot',
-        checked: false,
-      },
-    ];
-    
-    this.initialSurveyQuestions[5] = "Do you have an allergy or intolerance?";
-    this.initialSurveyOptions[5] = ['Yes', 'No'];
-    
-    // Only ask if answer to 5 is "Yes"
-    this.initialSurveyQuestions[6] = "Please select your allergies/intolerances:";
-    this.initialSurveyOptions[6] = [
-      {
-        title: 'Peanut',
-        checked: false,
-      },
-      {
-        title: 'Tree Nut',
-        checked: false,
-      },
-      {
-        title: 'Lactose',
-        checked: false,
-      },
-      {
-        title: 'Gluten',
-        checked: false,
-      },
-      {
-        title: 'Wheat',
-        checked: false,
-      },
-    ];
+    this.reviewSurveyQuestions[9] = "Which length of cooking do you prefer?";
+    this.reviewSurveyOptions[9] = ['15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', '4-hours-or-less'];
 
-    // Always this for initial survey
-    this.radioIndicators = [true, false, false, true, false, true, false];
+    // Always this for review survey
+    this.radioIndicators = [true, true, true, true, true, true, true, true,false, true];
   }
 
   /**
@@ -207,39 +165,26 @@ export class SurveyComponent implements OnInit {
     this.currentQuestion++;
     this.radioSelected = undefined;
     this.errorMessage = undefined;
-
     if (this.isInitial) {
-
       // Survey complete
-      if (this.currentQuestion == this.initialSurveyQuestions.length) {
+      if (this.currentQuestion == this.reviewSurveyQuestions.length) {
         // Finish the survey
         this.completeSurvey();
         return;
-      }
+      }   
 
-      // Check for dependant questions...
-      // Skip preferred source of meat for vegetarians
-      if (this.currentQuestion == 1 && this.initialSurveyAnswers.vegetarian == 'Yes') {
-        this.getNextQuestion();
+      if(this.currentQuestion == 8 && this.reviewSurveyAnswers.prefChange == 'No'){
+        this.completeSurvey();
         return;
       }
-      // Skip allergy intolerence question for those who select no
-      if (this.currentQuestion == 6 && this.initialSurveyAnswers.intolerant == 'No') {
-        this.initialSurveyAnswers[this.currentQuestion] = null;
-        this.getNextQuestion();
-        return;
-      }
-
     } else {
-
-      // Survey complete
-      if (this.currentQuestion == this.returnSurveyQuestions.length) {
+      if (this.currentQuestion == this.reviewSurveyQuestions.length) {
         // Finish the survey
         this.completeSurvey();
         return;
-      }
+      }  
     }
-    
+
     // Check if next question is single or multiple choice
     if (this.radioIndicators[this.currentQuestion]) {
       this.isRadio = true;
@@ -258,22 +203,42 @@ export class SurveyComponent implements OnInit {
       if (this.isInitial) {
         // this.initialSurveyAnswers[this.currentQuestion] = this.radioSelected;
         if (this.currentQuestion == 0) {
-          this.initialSurveyAnswers.vegetarian = this.radioSelected;
+          this.reviewSurveyAnswers.rating = this.radioSelected;
+        }
+        if (this.currentQuestion == 1) {
+          this.reviewSurveyAnswers.realCookTime = this.radioSelected;
+        }
+        if (this.currentQuestion == 2) {
+          this.reviewSurveyAnswers.substitutes = this.radioSelected;
         }
         if (this.currentQuestion == 3) {
-          this.initialSurveyAnswers.cookTime = this.radioSelected;
+          this.reviewSurveyAnswers.prefMatch = this.radioSelected;
+        }
+        if (this.currentQuestion == 4) {
+          this.reviewSurveyAnswers.difficulty = this.radioSelected;
         }
         if (this.currentQuestion == 5) {
-          this.initialSurveyAnswers.intolerant = this.radioSelected;
+          this.reviewSurveyAnswers.improvement = this.radioSelected;
+        }
+        if (this.currentQuestion == 6) {
+          this.reviewSurveyAnswers.recommend = this.radioSelected;
+        }
+        // Completes the survey if user answers no
+        if (this.currentQuestion == 7) {
+          this.reviewSurveyAnswers.prefChange = this.radioSelected;
+        }
+        if (this.currentQuestion == 9) {
+          this.reviewSurveyAnswers.newCookTime = this.radioSelected;
+          /*TODO: call new recipe recommendation */
         }
       } else {
         this.returnSurveyAnswers[this.currentQuestion] = this.radioSelected;
-    }
+      }
     this.getNextQuestion();
   }
 
   submitCheckbox() {
-    let answersList = this.initialSurveyOptions[this.currentQuestion].filter(item => item.checked);
+    let answersList = this.reviewSurveyOptions[this.currentQuestion].filter(item => item.checked);
     let answers = [];
     for (let i = 0; i < answersList.length; i++) {
       answers[i] = answersList[i].title;
@@ -285,26 +250,16 @@ export class SurveyComponent implements OnInit {
     console.log(answers);
     if (this.isInitial) {
       // this.initialSurveyAnswers[this.currentQuestion] = answers;
-      if (this.currentQuestion == 1) {
+      if (this.currentQuestion == 8) {
         if (answers.includes("No Preference")) {
-          this.initialSurveyAnswers.proteins = ["No Preference"];
+          this.reviewSurveyAnswers.newCuisine = ["No Preference"];
         } else {
-          this.initialSurveyAnswers.proteins = answers;
+          this.reviewSurveyAnswers.newCuisine = answers;
         }
-      }
-      if (this.currentQuestion == 2) {
-        if (answers.includes("No Preference")) {
-          this.initialSurveyAnswers.cuisines = ["No Preference"];
-        } else {
-          this.initialSurveyAnswers.cuisines = answers;
-        }
-      }         
-      if (this.currentQuestion == 4) {
-        this.initialSurveyAnswers.appliances = answers;
-      }
-      if (this.currentQuestion == 6) {
-        this.initialSurveyAnswers.intolerances = answers;
-      }
+      }    
+      /*if (this.currentQuestion == 4) {
+        this.reviewSurveyAnswers.appliances = answers;
+      }*/
     } else {
       this.returnSurveyAnswers[this.currentQuestion] = answers;
     }
@@ -343,7 +298,7 @@ export class SurveyComponent implements OnInit {
     console.log(document.cookie)
     this.isComplete = true;
     if (this.isInitial) {
-      this.dataService.putSurveyResults(JSON.stringify(this.initialSurveyAnswers), 10).subscribe((data: any[]) => {
+      this.dataService.putReviewResults(JSON.stringify(this.reviewSurveyAnswers), 10).subscribe((data: any[]) => {
         console.log(data);
         this.recommendedRecipe = data;
       });
