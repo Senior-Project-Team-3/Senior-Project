@@ -130,6 +130,6 @@ export class MyRecipesComponent implements OnInit {
 
   goToReview(recipeId) {
     console.log(recipeId);
-    this.router.navigateByUrl('/review');
+    this.router.navigateByUrl('/review/' + recipeId);
   }
 }
