@@ -35,10 +35,9 @@ export class MyRecipesComponent implements OnInit {
     this.myRecipeSearch();
   }
 
-  //
   myRecipeSearch() {
     console.log("test");
-    this.dataService.getMyRecipes('38094').subscribe((data: any[]) => {
+    this.dataService.getMyRecipes().subscribe((data: any[]) => {
       this.loading = true;
       console.log(data);
       console.log(data[0]);

@@ -43,7 +43,7 @@ createuser = function(userRecipeID) {
  * Returns a jwt signed token that stores the clients user id.
  * 
  * @returns {jwtoken} a jwt signed token.
-*/
+ */
 createjwt = function() {
     console.log(userid)
     return jwt.sign({ "userid": userid }, secret);
@@ -83,7 +83,7 @@ saveUserPreferences = function(userid, vegetarian, proteins, cuisines, cookTime,
     console.log("Vegetarian?: " + vegetarian); // can be yes or no /**queston ID: 1 */
     console.log("Proteins: " + proteins); //list of proteins , could be null /**queston ID: 2 */
     console.log("Cuisines: " + cuisines); //list of cusines  /**queston ID: 3 */
-    console.log("Cook time: " + cookTime);  /**queston ID: 4 */
+    console.log("Cook time: " + cookTime); /**queston ID: 4 */
     console.log("Appliances: " + appliances); // list of appliances /**queston ID: 5 */
     console.log("Intolerant?: " + intolerant); // yes or no /**queston ID: 6 */
     console.log("Intolerances: " + intolerances); // if intolreant is yes, list of inrolerances  /**queston ID: 7 */
@@ -125,20 +125,20 @@ saveUserPreferences = function(userid, vegetarian, proteins, cuisines, cookTime,
  * @param {Object} newProtein An array that has the user's new prefered cusines  
  * @param {String} newCookTime the user's new prefered cook time
  */
-updateUserPreferences = function(userIDCookies, newCuisine, newProtein, newCookTime){
+updateUserPreferences = function(userIDCookies, newCuisine, newProtein, newCookTime) {
     newCuisine = objToString(newCuisine)
-    //newPortein = objToString(newProtein).split(":")
+        //newPortein = objToString(newProtein).split(":")
     console.log("NEW_CUSINE: " + newCuisine)
     setTimeout(() => {
         sql = "CALL updateUserPreferences(" + userIDCookies + ',' + JSON.stringify(newCuisine) + ',' +
-        JSON.stringify(newProtein) + ',' + JSON.stringify(newCookTime) + ")";
+            JSON.stringify(newProtein) + ',' + JSON.stringify(newCookTime) + ")";
         console.log(sql)
-        // db.query(sql, (err, resultsForUser, fields) => {
-        //     if (err) {
-        //         throw err;
-        //     }
-        //     console.log("Writing user preferences data for user in db")
-        // });
+            // db.query(sql, (err, resultsForUser, fields) => {
+            //     if (err) {
+            //         throw err;
+            //     }
+            //     console.log("Writing user preferences data for user in db")
+            // });
 
     }, 200)
 }
@@ -152,7 +152,7 @@ updateUserPreferences = function(userIDCookies, newCuisine, newProtein, newCookT
  * @param {String} improvement any extra ingreditnes. etc. used when following a recipe 
  * @param {String} recommend a reason why a user would recommened this recipe to their friend or not 
  */
-saveUserRecipeReview = function(reviewedRecipe_id, rating, substitutes, improvement, recommend){
+saveUserRecipeReview = function(reviewedRecipe_id, rating, substitutes, improvement, recommend) {
 
 }
 
@@ -374,7 +374,7 @@ app.get('/recipes/random/:amount', function(req, res) {
     });
 });
 
-app.get('/recipes/:user_id/my_recipes', function(req, res) {
+app.get('/recipes/my_recipes', function(req, res) {
     console.log(req.cookies)
     if (req.cookies.jwtoken) { // jwtoken cookie is set
         try {
@@ -569,7 +569,7 @@ app.put('/review_results/:recipe_id', function(req, res) {
     console.log("New Cuisine: " + newCuisine)
     console.log("New Cook Time: " + newCookTime)
 
-    if (prefChange === 'Yes'){
+    if (prefChange === 'Yes') {
         decoded = jwt.verify(req.cookies.jwtoken, secret);
         var userIDCookies = decoded.userid;
         updateUserPreferences(userIDCookies, newCuisine, newProtein, newCookTime);
