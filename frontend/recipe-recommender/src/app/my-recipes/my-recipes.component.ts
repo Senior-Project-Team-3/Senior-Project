@@ -24,7 +24,7 @@ export class MyRecipesComponent implements OnInit {
   faAngleDoubleRight = faAngleDoubleRight;
   faEllipsisH = faEllipsisH;
 
-  loading = false;
+  loading = true;
 
   constructor(
     private dataService: DataService,
@@ -43,14 +43,18 @@ export class MyRecipesComponent implements OnInit {
       console.log(data);
       console.log(data[0]);
       this.recipes = data[0];
-      if(window.innerWidth < 768) {
-        this.slideLength = 1;
-      }
-      for (let index = 0; index < Math.ceil(this.recipes.length/this.slideLength) ; index++) {
-        this.recipesSmall.push("test");
-      } 
-      for(let index = 0; index < this.slideLength; index++){
-        this.slides.push("test");
+      if (this.recipes){
+        if(window.innerWidth < 768) {
+          this.slideLength = 1;
+        }
+        for (let index = 0; index < Math.ceil(this.recipes.length/this.slideLength) ; index++) {
+          this.recipesSmall.push("test");
+        } 
+        for(let index = 0; index < this.slideLength; index++){
+          this.slides.push("test");
+        }
+      } else {
+        this.recipes = []
       }
       this.loading = false;
     })
