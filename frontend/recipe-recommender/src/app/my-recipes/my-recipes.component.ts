@@ -24,7 +24,7 @@ export class MyRecipesComponent implements OnInit {
   faAngleDoubleRight = faAngleDoubleRight;
   faEllipsisH = faEllipsisH;
 
-  loading = true;
+  loading = false;
 
   constructor(
     private dataService: DataService,
