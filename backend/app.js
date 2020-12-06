@@ -544,7 +544,7 @@ app.put('/survey_results/save/:recipe_id', function(req, res) {
     }
     // used a timeout to ensure that the functions above run
     //before setting a coookie and sending the results(recommended recipe)
-    // setTimeout(() => {
+    setTimeout(() => {
     console.log(returningUser)
     if (!returningUser) { // will only set the cookies if its a new user taking the survey
         // cookie set to expire in a year 
@@ -553,7 +553,7 @@ app.put('/survey_results/save/:recipe_id', function(req, res) {
         saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
     }
     res.sendStatus(200);
-    // }, 200)
+     }, 200)
 
 });
 
