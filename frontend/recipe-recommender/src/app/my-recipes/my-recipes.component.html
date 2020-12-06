@@ -3,33 +3,37 @@
     <!--Carousel Wrapper-->
     <div *ngIf="recipes.length != 0" id="multi-item-example" class="carousel slide carousel-multi-item" data-ride="carousel" data-interval="false">
 
-        <div class="slide-desc d-flex justify-content-center" style="color: white;"> Slide {{slideCounter + 1}} | Recipes {{slideCounter*slideLength + 1}} - {{slideCounter != recipesSmall.length - 1 ? (slideCounter*slideLength + slideLength) : recipes.length}} of {{recipes.length}} </div>
-        <!--Controls-->
-        <div class="controls-top d-flex justify-content-center">
-            <a class="btn btn-primary" href="#multi-item-example" data-slide-to="0" (click)="changeCounter('first');">
-                <fa-icon [icon]="faAngleDoubleLeft"></fa-icon>
-            </a>
-            <a class="btn btn-primary" href="#multi-item-example" [attr.data-slide-to]="slideCounter" (click)="changeCounter('prev');">
-                <fa-icon [icon]="faChevronLeft"></fa-icon>
-            </a>
+        <div class="slide-desc d-flex justify-content-center" style="color: white;"> Slide {{slideCounter + 1}}  | Recipes {{slideCounter*slideLength + 1}} - {{slideCounter != recipesSmall.length - 1  ? (slideCounter*slideLength + slideLength) : recipes.length}} of {{recipes.length}} </div>
+      <!--Controls-->
+        <div class="controls-top d-flex justify-content-center m-2">
+            <a class="btn btn-primary mr-2" href="#multi-item-example" [attr.data-slide-to]="slideCounter" (click)="changeCounter('prev');"><fa-icon [icon]="faChevronLeft"></fa-icon></a>
 
-            <a *ngFor="let recipe of recipesSmall; index as i; let isFirst = first" class="btn btn-primary" href="#multi-item-example" [attr.data-slide-to]="i" (click)="changeCounter(i + 1);">{{i + 1}}</a>
+                
+            <!-- <div *ngIf="slideCounter > 3"></div> -->
 
-            <a class="btn btn-primary" href="#multi-item-example" [attr.data-slide-to]="slideCounter" (click)="changeCounter('next');">
-                <fa-icon [icon]="faChevronRight"></fa-icon>
-            </a>
-            <a class="btn btn-primary" href="#multi-item-example" [attr.data-slide-to]="recipesSmall.length-1" (click)="changeCounter('last');">
-                <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
-            </a>
+            <div class="btn-group mr-2">
+                <a class="btn btn-primary startThing" *ngIf="slideCounter > 2 && recipesSmall.length > 6" href="#multi-item-example" data-slide-to="0" (click)="changeCounter('first');">1</a>
+                <button type="button" *ngIf="slideCounter > 3 && recipesSmall.length > 7" class="btn btn-outline-primary border-top-0 border-bottom-0" disabled><fa-icon [icon]="faEllipsisH"></fa-icon></button>
+                <ng-container *ngFor="let recipe of recipesSmall; index as i; let isFirst = first; let isLast = last">
+                    <a  class="btn btn-primary" href="#multi-item-example" [attr.data-slide-to]="i" 
+                        *ngIf="(slideCounter < i + 3 && slideCounter > i - 3) || (slideCounter < 3 && i < 6) || (slideCounter >= recipesSmall.length - 3 && i >= recipesSmall.length - 6) || recipesSmall.length < 6" 
+                        (click)="changeCounter(i);" [ngClass]="{'active': (i == slideCounter)}">{{i + 1}}</a>
+                </ng-container>
+                <button type="button" *ngIf="slideCounter <= recipesSmall.length-5 && recipesSmall.length > 7" class="btn btn-outline-primary border-top-0 border-bottom-0" disabled><fa-icon [icon]="faEllipsisH"></fa-icon></button>
+                <a class="btn btn-primary endThing" *ngIf="slideCounter <= recipesSmall.length-4 && recipesSmall.length > 6" href="#multi-item-example" data-slide-to="0" (click)="changeCounter('last');">{{recipesSmall.length}}</a>
+            </div>
+
+
+            <a class="btn btn-primary mr-2" href="#multi-item-example" [attr.data-slide-to]="slideCounter" (click)="changeCounter('next');"><fa-icon [icon]="faChevronRight"></fa-icon></a>
         </div>
-        <div class="controls-top d-flex justify-content-center">
-            <input class="form-control mr-sm-2" type="number" #search placeholder="go to a slide" aria-label="Search" style="width: 5em;" value="1" min="-1" [attr.max]="recipesSmall.length+2">
+        <div class="controls-top  m-2 d-flex justify-content-center">
+            <input class="form-control mr-sm-2" type="number" #search placeholder="go to a slide" aria-label="Search" style="width: 5em;" value="1" min="1" [attr.max]="recipesSmall.length">
             <!-- <button class="btn btn-secondary my-2 my-sm-0" id="searchButton" (click)="changeCounter(search.value);">Go</button> -->
             <a class="btn btn-primary" href="#multi-item-example" [attr.data-slide-to]="search.value - 1" (click)="changeCounter(search.value);">Go to slide</a>
         </div>
-        <div class="controls-top d-flex justify-content-center">
+        <div class="controls-top m-2 d-flex justify-content-center">
             <input class="form-control mr-sm-2" type="number" #slideL placeholder="Change Slide Length" aria-label="Search" style="width: 5em;" value="1" min="1" max="10">
-            <a class="btn btn-primary" href="#multi-item-example" data-slide-to="0" (click)="timeoutSetSlideLength(slideL.value);">Change # recipes per slide</a>
+            <a class="btn btn-primary" href="#multi-item-example" data-slide-to="0" (click)="timeoutSetSlideLength(slideL.value);" >Change # recipes per slide</a>
         </div>
         <!-- <nav aria-label="Page navigation example">
             <ul class="pagination">
@@ -57,9 +61,8 @@
         <!--Slides-->
         <div class="carousel-inner h-100" role="listbox">
             <div class="carousel-item" *ngFor="let recipe of recipesSmall; index as i; let isFirst = first" [ngClass]="{active:isFirst}">
-                <div class="card-deck">
-
-                    <div class="col-md-4" *ngFor="let slide of slides; index as j;">
+                <div class="card-deck justify-content-center"> 
+                    <div class="col-md-4 mb-2" *ngFor="let slide of slides; index as j;">
                         <div class="card h-100" *ngIf="i*slideLength+j < recipes.length">
                             <img class="card-img-top" src={{recipes[i*slideLength+j].imageLink}} alt="Card image cap">
                             <div class="card-body">
@@ -68,58 +71,10 @@
                                 <p class="card-text"> {{i*slideLength+j}} </p>
                             </div>
                             <div class="card-footer">
-                                <a type="button" class="btn btn-primary" (click)="goToRecipe(recipes[i*slideLength+j].recipe_id)">View Recipe Details</a>
-                                <a type="button" class="btn btn-primary" (click)="goToReview(recipes[i*slideLength+j].recipe_id)" style="float: right">Take Review Survey</a>
+                                <a href="http://localhost:4200" class="btn btn-primary stretched-link"> Do a thing</a>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Card 1 -->
-                    <!-- <div class="col-md-4" *ngIf="recipes.length != 0">
-                    <div class="card h-100">
-                        <img class="card-img-top" src= {{recipes[i*3].imageLink}} alt="Card image cap">
-                        <div class="card-body">
-                            <h5 class="card-title">{{recipes[i*3].name}} </h5>
-                            <p class="card-text"> Cook Time: {{recipes[i*3].minutes}} minutes </p>
-                            <p class="card-text"> {{i}} </p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="http://localhost:4200" class="btn btn-primary stretched-link"> Do a thing</a>
-                        </div>
-                    </div>
-                </div> -->
-                    <!-- /.Card 1 -->
-
-                    <!-- Card 2 -->
-                    <!-- <div class="col-md-4 clearfix">
-                    <div class="card h-100" *ngIf="i * 3 + 1 < recipes.length">
-                        <img class="card-img-top" src= {{recipes[i*3+1].imageLink}} alt="Card image cap">
-                        <div class="card-body">
-                            <h5 class="card-title">{{recipes[i*3+1].name}}</h5>
-                            <p class="card-text"> Cook Time: {{recipes[i*3+1].minutes}} minutes</p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="http://localhost:4200" class="btn btn-primary stretched-link"> Do a thing</a>
-                        </div>
-                    </div>
-                </div> -->
-                    <!-- ./Card 2 -->
-
-                    <!-- Card 3 -->
-                    <!-- <div class="col-md-4 clearfix">
-                    <div class="card h-100" *ngIf="i * 3 + 2 < recipes.length" >
-                        <img class="card-img-top" src= {{recipes[i*3+2].imageLink}} alt="Card image cap">
-                        <div class="card-body">
-                            <h5 class="card-title">{{recipes[i*3+2].name}}</h5>
-                            <p class="card-text"> Cook Time: {{recipes[i*2+2].minutes}} minutes </p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="http://localhost:4200" class="btn btn-primary stretched-link"> Do a thing</a>
-                        </div>
-                    </div>
-                </div> -->
-                    <!-- ./Card 3 -->
-
                 </div>
             </div>
         </div>
