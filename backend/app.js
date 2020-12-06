@@ -391,14 +391,16 @@ app.get('/recipes/my_recipes', function(req, res) {
             });
         } catch (err) {
             // bad token
+            data = []
             console.log("Invalid token")
             // res.status(401).send("Invalid token")
-            res.status(200).send("\n\nGeneric recipes\n\n");
+            res.status(200).send(data);
         }
     } else {
         //cookies are not set and is a new user
         /** TO DO: tell them to take a survey  */
-        res.status(200).send("\n\nGeneric recipes\n\n");
+        data = []
+        res.status(200).send(data);
     }
 });
 
