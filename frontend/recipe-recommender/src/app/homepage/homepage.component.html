@@ -10,6 +10,7 @@
             <img src="{{ recipe.imageLink }}" class="img-responsive" style="width:70%">
             <div class="card-footer">
                 <a href="http://localhost:4200/recipe/{{ recipe.recipe_id }}" class="btn btn-primary stretched-link"></a>
+                <a type="button" class="btn btn-primary" (click)="goToRecipe(recipes[i*slideLength+j].recipe_id)">View Recipe Details</a>
             </div>
         </div>
     </div>
