@@ -8,7 +8,6 @@
 </head>
 
 <body>
-
     <div class="card mx-auto" id="surveyCard" *ngIf="isComplete == false">
         <div class="card-body">
             <div *ngIf="isInitial">
@@ -53,15 +52,17 @@
             </div>
         </div>
     </div>
-    <div *ngIf="isComplete">
-        <div class="card mx-auto" id="recommendationCard" *ngFor="let recipe of recommendedRecipe">
+    <div *ngIf="isComplete" class="container-fluid bg-3 text-center">
+        <h1>Here are some recipes just for you...</h1><br>
+        <div class="card mx-auto" id="recommendationCard" *ngFor="let recipe of recommendedRecipes">
             <img class="card-img-top" src={{recipe.imageLink}} alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">{{recipe.name | uppercase}} </h5>
-                <p class="card-text"></p>
+                <!-- <p class="card-text"></p> -->
             </div>
             <div class="card-footer">
-                <a class="btn btn-primary stretched-link" (click)="goToRecipe(recipe.recipe_id)">View Recipe</a>
+                <!-- <a class="btn btn-primary" (click)="goToRecipe(recipe.recipe_id)" style="float: left">View Recipe</a> -->
+                <a class="btn btn-primary" (click)="addToMyRecipes(recipe.recipe_id)" style="float: right">Save Recipe</a>
             </div>
         </div>
     </div>
