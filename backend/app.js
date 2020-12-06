@@ -196,55 +196,6 @@ db.connect((err) => {
     console.log("Database Connected");
 });
 
-
-/* Later task: store refresh token(s) in database or redis cache */
-let refreshTokens = []
-
-/* data structure refreshTokens[] is drawing from */
-const posts = [{
-    username: 'Kyle'
-},
-{
-    username: 'Jim',
-    title: 'Post 2'
-}
-]
-
-/* This GET request is retrieves user data only mataching the authentication */
-app.get('/posts', authenticateToken, (req, res) => {
-    res.json(posts.filter(post => post.username === req.user.name)) /* Only returning the posts the user has access to */
-})
-
-/* This POST request recieves the refresh JWT and creates time-based access tokens*/
-app.post('/refresh', (req, res) => {
-    const refreshToken = req.body.token /* Looks the body of the JWT refresh token */
-    if (refreshToken == null) return res.sendStatus(401) /* checking if token not null */
-    if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403) /* checking if the JWT refresh token exists in the storage */
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-        if (err) return res.sendStatus(403)
-        const accessToken = generateAccessToken({ name: user.name }) /* Generating new access token */
-        //res.json({ accessToken: accessToken })  /* Output JWT access token information */
-        res.cookie('refreshAccessToken', accessToken, {
-            //expires: new Date(Date.now() + expiration),
-            //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
-            secure: false, // set to true if your using https
-            httpOnly: true,
-        }).send('Refresh Success!');
-    })
-
-})
-
-/* Used to view all cookies created */
-app.get('/', (req, res) => {
-    res.send(req.cookies)
-
-    // Cookies that have not been signed
-    console.log('Cookies: ', req.cookies)
-
-    // Cookies that have been signed
-    console.log('Signed Cookies: ', req.signedCookies)
-})
-
 /* Used to clear all cookies created */
 app.get('/clear', (req, res) => {
     res.clearCookie('accessToken')
@@ -252,65 +203,6 @@ app.get('/clear', (req, res) => {
     res.clearCookie('refreshAccessToken')
     res.send('cookies cleared');
 });
-
-/* Working version of app.post('/login') */
-app.post('/survey', (req, res) => {
-    const username = req.body.username
-    const user = { name: username } /* Passing the body of the token as the user*/
-
-    const accessToken = generateAccessToken(user) /* Creating time-based user access token */
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET) /* Created a signed refresh JWT */
-    refreshTokens.push(refreshToken) /* Adding the refresh JWT to the refreshTokens array */
-    //res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
-    res.cookie('accessTokenCookie', accessToken, {
-        //expires: new Date(Date.now() + expiration),
-        //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
-        secure: false, // set to true if your using https
-        httpOnly: true,
-    })
-    res.cookie('refreshTokenCookie', refreshToken, {
-        //expires: new Date(Date.now() + expiration),
-        //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
-        secure: false, // set to true if your using https
-        httpOnly: true,
-    })
-    res.send('Success!');
-})
-
-app.use('/testing', (req, res) => {
-    const cookieToken = req.cookies.accessTokenCookie
-
-    res.status(200).json(posts)
-})
-
-
-/* This DELETE is used to stop the JWT refresh token from creating addition time-based access JWT */
-app.delete('/logout', (req, res) => {
-    refreshTokens = refreshTokens.filter(token => token !== req.body.token) /* Comparing body token for possible removal */
-    res.sendStatus(204)
-})
-
-/* This function is used to authenticate the JWT as a non-null and verified */
-function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1] /* Bearer portion of the token and returns undefined if no token found */
-    if (token == null) return res.sendStatus(401) /* Outputing 401 Error to user when token is null */
-
-    /* verifying the JWT with callback functionality */
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if (err) return res.sendStatus(403) /* notifies user that the token is no longer valid */
-        req.user = user /* setting the valid user token */
-        next()
-    })
-}
-
-/* This function is used to generate the time-based access tokens */
-function generateAccessToken(user) {
-    ///return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '40s'})
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-
-}
-
 
 app.get('/recipes/:recipe_name/search', function (req, res) {
     var recipe_name = req.params.recipe_name;
