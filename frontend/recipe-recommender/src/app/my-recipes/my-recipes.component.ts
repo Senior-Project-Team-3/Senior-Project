@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { DataService } from '../data.service';
 
-import {faChevronLeft, faChevronRight, faAngleDoubleLeft, faAngleDoubleRight} from '@fortawesome/free-solid-svg-icons'
+import {faChevronLeft, faChevronRight, faAngleDoubleLeft, faAngleDoubleRight, faEllipsisH} from '@fortawesome/free-solid-svg-icons'
 @Component({
   selector: 'app-my-recipes',
   templateUrl: './my-recipes.component.html',
@@ -21,6 +21,7 @@ export class MyRecipesComponent implements OnInit {
   faChevronRight = faChevronRight;
   faAngleDoubleLeft = faAngleDoubleLeft;
   faAngleDoubleRight = faAngleDoubleRight;
+  faEllipsisH = faEllipsisH;
 
   loading = true;
 
@@ -113,7 +114,7 @@ export class MyRecipesComponent implements OnInit {
         };
         break;
       default: 
-       this.slideCounter = parseInt(slideChange) - 1;
+       this.slideCounter = parseInt(slideChange);
 
     }
     
