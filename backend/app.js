@@ -126,7 +126,7 @@ saveUserPreferences = function(userid, vegetarian, proteins, cuisines, cookTime,
  * @param {String} newCookTime the user's new prefered cook time
  */
 updateUserPreferences = function(userIDCookies, newCuisine, newProtein, newCookTime){
-    newCuisine = objToString(newCuisine).split(':')
+    newCuisine = objToString(newCuisine)
     //newPortein = objToString(newProtein).split(":")
     console.log("NEW_CUSINE: " + newCuisine)
     setTimeout(() => {
@@ -141,6 +141,19 @@ updateUserPreferences = function(userIDCookies, newCuisine, newProtein, newCookT
         // });
 
     }, 200)
+}
+
+/**
+ * Saves a user review of a recipe that was previously recommended to them
+ * 
+ * @param {Number} reviewedRecipe_id the recipe id of the recommended recipe a user made a review of 
+ * @param {Number} rating a number ranging from 1 to 5 that represents the users rating of a recipe 
+ * @param {String} substitutes substitutes used when follwoing a recipe 
+ * @param {String} improvement any extra ingreditnes. etc. used when following a recipe 
+ * @param {String} recommend a reason why a user would recommened this recipe to their friend or not 
+ */
+saveUserRecipeReview = function(reviewedRecipe_id, rating, substitutes, improvement, recommend){
+
 }
 
 /**
@@ -351,11 +364,7 @@ app.get('/recipes/random/:amount', function(req, res) {
     var amount = req.params.amount;
     let sql = "SELECT * FROM recipes AS t1 " +
         "JOIN (SELECT recipe_id FROM recipes ORDER BY RAND() LIMIT " + amount + " ) as t2 " +
-        "ON t1.recipe_id=t2.recipe_id " +
-        "INNER JOIN nutrition " +
-        "ON t1.recipe_id = nutrition.recipe_id " +
-        "INNER JOIN steps " +
-        "ON t1.recipe_id = steps.recipe_id;"
+        "ON t1.recipe_id=t2.recipe_id;"
     let query = db.query(sql, (err, results) => {
         if (err) {
             throw err;
@@ -533,21 +542,21 @@ app.put('/survey_results/:user_id', function(req, res) {
 
 app.put('/review_results/:recipe_id', function(req, res) {
     console.log('entering the results endpoint')
-    var recipe_id = req.params.recipe_id
+    var reviewedRecipe_id = req.params.recipe_id
     console.log(req.body.data)
     let results = JSON.parse(req.body.data)
 
-    let rating = results.rating
+    let rating = results.rating // used for user recipe review
     let realCookTime = results.realCookTime
-    let substitutes = results.substitutes
+    let substitutes = results.substitutes // used for user recipe review
     let prefMatch = results.prefMatch
     let difficulty = results.difficulty
-    let improvement = results.improvement
-    let recommend = results.recommend
+    let improvement = results.improvement // used for user recipe review
+    let recommend = results.recommend // used for user recipe review 
     let prefChange = results.prefChange // if yes: update user preferences if no: just query DB to recommmend recipe 
-    let newProtein = 'testProtein' // variable used for updating user preferences 
-    let newCuisine = results.newCuisine // variable used for updating user preferences 
-    let newCookTime = results.newCookTime // variable used for updating user preferences 
+    let newProtein = 'testProtein' //  used for updating user preferences 
+    let newCuisine = results.newCuisine //  used for updating user preferences 
+    let newCookTime = results.newCookTime //  used for updating user preferences 
 
     console.log("Rating: " + rating)
     console.log("Real Cook Time: " + realCookTime)
@@ -565,6 +574,8 @@ app.put('/review_results/:recipe_id', function(req, res) {
         var userIDCookies = decoded.userid;
         updateUserPreferences(userIDCookies, newCuisine, newProtein, newCookTime);
     }
+
+    saveUserPreferences(reviewedRecipe_id, rating, substitutes, improvement, recommend)
 
     let sql = "select * from recipes " +
         "INNER JOIN nutrition " +
