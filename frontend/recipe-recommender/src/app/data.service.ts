@@ -30,6 +30,10 @@ export class DataService {
     return this.httpClient.put(this.REST_API_SERVER + '/survey_results/' + userID, {"data": results}, { withCredentials: true});
   }
 
+  public saveRecipe(results: String, recipeID: number) {
+    return this.httpClient.put(this.REST_API_SERVER + '/survey_results/save/' + recipeID, {"data": results}, { withCredentials: true});
+  }
+
   public putReviewResults(results: String, recipeID: number) {
     return this.httpClient.put(this.REST_API_SERVER + '/review_results/' + recipeID, {"data": results}, { withCredentials: true});
   }

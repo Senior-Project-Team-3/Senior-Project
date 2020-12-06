@@ -35,7 +35,7 @@ export class SurveyComponent implements OnInit {
   // Indicate end of survey
   isComplete: boolean;
   errorMessage: string;
-  recommendedRecipe = [];
+  recommendedRecipes = [];
   
   constructor(
     private dataService: DataService,
@@ -345,7 +345,7 @@ export class SurveyComponent implements OnInit {
     if (this.isInitial) {
       this.dataService.putSurveyResults(JSON.stringify(this.initialSurveyAnswers), 10).subscribe((data: any[]) => {
         console.log(data);
-        this.recommendedRecipe = data;
+        this.recommendedRecipes = data;
       });
     } else {
       // this.dataService.putSurveyResults(this.returnSurveyAnswers, 10).subscribe((data: any[]) => {
@@ -356,5 +356,11 @@ export class SurveyComponent implements OnInit {
 
   goToRecipe(recipe_id: number) {
     this.router.navigateByUrl('/recipe/' + recipe_id);
+  }
+
+  addToMyRecipes(recipe_id: number) {
+    this.dataService.saveRecipe(JSON.stringify(this.initialSurveyAnswers), recipe_id).subscribe((data: any[]) => {
+      console.log(data);
+    })
   }
 }
