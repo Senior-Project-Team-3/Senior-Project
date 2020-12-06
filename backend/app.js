@@ -27,7 +27,7 @@ const secret = process.env.ACCESS_TOKEN_SECRET
  * 
  * @param {Number} userRecipeID the recipe id from the recipe that was recommended to the user. 
  */
-createuser = function(userRecipeID) {
+createuser = function (userRecipeID) {
     sql1 = 'CALL createUser(' + userRecipeID + ')';
     db.query(sql1, (err, resultsForUser, fields) => {
         if (err) {
@@ -44,7 +44,7 @@ createuser = function(userRecipeID) {
  * 
  * @returns {jwtoken} a jwt signed token.
 */
-createjwt = function() {
+createjwt = function () {
     console.log(userid)
     return jwt.sign({ "userid": userid }, secret);
 }
@@ -55,7 +55,7 @@ createjwt = function() {
  * @param {String} returningUserId the users id stored in the cookies.
  * @param {Number} userRecipeID tthe recipe id from the recipe that was recommended to the user. 
  */
-insertUserReconnemdedRecipe = function(returningUserId, userRecipeID) {
+insertUserReconnemdedRecipe = function (returningUserId, userRecipeID) {
     sql1 = 'CALL insertUserAndRecipe(' + returningUserId + ',' + userRecipeID + ');';
     db.query(sql1, (err, resultsForUser, fields) => {
         if (err) {
@@ -78,7 +78,7 @@ insertUserReconnemdedRecipe = function(returningUserId, userRecipeID) {
  * @param {String} intolerant the users answer to the intolerant question from the survey
  * @param {Object} intolerances An array of selected intolerances by the user 
  */
-saveUserPreferences = function(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances) {
+saveUserPreferences = function (userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances) {
     console.log("User: " + userid); /**user id */
     console.log("Vegetarian?: " + vegetarian); // can be yes or no /**queston ID: 1 */
     console.log("Proteins: " + proteins); //list of proteins , could be null /**queston ID: 2 */
@@ -125,13 +125,13 @@ saveUserPreferences = function(userid, vegetarian, proteins, cuisines, cookTime,
  * @param {Object} newProtein An array that has the user's new prefered cusines  
  * @param {String} newCookTime the user's new prefered cook time
  */
-updateUserPreferences = function(userIDCookies, newCuisine, newProtein, newCookTime){
+updateUserPreferences = function (userIDCookies, newCuisine, newProtein, newCookTime) {
     newCuisine = objToString(newCuisine)
     //newPortein = objToString(newProtein).split(":")
     console.log("NEW_CUSINE: " + newCuisine)
     setTimeout(() => {
         sql = "CALL updateUserPreferences(" + userIDCookies + ',' + JSON.stringify(newCuisine) + ',' +
-        JSON.stringify(newProtein) + ',' + JSON.stringify(newCookTime) + ")";
+            JSON.stringify(newProtein) + ',' + JSON.stringify(newCookTime) + ")";
         console.log(sql)
         // db.query(sql, (err, resultsForUser, fields) => {
         //     if (err) {
@@ -152,7 +152,7 @@ updateUserPreferences = function(userIDCookies, newCuisine, newProtein, newCookT
  * @param {String} improvement any extra ingreditnes. etc. used when following a recipe 
  * @param {String} recommend a reason why a user would recommened this recipe to their friend or not 
  */
-saveUserRecipeReview = function(reviewedRecipe_id, rating, substitutes, improvement, recommend){
+saveUserRecipeReview = function (reviewedRecipe_id, rating, substitutes, improvement, recommend) {
 
 }
 
@@ -202,12 +202,12 @@ let refreshTokens = []
 
 /* data structure refreshTokens[] is drawing from */
 const posts = [{
-        username: 'Kyle'
-    },
-    {
-        username: 'Jim',
-        title: 'Post 2'
-    }
+    username: 'Kyle'
+},
+{
+    username: 'Jim',
+    title: 'Post 2'
+}
 ]
 
 /* This GET request is retrieves user data only mataching the authentication */
@@ -223,7 +223,7 @@ app.post('/refresh', (req, res) => {
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(403)
         const accessToken = generateAccessToken({ name: user.name }) /* Generating new access token */
-            //res.json({ accessToken: accessToken })  /* Output JWT access token information */
+        //res.json({ accessToken: accessToken })  /* Output JWT access token information */
         res.cookie('refreshAccessToken', accessToken, {
             //expires: new Date(Date.now() + expiration),
             //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
@@ -261,7 +261,7 @@ app.post('/survey', (req, res) => {
     const accessToken = generateAccessToken(user) /* Creating time-based user access token */
     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET) /* Created a signed refresh JWT */
     refreshTokens.push(refreshToken) /* Adding the refresh JWT to the refreshTokens array */
-        //res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
+    //res.json({ accessToken: accessToken, refreshToken: refreshToken}) /* Passing access and refresh JWT */
     res.cookie('accessTokenCookie', accessToken, {
         //expires: new Date(Date.now() + expiration),
         //maxAge: 365 * 24 * 60 * 60 * 100, //max age of a year
@@ -312,7 +312,7 @@ function generateAccessToken(user) {
 }
 
 
-app.get('/recipes/:recipe_name/search', function(req, res) {
+app.get('/recipes/:recipe_name/search', function (req, res) {
     var recipe_name = req.params.recipe_name;
     console.log(req.params.recipe_name)
     let sql = "SELECT * FROM recipe WHERE recipe_name = '" + recipe_name + "'";
@@ -325,7 +325,7 @@ app.get('/recipes/:recipe_name/search', function(req, res) {
     })
 })
 
-app.get('/recipes/review/top_rated', function(req, res) {
+app.get('/recipes/review/top_rated', function (req, res) {
     let sql = "select * from recipes " +
         "INNER JOIN nutrition " +
         "ON recipes.recipe_id = nutrition.recipe_id " +
@@ -341,7 +341,7 @@ app.get('/recipes/review/top_rated', function(req, res) {
     });
 });
 
-app.get('/recipe/:recipe_id', function(req, res) {
+app.get('/recipe/:recipe_id', function (req, res) {
     var recipe_id = req.params.recipe_id;
     console.log(recipe_id);
     console.log(req.params.recipe_id)
@@ -360,7 +360,7 @@ app.get('/recipe/:recipe_id', function(req, res) {
     })
 })
 
-app.get('/recipes/random/:amount', function(req, res) {
+app.get('/recipes/random/:amount', function (req, res) {
     var amount = req.params.amount;
     let sql = "SELECT * FROM recipes AS t1 " +
         "JOIN (SELECT recipe_id FROM recipes ORDER BY RAND() LIMIT " + amount + " ) as t2 " +
@@ -374,7 +374,7 @@ app.get('/recipes/random/:amount', function(req, res) {
     });
 });
 
-app.get('/recipes/:user_id/my_recipes', function(req, res) {
+app.get('/recipes/:user_id/my_recipes', function (req, res) {
     console.log(req.cookies)
     if (req.cookies.jwtoken) { // jwtoken cookie is set
         try {
@@ -392,7 +392,7 @@ app.get('/recipes/:user_id/my_recipes', function(req, res) {
         } catch (err) {
             // bad token
             console.log("Invalid token")
-                // res.status(401).send("Invalid token")
+            // res.status(401).send("Invalid token")
             res.status(200).send("\n\nGeneric recipes\n\n");
         }
     } else {
@@ -402,7 +402,7 @@ app.get('/recipes/:user_id/my_recipes', function(req, res) {
     }
 });
 
-app.put('/survey_results/:user_id', function(req, res) {
+app.put('/survey_results/:user_id', function (req, res) {
     var user_id = req.params.user_id;
     console.log(req.body.data);
     let results = JSON.parse(req.body.data);
@@ -509,9 +509,9 @@ app.put('/survey_results/:user_id', function(req, res) {
             throw err;
         }
         console.log(results)
-            // grab the recipe ID for the recipe from results and use that to create a user
+        // grab the recipe ID for the recipe from results and use that to create a user
         var userRecipeID = results[0]['recipe_id']
-            // used to know if the person taking the survey is a new user or a returning user.
+        // used to know if the person taking the survey is a new user or a returning user.
         var returningUser = false;
         if (req.cookies.jwtoken) { // cookies are set. save recomeneded recipe in db  
             returningUser = true;
@@ -532,7 +532,7 @@ app.put('/survey_results/:user_id', function(req, res) {
             if (!returningUser) { // will only set the cookies if its a new user taking the survey
                 // cookie set to expire in a year 
                 res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
-                    // save the users preferences in the database 
+                // save the users preferences in the database 
                 saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
             }
             res.send(results);
@@ -540,11 +540,11 @@ app.put('/survey_results/:user_id', function(req, res) {
     });
 });
 
-app.put('/review_results/:recipe_id', function(req, res) {
-    console.log('entering the results endpoint')
+app.put('/review_results/:recipe_id', function (req, res) {
     var reviewedRecipe_id = req.params.recipe_id
-    console.log(req.body.data)
     let results = JSON.parse(req.body.data)
+    decoded = jwt.verify(req.cookies.jwtoken, secret);
+    var userIDCookies = decoded.userid;
 
     let rating = results.rating // used for user recipe review
     let realCookTime = results.realCookTime
@@ -569,95 +569,101 @@ app.put('/review_results/:recipe_id', function(req, res) {
     console.log("New Cuisine: " + newCuisine)
     console.log("New Cook Time: " + newCookTime)
 
-    if (prefChange === 'Yes'){
-        decoded = jwt.verify(req.cookies.jwtoken, secret);
-        var userIDCookies = decoded.userid;
+    if (prefChange === 'Yes') {
         updateUserPreferences(userIDCookies, newCuisine, newProtein, newCookTime);
     }
+    setTimeout(() => {
+        saveUserRecipeReview(reviewedRecipe_id, rating, substitutes, improvement, recommend)
+        let selectUserPreferencesQuery = 'call selectUserPreferences(' + userIDCookies + ');'
+        let selectQuery = db.query(selectUserPreferencesQuery, (err, UserResults) => {
+            if (err) {
+                throw err;
+            }
+            var areYouAVegertarian = UserResults[0][0].answer_text
+            var mainSourceOfMeat = UserResults[0][1].answer_text
+            var cuisines = UserResults[0][2].answer_text
+            var lengthOfCooking = UserResults[0][3].answer_text
+            var appliances = UserResults[0][4].answer_text
+            var haveAllergyOrIntolerances = UserResults[0][5].answer_text
+            var selectedAllergiesOrIntolerances = UserResults[0][6].answer_text
 
-    saveUserPreferences(reviewedRecipe_id, rating, substitutes, improvement, recommend)
+            let recommendSQL = "select name, minutes, recipes.recipe_id, imageLink, tags " +
+                "from mealmateSQL.recipes " +
+                "join mealmateSQL.steps on mealmateSQL.steps.recipe_id = mealmateSQL.recipes.recipe_id " +
+                "join mealmateSQL.nutrition on mealmateSQL.nutrition.recipe_id = mealmateSQL.recipes.recipe_id where ";
 
-    let sql = "select * from recipes " +
-        "INNER JOIN nutrition " +
-        "ON recipes.recipe_id = nutrition.recipe_id " +
-        "INNER JOIN steps " +
-        "ON recipes.recipe_id = steps.recipe_id " +
-        "limit 8;"
-    let query = db.query(sql, (err, results) => {
-        if (err) {
-            throw err;
-        }
-        console.log(results);
-        res.send(results);
-    });
+            if (areYouAVegertarian == "Yes") {
+                recommendSQL += "mealmateSQL.recipes.tags like \"%vegetarian%\" AND "
+            } else {
+                if ((!mainSourceOfMeat.includes("No Preference")) && (!mainSourceOfMeat.includes("No"))) {
+                    proteinsArray = mainSourceOfMeat.split(':')
+                    for (let i = 0; i < proteinsArray.length; i++) {
+                        let protein = proteinsArray[i]
+                        if (i == proteinsArray.length - 1) {
+                            recommendSQL += "mealmateSQL.recipes.tags like \"%" + protein.toLowerCase() + "%\" AND "
+                        } else {
+                            recommendSQL += "mealmateSQL.recipes.tags like \"%" + protein.toLowerCase() + "%\" OR "
+                        }
+                    }
+                }
+            }
 
-    // let sql = "select name, minutes, recipes.recipe_id, imageLink, tags " +
-    //     "from mealmateSQL.recipes " +
-    //     "join mealmateSQL.steps on mealmateSQL.steps.recipe_id = mealmateSQL.recipes.recipe_id " +
-    //     "join mealmateSQL.nutrition on mealmateSQL.nutrition.recipe_id = mealmateSQL.recipes.recipe_id where ";
+            if ((!cuisines.includes("No Preference")) && (!cuisines.includes("No"))) {
+                cuisinesArray = cuisines.split(':')
+                for (let i = 0; i < cuisinesArray.length; i++) {
+                    let cusine = cuisinesArray[i]
+                    if (i == cuisinesArray.length - 1) {
+                        recommendSQL += "mealmateSQL.recipes.tags like \"%" + cusine.toLowerCase() + "%\" AND "
+                    } else {
+                        recommendSQL += "mealmateSQL.recipes.tags like \"%" + cusine.toLowerCase() + "%\" OR "
+                    }
+                }
+            }
 
-    // sql += "mealmateSQL.recipes.tags like \"%" + rating + "%\" AND "
-    // sql += "mealmateSQL.recipes.tags like \"%" + realCookTime + "%\" AND "
-    // sql += "mealmateSQL.recipes.tags like \"%" + substitutes + "%\" AND "
-    // sql += "mealmateSQL.recipes.tags like \"%" + prefMatch + "%\" AND "
-    // sql += "mealmateSQL.recipes.tags like \"%" + difficulty + "%\" AND "
-    // sql += "mealmateSQL.recipes.tags like \"%" + improvement + "%\" AND "
-    // sql += "mealmateSQL.recipes.tags like \"%" + recommend + "%\" AND "
-    // sql += "mealmateSQL.recipes.tags like \"%" + prefChange + "%\" AND "
-    // if (String(newCuisine) !== "No Preference") {
-    //     let splitCuisines = String(newCuisine).split(',');
-    //     for (let i = 0; i < splitCuisines.length; i++) {
-    //         let element = splitCuisines[i];
-    //         // console.log(element);
-    //         if (i == splitCuisines.length - 1) {
-    //             sql += "mealmateSQL.recipes.tags like \"%" + element.toLowerCase() + "%\" AND "
-    //         } else {
-    //             sql += "mealmateSQL.recipes.tags like \"%" + element.toLowerCase() + "%\" OR "
-    //         }
-    //     }
-    // }
-    // sql += "mealmateSQL.recipes.tags like \"%" + newCookTime
+            if ((!lengthOfCooking.includes("No Preference")) && (!lengthOfCooking.includes("No"))) {
+                recommendSQL += "mealmateSQL.recipes.tags like \"%" + lengthOfCooking + "%\" AND ";
+            }
 
-    // console.log(sql);
-    // let query = db.query(sql, (err, results) => {
-    //     if (err) {
-    //         throw err;
-    //     }
-    //     console.log(results)
-    //         // grab the recipe ID for the recipe from results and use that to create a user
-    //     var userRecipeID = results[0]['recipe_id']
-    //         // used to know if the person taking the survey is a new user or a returning user.
-    //     var returningUser = false;
-    //     console.log('checking for cookie')
-    //     if (req.cookies.jwtoken) { // cookies are set. save recomeneded recipe in db  
-    //         console.log('reading in cookie')
-    //         returningUser = true;
-    //         decoded = jwt.verify(req.cookies.jwtoken, secret);
-    //         var returnUserID = decoded.userid;
-    //         userid = returnUserID;
-    //         insertUserReconnemdedRecipe(returnUserID, userRecipeID)
-    //         console.log('cookies are set. this is a returning user')
-    //     }
-    //     if (!returningUser) { // cookies are not set 
-    //         createuser(userRecipeID)
-    //         console.log('cookeis are not set. creating a new user in the db')
-    //     }
-    //     // used a timeout to ensure that the functions above run
-    //     //before setting a coookie and sending the results(recommended recipe)
-    //     setTimeout(() => {
-    //         console.log(returningUser)
-    //         if (!returningUser) { // will only set the cookies if its a new user taking the survey
-    //             // cookie set to expire in a year 
-    //             res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
-    //                 // save the users preferences in the database 
-    //             saveUserPreferences(userid, newCuisine, newCookTime)
-    //         }
-    //         res.send(results);
-    //     }, 200)
-    // });
+            appliancesArray = appliances.split(":")
+            for (let i = 0; i < appliancesArray.length; i++) {
+                let appliance = appliancesArray[i]
+                if (i == appliancesArray.length - 1) {
+                    recommendSQL += "mealmateSQL.recipes.tags like \"%" + appliance.toLowerCase() + "%\" AND "
+                } else {
+                    recommendSQL += "mealmateSQL.recipes.tags like \"%" + appliance.toLowerCase() + "%\" OR "
+                }
+            }
+
+            if ((!haveAllergyOrIntolerances.includes("No Preference")) && (!haveAllergyOrIntolerances.includes("No"))) {
+                selectedAllergiesOrIntolerancesArray = selectedAllergiesOrIntolerances.split(":")
+                for (let i = 0; i < selectedAllergiesOrIntolerancesArray.length; i++) {
+                    let allergy = selectedAllergiesOrIntolerancesArray[i]
+                    if (i == selectedAllergiesOrIntolerancesArray.length - 1) {
+                        recommendSQL += "mealmateSQL.recipes.tags like \"%" + allergy.toLowerCase() + "%\" LIMIT 5; "
+                    } else {
+                        recommendSQL += "mealmateSQL.recipes.tags like \"%" + allergy.toLowerCase() + "%\" OR "
+                    }
+                }
+            } else {
+                var n = recommendSQL.lastIndexOf("AND");
+                recommendSQL = recommendSQL.slice(0, n) + recommendSQL.slice(n).replace("AND", "LIMIT 5;");
+            }
+
+            setTimeout(() => {
+                console.log(recommendSQL)
+                db.query(recommendSQL, (err, recResults) => {
+                    if (err) {
+                        throw err;
+                    }
+                    res.send(recResults)
+                })
+            }, 500)
+
+        })
+    })
 });
 
-app.put('/review/user/recent', function(req, res) {
+app.put('/review/user/recent', function (req, res) {
     console.log(req.cookies)
     if (req.cookies.jwtoken) { // jwtoken cookie is set
         try {
@@ -675,7 +681,7 @@ app.put('/review/user/recent', function(req, res) {
         } catch (err) {
             // bad token
             console.log("Invalid token")
-                // res.status(401).send("Invalid token")
+            // res.status(401).send("Invalid token")
             res.status(200).send("\n\nGeneric recipes\n\n");
         }
     } else {
