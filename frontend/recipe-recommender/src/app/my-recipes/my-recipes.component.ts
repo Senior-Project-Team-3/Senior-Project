@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 
 import {faChevronLeft, faChevronRight, faAngleDoubleLeft, faAngleDoubleRight, faEllipsisH} from '@fortawesome/free-solid-svg-icons'
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-my-recipes',
   templateUrl: './my-recipes.component.html',
@@ -25,21 +26,23 @@ export class MyRecipesComponent implements OnInit {
 
   loading = true;
 
-  constructor(private dataService: DataService) { }
+  constructor(
+    private dataService: DataService,
+    private router: Router
+    ) { }
   
 
   ngOnInit(): void {
     this.myRecipeSearch();
   }
 
-  //
   myRecipeSearch() {
     console.log("test");
-    this.dataService.getMyRecipes('38094').subscribe((data: any[]) => {
+    this.dataService.getMyRecipes().subscribe((data: any[]) => {
       this.loading = true;
       console.log(data);
       console.log(data[0]);
-      this.recipes = data;
+      this.recipes = data[0];
       if(window.innerWidth < 768) {
         this.slideLength = 1;
       }
@@ -118,5 +121,15 @@ export class MyRecipesComponent implements OnInit {
 
     }
     
+  }
+
+  goToRecipe(recipeId) {
+    console.log(recipeId);
+    this.router.navigateByUrl('/recipe/' + recipeId);
+  }
+
+  goToReview(recipeId) {
+    console.log(recipeId);
+    this.router.navigateByUrl('/review/' + recipeId);
   }
 }

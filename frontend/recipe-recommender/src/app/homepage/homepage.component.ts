@@ -11,6 +11,8 @@ export class HomepageComponent implements OnInit {
 
   recipes = [];
 
+  loading = true;
+
   constructor(
     private router: Router,
     private dataService: DataService
@@ -24,11 +26,17 @@ export class HomepageComponent implements OnInit {
     this.dataService.getRandomRecipes(amount).subscribe((data: any[]) => {
       console.log(data);
       this.recipes = data;
+      this.loading = false;
     })
   }
 
   goToSurvey() {
     this.router.navigateByUrl('/survey');
+  }
+
+  goToRecipe(recipeId) {
+    console.log(recipeId);
+    this.router.navigateByUrl('/recipe/' + recipeId);
   }
 
 }

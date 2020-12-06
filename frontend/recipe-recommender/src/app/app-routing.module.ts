@@ -9,6 +9,7 @@ import { RecipeComponent } from './recipe/recipe.component';
 import { RegisterComponent } from './register/register.component';
 import { SurveyComponent } from './survey/survey.component';
 import { TopRecipesComponent } from './top-recipes/top-recipes.component';
+import { ReviewComponent } from './review/review.component';
 
 const routes: Routes = [
   // { path: '', pathMatch: 'full', redirectTo: '/' },
@@ -19,7 +20,8 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'recipe/:recipe_id', component: RecipeComponent },
-  { path: 'my-recipes', component: MyRecipesComponent }
+  { path: 'my-recipes', component: MyRecipesComponent },
+  { path: 'review/:recipe_id', component: ReviewComponent }
 ];
 
 @NgModule({

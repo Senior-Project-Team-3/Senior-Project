@@ -34,9 +34,9 @@ export class RecipeComponent implements OnInit {
       console.log(data);
       data[0].submitted = this.dateSubmit(data[0].submitted);
       this.ingredients = data[0].ingredients;
-      data[0].ingredients = this.ingredients.replace(/'/g, "");
+      data[0].ingredients = this.ingredients.replace("'", "");
       this.steps = data[0].steps_text;
-      data[0].steps_text = this.steps.replace(/'/g, "");
+      data[0].steps_text = this.steps.replace("'", "");
       data[1] = this.arrayItize(data[0].ingredients);
       data[2] = this.arrayItize(data[0].steps_text);
       this.recipe = data;
@@ -49,7 +49,9 @@ export class RecipeComponent implements OnInit {
   }
 
   arrayItize(str){
-    return str.split(", ");
+    var finalapp = str.lastIndexOf("'");
+    str = str.substring(0, finalapp)
+    return str.split("', '");
   }
 
 
