@@ -501,7 +501,7 @@ app.put('/survey_results/:user_id', function(req, res) {
         }
     } else {
         var n = sql.lastIndexOf("AND");
-        sql = sql.slice(0, n) + sql.slice(n).replace("AND", "LIMIT 1;");
+        sql = sql.slice(0, n) + sql.slice(n).replace("AND", "LIMIT 5;");
     }
     console.log(sql);
     let query = db.query(sql, (err, results) => {
@@ -509,36 +509,83 @@ app.put('/survey_results/:user_id', function(req, res) {
             throw err;
         }
         console.log(results)
-            // grab the recipe ID for the recipe from results and use that to create a user
-        var userRecipeID = results[0]['recipe_id']
-            // used to know if the person taking the survey is a new user or a returning user.
-        var returningUser = false;
-        if (req.cookies.jwtoken) { // cookies are set. save recomeneded recipe in db  
-            returningUser = true;
-            decoded = jwt.verify(req.cookies.jwtoken, secret);
-            var returnUserID = decoded.userid;
-            userid = returnUserID;
-            insertUserReconnemdedRecipe(returnUserID, userRecipeID)
-            console.log('cookies are set. this is a returning user')
-        }
-        if (!returningUser) { // cookies are not set 
-            createuser(userRecipeID)
-            console.log('cookeis are not set. creating a new user in the db')
-        }
-        // used a timeout to ensure that the functions above run
-        //before setting a coookie and sending the results(recommended recipe)
-        setTimeout(() => {
-            console.log(returningUser)
-            if (!returningUser) { // will only set the cookies if its a new user taking the survey
-                // cookie set to expire in a year 
-                res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
-                    // save the users preferences in the database 
-                saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
-            }
-            res.send(results);
-        }, 200)
+        res.send(results);
     });
 });
+
+// v--- New work for multiple recommendations ---v
+
+app.put('/survey_results/save/:recipe_id', function(req, res) {
+    let results = JSON.parse(req.body.data);
+    let vegetarian = results.vegetarian;
+    let proteins = results.proteins;
+    let cuisines = results.cuisines;
+    let cookTime = results.cookTime;
+    let appliances = results.appliances;
+    let intolerant = results.intolerant;
+    let intolerances = results.intolerances;
+    // grab the recipe ID for the recipe from results and use that to create a user
+    var userRecipeID = req.params.recipe_id;
+    // used to know if the person taking the survey is a new user or a returning user.
+    var returningUser = false;
+    if (req.cookies.jwtoken) { // cookies are set. save recomeneded recipe in db  
+        returningUser = true;
+        decoded = jwt.verify(req.cookies.jwtoken, secret);
+        var returnUserID = decoded.userid;
+        userid = returnUserID;
+        insertUserReconnemdedRecipe(returnUserID, userRecipeID)
+        console.log('cookies are set. this is a returning user')
+    }
+    if (!returningUser) { // cookies are not set 
+        createuser(userRecipeID)
+        console.log('cookeis are not set. creating a new user in the db')
+    }
+    // used a timeout to ensure that the functions above run
+    //before setting a coookie and sending the results(recommended recipe)
+    // setTimeout(() => {
+    console.log(returningUser)
+    if (!returningUser) { // will only set the cookies if its a new user taking the survey
+        // cookie set to expire in a year 
+        res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
+            // save the users preferences in the database 
+        saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
+    }
+    res.sendStatus(200);
+    // }, 200)
+
+});
+
+
+//     // grab the recipe ID for the recipe from results and use that to create a user
+// var userRecipeID = results[0]['recipe_id']
+//     // used to know if the person taking the survey is a new user or a returning user.
+// var returningUser = false;
+// if (req.cookies.jwtoken) { // cookies are set. save recomeneded recipe in db  
+//     returningUser = true;
+//     decoded = jwt.verify(req.cookies.jwtoken, secret);
+//     var returnUserID = decoded.userid;
+//     userid = returnUserID;
+//     insertUserReconnemdedRecipe(returnUserID, userRecipeID)
+//     console.log('cookies are set. this is a returning user')
+// }
+// if (!returningUser) { // cookies are not set 
+//     createuser(userRecipeID)
+//     console.log('cookeis are not set. creating a new user in the db')
+// }
+// // used a timeout to ensure that the functions above run
+// //before setting a coookie and sending the results(recommended recipe)
+// setTimeout(() => {
+//     console.log(returningUser)
+//     if (!returningUser) { // will only set the cookies if its a new user taking the survey
+//         // cookie set to expire in a year 
+//         res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
+//             // save the users preferences in the database 
+//         saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
+//     }
+//     res.send(results);
+// }, 200)
+// });
+// });
 
 app.put('/review_results/:recipe_id', function(req, res) {
     console.log('entering the results endpoint')
