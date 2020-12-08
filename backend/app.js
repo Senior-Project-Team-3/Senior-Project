@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { request } = require('express');
-var userid = "shouild be overwritten";
+var userid = "shouild be overwritten"; // used as a fail safe when creating a user
 
 app.use(express.json())
 app.use(cors({
