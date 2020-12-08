@@ -11,7 +11,7 @@ var userid = "shouild be overwritten";
 
 app.use(express.json())
 app.use(cors({
-    origin: 'http://localhost:4200', //need to update to production url
+    origin: 'http://localhost:4200',
     credentials: true
 }));
 app.use(cookieParser());
@@ -44,7 +44,7 @@ createuser = function (userRecipeID) {
  * 
  * @returns {jwtoken} a jwt signed token.
  */
-createjwt = function() {
+createjwt = function () {
     console.log(userid)
     return jwt.sign({ "userid": userid }, secret);
 }
@@ -127,18 +127,18 @@ saveUserPreferences = function (userid, vegetarian, proteins, cuisines, cookTime
  */
 updateUserPreferences = function (userIDCookies, newCuisine, newProtein, newCookTime) {
     newCuisine = objToString(newCuisine)
-        //newPortein = objToString(newProtein).split(":")
+    //newPortein = objToString(newProtein).split(":")
     console.log("NEW_CUSINE: " + newCuisine)
     setTimeout(() => {
         sql = "CALL updateUserPreferences(" + userIDCookies + ',' + JSON.stringify(newCuisine) + ',' +
             JSON.stringify(newProtein) + ',' + JSON.stringify(newCookTime) + ")";
         console.log(sql)
-            // db.query(sql, (err, resultsForUser, fields) => {
-            //     if (err) {
-            //         throw err;
-            //     }
-            //     console.log("Writing user preferences data for user in db")
-            // });
+        // db.query(sql, (err, resultsForUser, fields) => {
+        //     if (err) {
+        //         throw err;
+        //     }
+        //     console.log("Writing user preferences data for user in db")
+        // });
 
     }, 200)
 }
@@ -182,6 +182,11 @@ app.use((req, res, next) => {
     next();
 });
 
+/**
+ * The database inforamtion needed to create a connection
+ * to the mysql database. for security reasons, the
+ * informtaion is storeed in enviroment variables. 
+ */
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -189,6 +194,11 @@ const db = mysql.createConnection({
     database: process.env.DB_SCHEMA
 });
 
+/**
+ * this will try to connect to the databse,
+ * if connected, log databse connected
+ * else throw and error. 
+ */
 db.connect((err) => {
     if (err) {
         throw err;
@@ -204,6 +214,13 @@ app.get('/clear', (req, res) => {
     res.send('cookies cleared');
 });
 
+/**
+ * This endpoint queries the recipes table in our database 
+ * to search for recipes that match or contain the :recipe_name 
+ * entered into the search bar. It sends recipe results back in JSON format.  
+ * 
+ * @returns {Response} send recipts results back in JSON format
+ */
 app.get('/recipes/:recipe_name/search', function (req, res) {
     var recipe_name = req.params.recipe_name;
     console.log(req.params.recipe_name)
@@ -217,6 +234,12 @@ app.get('/recipes/:recipe_name/search', function (req, res) {
     })
 })
 
+/**
+ * This endpoint queries the reviews table in our database to search 
+ * for 8 recipes whose ratings were above the average review rating. 
+ * 
+ * @returns {Response} send back the recipe's back in JSON format 
+ */
 app.get('/recipes/review/top_rated', function (req, res) {
     let sql = "select * from recipes " +
         "INNER JOIN nutrition " +
@@ -233,6 +256,12 @@ app.get('/recipes/review/top_rated', function (req, res) {
     });
 });
 
+/**
+ * This endpoint will grab all the necessary information about a recipe 
+ * with the matching :recipe_id in the recipes table in our database. 
+ * 
+ * @returns {Response} recipe is sent back in JSON format 
+ */
 app.get('/recipe/:recipe_id', function (req, res) {
     var recipe_id = req.params.recipe_id;
     console.log(recipe_id);
@@ -252,6 +281,13 @@ app.get('/recipe/:recipe_id', function (req, res) {
     })
 })
 
+/**
+ * Allows the user to view random recipes when they load the homepage
+ * This endpoint queries the recipes table in our database to find 
+ * :amount of random recipes. 
+ * 
+ * @returns {Response} sends the recipe's results back in JSON format. 
+ */
 app.get('/recipes/random/:amount', function (req, res) {
     var amount = req.params.amount;
     let sql = "SELECT * FROM recipes AS t1 " +
@@ -266,7 +302,15 @@ app.get('/recipes/random/:amount', function (req, res) {
     });
 });
 
-app.get('/recipes/my_recipes', function(req, res) {
+/**
+ * Allows the user to view their recommended/saved recipes on their my recipes page. 
+ * If the cookies are set, grab the user id from the cookies and query the database 
+ * to grab their previously recommended recipes, and send the recipe's results back in JSON format. 
+ * If cookies are not set, send back an empty array
+ * 
+ * @returns {Response} if cookies are set, send the recipe results back in JSON format
+ */
+app.get('/recipes/my_recipes', function (req, res) {
     console.log(req.cookies)
     if (req.cookies.jwtoken) { // jwtoken cookie is set
         try {
@@ -296,6 +340,14 @@ app.get('/recipes/my_recipes', function(req, res) {
     }
 });
 
+/**
+ * Allows the user to be recommended recipes after taking the initial survey.
+ * This endpoint will take the users answers to all the questions, 
+ * query the recipes table in our database that matches the users responses 
+ * and send the recipe's results back in JSON format.
+ * 
+ * @returns {Response} send the recipe's results back in JSON format.
+ */
 app.put('/survey_results/:user_id', function (req, res) {
     var user_id = req.params.user_id;
     console.log(req.body.data);
@@ -409,7 +461,15 @@ app.put('/survey_results/:user_id', function (req, res) {
 
 // v--- New work for multiple recommendations ---v
 
-app.put('/survey_results/save/:recipe_id', function(req, res) {
+/**
+ * After taking the initial survey, this allows a user to save recipes to their my_recipes page. 
+ * If the cookies are set, grab the users Id and save the recipe in the recommend recipes table 
+ * in our database. If cookies are not set; create a user, save the recipe in the recommended recipes 
+ * table and set the cookies to hold a JWT that stores the user’s id. Send back a 200 status. 
+ * 
+ * @returns {Response} Send back a 200 status if no erros occur. 
+ */
+app.put('/survey_results/save/:recipe_id', function (req, res) {
     let results = JSON.parse(req.body.data);
     let vegetarian = results.vegetarian;
     let proteins = results.proteins;
@@ -437,51 +497,28 @@ app.put('/survey_results/save/:recipe_id', function(req, res) {
     // used a timeout to ensure that the functions above run
     //before setting a coookie and sending the results(recommended recipe)
     setTimeout(() => {
-    console.log(returningUser)
-    if (!returningUser) { // will only set the cookies if its a new user taking the survey
-        // cookie set to expire in a year 
-        res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
+        console.log(returningUser)
+        if (!returningUser) { // will only set the cookies if its a new user taking the survey
+            // cookie set to expire in a year 
+            res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
             // save the users preferences in the database 
-        saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
-    }
-    res.sendStatus(200);
-     }, 200)
+            saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
+        }
+        res.sendStatus(200);
+    }, 200)
 
 });
 
-
-//     // grab the recipe ID for the recipe from results and use that to create a user
-// var userRecipeID = results[0]['recipe_id']
-//     // used to know if the person taking the survey is a new user or a returning user.
-// var returningUser = false;
-// if (req.cookies.jwtoken) { // cookies are set. save recomeneded recipe in db  
-//     returningUser = true;
-//     decoded = jwt.verify(req.cookies.jwtoken, secret);
-//     var returnUserID = decoded.userid;
-//     userid = returnUserID;
-//     insertUserReconnemdedRecipe(returnUserID, userRecipeID)
-//     console.log('cookies are set. this is a returning user')
-// }
-// if (!returningUser) { // cookies are not set 
-//     createuser(userRecipeID)
-//     console.log('cookeis are not set. creating a new user in the db')
-// }
-// // used a timeout to ensure that the functions above run
-// //before setting a coookie and sending the results(recommended recipe)
-// setTimeout(() => {
-//     console.log(returningUser)
-//     if (!returningUser) { // will only set the cookies if its a new user taking the survey
-//         // cookie set to expire in a year 
-//         res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
-//             // save the users preferences in the database 
-//         saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
-//     }
-//     res.send(results);
-// }, 200)
-// });
-// });
-
-app.put('/review_results/:recipe_id', function(req, res) {
+/**
+ * Allows a user to review a recipe in their rmy_recipes page.
+ * This endpoint will save their review of a recipe in our database, 
+ * update the users preferences that are saved in our database, and query 
+ * the recipes table for recipes that match the user preferences. 
+ * The recipe's results are sent back in JSON format. 
+ * 
+ * @returns {Response} recipe's results are sent back in JSON format.
+ */
+app.put('/review_results/:recipe_id', function (req, res) {
     console.log('entering the results endpoint')
     var reviewedRecipe_id = req.params.recipe_id
     let results = JSON.parse(req.body.data)
@@ -605,6 +642,12 @@ app.put('/review_results/:recipe_id', function(req, res) {
     })
 });
 
+/**
+ * This endpoint will select the users most recent saved/recommended recipe.
+ * The recipe is sent back in JSON format. 
+ * 
+ * @returns {Response} if cookies are set, ueser most recent recipe is sent back in JSON format. 
+ */
 app.put('/review/user/recent', function (req, res) {
     console.log(req.cookies)
     if (req.cookies.jwtoken) { // jwtoken cookie is set
@@ -622,14 +665,15 @@ app.put('/review/user/recent', function (req, res) {
             });
         } catch (err) {
             // bad token
+            data = []
             console.log("Invalid token")
             // res.status(401).send("Invalid token")
-            res.status(200).send("\n\nGeneric recipes\n\n");
+            res.status(200).send(data);
         }
     } else {
         //cookies are not set and is a new user
-        /** TO DO: tell them to take a survey  */
-        res.status(200).send("\n\nGeneric recipes\n\n");
+        data = []
+        res.status(200).send(data);
     }
 });
 
