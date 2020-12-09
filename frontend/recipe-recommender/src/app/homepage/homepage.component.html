@@ -9,7 +9,7 @@
             <div class="col-sm-3" *ngFor="let recipe of recipes" style="padding-bottom:15px;">
                 <p>{{ recipe.name | uppercase }} </p>
                 <img src="{{ recipe.imageLink }}" class="img-responsive" style="width:70%">
-                <div class="card-footer">
+                <div class="card-footer" style="border-top: 0">
                     <a type="button" class="btn btn-primary" (click)="goToRecipe(recipe.recipe_id)">View Recipe Details</a>
                 </div>
             </div>
