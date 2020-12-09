@@ -3,13 +3,18 @@
     <!--Carousel Wrapper-->
     <div *ngIf="recipes.length != 0" id="multi-item-example" class="carousel slide carousel-multi-item" data-ride="carousel" data-interval="false">
 
-        <div class="slide-desc d-flex justify-content-center" style="color: white;"> Slide {{slideCounter + 1}}  | Recipes {{slideCounter*slideLength + 1}} - {{slideCounter != recipesSmall.length - 1  ? (slideCounter*slideLength + slideLength) : recipes.length}} of {{recipes.length}} </div>
+        <div *ngIf="!(slideLength == 1 || slideCounter*slideLength + 1 == recipes.length)" class="slide-desc d-flex justify-content-center" style="color: white;"> 
+            Slide {{slideCounter + 1}}  | Recipes 
+            {{slideCounter*slideLength + 1}} - {{slideCounter != recipesSmall.length - 1  ? (slideCounter*slideLength + slideLength) : recipes.length}} 
+            of {{recipes.length}} 
+        </div>
+        <div *ngIf="slideLength == 1 || slideCounter*slideLength + 1 == recipes.length" class="slide-desc d-flex justify-content-center" style="color: white;">
+            Slide {{slideCounter + 1}}  | Recipe {{slideCounter*slideLength + 1}} 
+            of {{recipes.length}} 
+        </div>
       <!--Controls-->
         <div class="controls-top d-flex justify-content-center m-2">
             <a class="btn btn-primary mr-2" href="#multi-item-example" [attr.data-slide-to]="slideCounter" (click)="changeCounter('prev');"><fa-icon [icon]="faChevronLeft"></fa-icon></a>
-
-                
-            <!-- <div *ngIf="slideCounter > 3"></div> -->
 
             <div class="btn-group mr-2">
                 <a class="btn btn-primary startThing" *ngIf="slideCounter > 2 && recipesSmall.length > 6" href="#multi-item-example" data-slide-to="0" (click)="changeCounter('first');">1</a>
@@ -23,14 +28,17 @@
                 <a class="btn btn-primary endThing" *ngIf="slideCounter <= recipesSmall.length-4 && recipesSmall.length > 6" href="#multi-item-example" data-slide-to="0" (click)="changeCounter('last');">{{recipesSmall.length}}</a>
             </div>
 
-
             <a class="btn btn-primary mr-2" href="#multi-item-example" [attr.data-slide-to]="slideCounter" (click)="changeCounter('next');"><fa-icon [icon]="faChevronRight"></fa-icon></a>
         </div>
+
         <div class="controls-top  m-2 d-flex justify-content-center">
             <input class="form-control mr-sm-2" type="number" #search placeholder="go to a slide" aria-label="Search" style="width: 5em;" value="1" min="1" [attr.max]="recipesSmall.length">
             <!-- <button class="btn btn-secondary my-2 my-sm-0" id="searchButton" (click)="changeCounter(search.value);">Go</button> -->
-            <a class="btn btn-primary" href="#multi-item-example" [attr.data-slide-to]="search.value - 1" (click)="changeCounter(search.value);">Go to slide</a>
+            <a class="btn btn-primary" href="#multi-item-example" 
+                [attr.data-slide-to]="(search.value - 1 >= 0 ? (search.value - 1 < recipesSmall.length ? search.value - 1 : recipesSmall.length - 1) : 0)" 
+                (click)="changeCounter(search.value - 1);">Go to slide</a>
         </div>
+
         <div class="controls-top m-2 d-flex justify-content-center">
             <input class="form-control mr-sm-2" type="number" #slideL placeholder="Change Slide Length" aria-label="Search" style="width: 5em;" value="1" min="1" max="10">
             <a class="btn btn-primary" href="#multi-item-example" data-slide-to="0" (click)="timeoutSetSlideLength(slideL.value);" >Change # recipes per slide</a>
@@ -104,6 +112,7 @@
             </div>
         </div>
     </div>
+
 </div>
 <div *ngIf="loading" class="d-flex justify-content-center mt-">
     <div class="spinner-border" role="status">
