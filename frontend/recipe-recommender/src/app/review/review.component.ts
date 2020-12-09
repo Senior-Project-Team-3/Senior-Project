@@ -182,7 +182,7 @@ export class ReviewComponent implements OnInit {
     this.reviewSurveyOptions[10] = ['15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', '4-hours-or-less'];
 
 
-    // Always this for review survey
+    // Filling arrays to determain questoin type
     this.radioIndicators =    [true, true, false, true, true, false, true, true, false, false, true]
     this.textAreaIndicators = [false, false, true, false, false, true, false, false, false, false, false]
   }
@@ -202,13 +202,14 @@ export class ReviewComponent implements OnInit {
     this.radioSelected = undefined;
     this.textAreaValue = null;
     this.errorMessage = undefined;
+    
     // Survey complete
     if (this.currentQuestion == this.reviewSurveyQuestions.length) {
-      // Finish the survey
       this.completeSurvey();
       return;
     }   
-
+    
+    // Completes survey if nothing the user doesn't want to change their preferrences
     if(this.currentQuestion == 8 && this.reviewSurveyAnswers.prefChange == 'No'){
       this.completeSurvey();
       return;
@@ -221,7 +222,7 @@ export class ReviewComponent implements OnInit {
       this.isRadio = false;
     }
 
-    // Check if next question is single or multiple choice
+    // Check if next question is a text area
     if (this.textAreaIndicators[this.currentQuestion]) {
       this.isTextArea = true;
     } else {
@@ -242,6 +243,7 @@ export class ReviewComponent implements OnInit {
     this.getNextQuestion();
   }
 
+  // Place checkbox selection into answers array, continue to next question
   submitCheckbox() {
     let answersList = this.reviewSurveyOptions[this.currentQuestion].filter(item => item.checked);
     let answers = [];
@@ -281,10 +283,6 @@ export class ReviewComponent implements OnInit {
         console.log(data);
         this.recommendedRecipe = data;
       });
-    } else {
-      // this.dataService.putSurveyResults(this.returnSurveyAnswers, 10).subscribe((data: any[]) => {
-      //   console.log(data);
-      // });
     }
   }
 
