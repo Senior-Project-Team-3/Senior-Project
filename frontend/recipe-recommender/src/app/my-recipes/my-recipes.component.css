@@ -2,6 +2,7 @@
     background-color: orange;
 }
 
+
 /* .carousel{
     height: 500px;
 } */
@@ -16,4 +17,11 @@
 
 #noRecipes {
     height: auto;
+}
+
+#deleteButton {
+    position: absolute;
+    top: 2%;
+    left: 87%;
+    width: 10%;
 }

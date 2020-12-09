@@ -8,7 +8,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { request } = require('express');
 // used as a fail safe when creating a user
-var userid = "shouild be overwritten"; 
+var userid = "shouild be overwritten";
 
 app.use(express.json())
 app.use(cors({
@@ -28,7 +28,7 @@ const secret = process.env.ACCESS_TOKEN_SECRET
  * 
  * @param {Number} userRecipeID the recipe id from the recipe that was recommended to the user. 
  */
-createuser = function (userRecipeID) {
+createuser = function(userRecipeID) {
     sql1 = 'CALL createUser(' + userRecipeID + ')';
     db.query(sql1, (err, resultsForUser, fields) => {
         if (err) {
@@ -45,7 +45,7 @@ createuser = function (userRecipeID) {
  * 
  * @returns {jwtoken} a jwt signed token.
  */
-createjwt = function () {
+createjwt = function() {
     console.log(userid)
     return jwt.sign({ "userid": userid }, secret);
 }
@@ -56,7 +56,7 @@ createjwt = function () {
  * @param {String} returningUserId the users id stored in the cookies.
  * @param {Number} userRecipeID tthe recipe id from the recipe that was recommended to the user. 
  */
-insertUserReconnemdedRecipe = function (returningUserId, userRecipeID) {
+insertUserReconnemdedRecipe = function(returningUserId, userRecipeID) {
     sql1 = 'CALL insertUserAndRecipe(' + returningUserId + ',' + userRecipeID + ');';
     db.query(sql1, (err, resultsForUser, fields) => {
         if (err) {
@@ -79,7 +79,7 @@ insertUserReconnemdedRecipe = function (returningUserId, userRecipeID) {
  * @param {String} intolerant the users answer to the intolerant question from the survey
  * @param {Object} intolerances An array of selected intolerances by the user 
  */
-saveUserPreferences = function (userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances) {
+saveUserPreferences = function(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances) {
     console.log("User: " + userid); /**user id */
     console.log("Vegetarian?: " + vegetarian); // can be yes or no /**queston ID: 1 */
     console.log("Proteins: " + proteins); //list of proteins , could be null /**queston ID: 2 */
@@ -126,20 +126,20 @@ saveUserPreferences = function (userid, vegetarian, proteins, cuisines, cookTime
  * @param {Object} newProtein An array that has the user's new prefered cusines  
  * @param {String} newCookTime the user's new prefered cook time
  */
-updateUserPreferences = function (userIDCookies, newCuisine, newProtein, newCookTime) {
+updateUserPreferences = function(userIDCookies, newCuisine, newProtein, newCookTime) {
     newCuisine = objToString(newCuisine)
-    //newPortein = objToString(newProtein).split(":")
+        //newPortein = objToString(newProtein).split(":")
     console.log("NEW_CUSINE: " + newCuisine)
     setTimeout(() => {
         sql = "CALL updateUserPreferences(" + userIDCookies + ',' + JSON.stringify(newCuisine) + ',' +
             JSON.stringify(newProtein) + ',' + JSON.stringify(newCookTime) + ")";
         console.log(sql)
-        // db.query(sql, (err, resultsForUser, fields) => {
-        //     if (err) {
-        //         throw err;
-        //     }
-        //     console.log("Writing user preferences data for user in db")
-        // });
+            // db.query(sql, (err, resultsForUser, fields) => {
+            //     if (err) {
+            //         throw err;
+            //     }
+            //     console.log("Writing user preferences data for user in db")
+            // });
 
     }, 200)
 }
@@ -153,7 +153,7 @@ updateUserPreferences = function (userIDCookies, newCuisine, newProtein, newCook
  * @param {String} improvement any extra ingreditnes. etc. used when following a recipe 
  * @param {String} recommend a reason why a user would recommened this recipe to their friend or not 
  */
-saveUserRecipeReview = function (reviewedRecipe_id, rating, substitutes, improvement, recommend) {
+saveUserRecipeReview = function(reviewedRecipe_id, rating, substitutes, improvement, recommend) {
 
 }
 
@@ -222,7 +222,7 @@ app.get('/clear', (req, res) => {
  * 
  * @returns {Response} send recipts results back in JSON format
  */
-app.get('/recipes/:recipe_name/search', function (req, res) {
+app.get('/recipes/:recipe_name/search', function(req, res) {
     var recipe_name = req.params.recipe_name;
     console.log(req.params.recipe_name)
     let sql = "SELECT * FROM recipe WHERE recipe_name = '" + recipe_name + "'";
@@ -241,7 +241,7 @@ app.get('/recipes/:recipe_name/search', function (req, res) {
  * 
  * @returns {Response} send back the recipe's back in JSON format 
  */
-app.get('/recipes/review/top_rated', function (req, res) {
+app.get('/recipes/review/top_rated', function(req, res) {
     let sql = "select * from recipes " +
         "INNER JOIN nutrition " +
         "ON recipes.recipe_id = nutrition.recipe_id " +
@@ -263,7 +263,7 @@ app.get('/recipes/review/top_rated', function (req, res) {
  * 
  * @returns {Response} recipe is sent back in JSON format 
  */
-app.get('/recipe/:recipe_id', function (req, res) {
+app.get('/recipe/:recipe_id', function(req, res) {
     var recipe_id = req.params.recipe_id;
     console.log(recipe_id);
     console.log(req.params.recipe_id)
@@ -289,7 +289,7 @@ app.get('/recipe/:recipe_id', function (req, res) {
  * 
  * @returns {Response} sends the recipe's results back in JSON format. 
  */
-app.get('/recipes/random/:amount', function (req, res) {
+app.get('/recipes/random/:amount', function(req, res) {
     var amount = req.params.amount;
     let sql = "SELECT * FROM recipes AS t1 " +
         "JOIN (SELECT recipe_id FROM recipes ORDER BY RAND() LIMIT " + amount + " ) as t2 " +
@@ -311,7 +311,7 @@ app.get('/recipes/random/:amount', function (req, res) {
  * 
  * @returns {Response} if cookies are set, send the recipe results back in JSON format
  */
-app.get('/recipes/my_recipes', function (req, res) {
+app.get('/recipes/my_recipes', function(req, res) {
     console.log(req.cookies)
     if (req.cookies.jwtoken) { // jwtoken cookie is set
         try {
@@ -330,7 +330,7 @@ app.get('/recipes/my_recipes', function (req, res) {
             // bad token
             data = []
             console.log("Invalid token")
-            // res.status(401).send("Invalid token")
+                // res.status(401).send("Invalid token")
             res.status(200).send(data);
         }
     } else {
@@ -349,7 +349,7 @@ app.get('/recipes/my_recipes', function (req, res) {
  * 
  * @returns {Response} send the recipe's results back in JSON format.
  */
-app.put('/survey_results/:user_id', function (req, res) {
+app.put('/survey_results/:user_id', function(req, res) {
     var user_id = req.params.user_id;
     console.log(req.body.data);
     let results = JSON.parse(req.body.data);
@@ -470,7 +470,7 @@ app.put('/survey_results/:user_id', function (req, res) {
  * 
  * @returns {Response} Send back a 200 status if no erros occur. 
  */
-app.put('/survey_results/save/:recipe_id', function (req, res) {
+app.put('/survey_results/save/:recipe_id', function(req, res) {
     let results = JSON.parse(req.body.data);
     let vegetarian = results.vegetarian;
     let proteins = results.proteins;
@@ -502,7 +502,7 @@ app.put('/survey_results/save/:recipe_id', function (req, res) {
         if (!returningUser) { // will only set the cookies if its a new user taking the survey
             // cookie set to expire in a year 
             res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
-            // save the users preferences in the database 
+                // save the users preferences in the database 
             saveUserPreferences(userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances)
         }
         res.sendStatus(200);
@@ -519,7 +519,7 @@ app.put('/survey_results/save/:recipe_id', function (req, res) {
  * 
  * @returns {Response} recipe's results are sent back in JSON format.
  */
-app.put('/review_results/:recipe_id', function (req, res) {
+app.put('/review_results/:recipe_id', function(req, res) {
     console.log('entering the results endpoint')
     var reviewedRecipe_id = req.params.recipe_id
     let results = JSON.parse(req.body.data)
@@ -649,7 +649,7 @@ app.put('/review_results/:recipe_id', function (req, res) {
  * 
  * @returns {Response} if cookies are set, ueser most recent recipe is sent back in JSON format. 
  */
-app.put('/review/user/recent', function (req, res) {
+app.put('/review/user/recent', function(req, res) {
     console.log(req.cookies)
     if (req.cookies.jwtoken) { // jwtoken cookie is set
         try {
@@ -668,7 +668,7 @@ app.put('/review/user/recent', function (req, res) {
             // bad token
             data = []
             console.log("Invalid token")
-            // res.status(401).send("Invalid token")
+                // res.status(401).send("Invalid token")
             res.status(200).send(data);
         }
     } else {
@@ -676,6 +676,22 @@ app.put('/review/user/recent', function (req, res) {
         data = []
         res.status(200).send(data);
     }
+});
+
+app.delete('/recipes/my_recipes/:recipe_id', function(req, res) {
+    let recipeID = req.params.recipe_id;
+    decoded = jwt.verify(req.cookies.jwtoken, secret);
+    var userID = decoded.userid;
+    sql = 'CALL deleteUserRecipe(' + userID + ', ' + recipeID + ')';
+    db.query(sql, (err, results) => {
+        if (err) {
+            res.send("404");
+            throw err;
+        }
+        console.log(results);
+        res.send(results);
+
+    })
 });
 
 app.listen(3000, () => console.log("Server Connected on Port 3000"))
