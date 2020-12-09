@@ -36,6 +36,7 @@ export class ReviewComponent implements OnInit {
   isTextArea: boolean;
   // Holds the options selected by the user when they finish a question
   radioSelected: any;
+  // Holds the value of the text area submitted by the user
   textAreaValue: any;
   // Indicate end of survey
   isComplete: boolean;
@@ -201,24 +202,16 @@ export class ReviewComponent implements OnInit {
     this.radioSelected = undefined;
     this.textAreaValue = null;
     this.errorMessage = undefined;
-    if (this.isInitial) {
-      // Survey complete
-      if (this.currentQuestion == this.reviewSurveyQuestions.length) {
-        // Finish the survey
-        this.completeSurvey();
-        return;
-      }   
+    // Survey complete
+    if (this.currentQuestion == this.reviewSurveyQuestions.length) {
+      // Finish the survey
+      this.completeSurvey();
+      return;
+    }   
 
-      if(this.currentQuestion == 8 && this.reviewSurveyAnswers.prefChange == 'No'){
-        this.completeSurvey();
-        return;
-      }
-    // } else {
-    //   if (this.currentQuestion == this.reviewSurveyQuestions.length) {
-    //     // Finish the survey
-    //     this.completeSurvey();
-    //     return;
-    //   }  
+    if(this.currentQuestion == 8 && this.reviewSurveyAnswers.prefChange == 'No'){
+      this.completeSurvey();
+      return;
     }
 
     // Check if next question is single or multiple choice
@@ -238,45 +231,14 @@ export class ReviewComponent implements OnInit {
 
   // Place radio selection into answers array, continue to next question
   submitRadio() {
-      console.log(this.radioSelected);
-      if (this.radioSelected == undefined) {
-        this.errorMessage = "You must select an option before continuing";
-        return;
-      }
-      if (this.isInitial) {
-        // this.initialSurveyAnswers[this.currentQuestion] = this.radioSelected;
-        if (this.currentQuestion == 0) {
-          this.reviewSurveyAnswers.rating = this.radioSelected;
-        }
-        if (this.currentQuestion == 1) {
-          this.reviewSurveyAnswers.realCookTime = this.radioSelected;
-        }
-        // if (this.currentQuestion == 2) {
-        //   this.reviewSurveyAnswers.substitutes = this.radioSelected;
-        // }
-        if (this.currentQuestion == 3) {
-          this.reviewSurveyAnswers.prefMatch = this.radioSelected;
-        }
-        if (this.currentQuestion == 4) {
-          this.reviewSurveyAnswers.difficulty = this.radioSelected;
-        }
-        if (this.currentQuestion == 5) {
-          this.reviewSurveyAnswers.improvement = this.radioSelected;
-        }
-        if (this.currentQuestion == 6) {
-          this.reviewSurveyAnswers.recommend = this.radioSelected;
-        }
-        // Completes the survey if user answers no
-        if (this.currentQuestion == 7) {
-          this.reviewSurveyAnswers.prefChange = this.radioSelected;
-        }
-        if (this.currentQuestion == 10) {
-          this.reviewSurveyAnswers.newCookTime = this.radioSelected;
-          /*TODO: call new recipe recommendation */
-        }
-      } else {
-        this.returnSurveyAnswers[this.currentQuestion] = this.radioSelected;
-      }
+    console.log(this.radioSelected);
+    if (this.radioSelected == undefined) {
+      this.errorMessage = "You must select an option before continuing";
+      return;
+    }
+    
+    this.returnSurveyAnswers[this.currentQuestion] = this.radioSelected;
+
     this.getNextQuestion();
   }
 
@@ -291,41 +253,22 @@ export class ReviewComponent implements OnInit {
       return;
     }
     console.log(answers);
-    if (this.isInitial) {
-      // this.initialSurveyAnswers[this.currentQuestion] = answers;
-      if (this.currentQuestion == 8) {
-        if (answers.includes("No Preference")) {
-          this.reviewSurveyAnswers.newCuisine = ["No Preference"];
-        } else {
-          this.reviewSurveyAnswers.newCuisine = answers;
-        }
+
+    if (this.currentQuestion == 8 || 9) {
+      if (answers.includes("No Preference")) {
+        this.reviewSurveyAnswers[this.currentQuestion] = ["No Preference"];
+      } else {
+        this.reviewSurveyAnswers[this.currentQuestion] = answers;
       }
-      if (this.currentQuestion == 9) {
-        if (answers.includes("No Preference")) {
-          this.reviewSurveyAnswers.newProtien = ["No Preference"];
-        } else {
-          this.reviewSurveyAnswers.newProtien = answers;
-        }
-      }
-    } else {
-      this.returnSurveyAnswers[this.currentQuestion] = answers;
     }
+
     this.getNextQuestion();
   }
 
+  //This function is used to get and assign text area answers to the reviewSurveyAnswers array
   submitTextArea() {
-    //var textAreaResponse = document.getElementById('textarea')[0].value
-    //var textAreaValue = textAreaResponse.value
-
-    if (this.currentQuestion == 2) {
-      this.reviewSurveyAnswers.substitutes = this.textAreaValue
-      console.log(this.reviewSurveyAnswers.substitutes)
-    }
-
-    if (this.currentQuestion == 5) {
-      this.reviewSurveyAnswers.improvement = this.textAreaValue
-      console.log(this.reviewSurveyAnswers.improvement)
-    }
+    this.reviewSurveyAnswers[this.currentQuestion] = this.textAreaValue
+    console.log(this.reviewSurveyAnswers[this.currentQuestion])   
 
     this.getNextQuestion()
   }
