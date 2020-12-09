@@ -253,25 +253,15 @@ export class ReviewComponent implements OnInit {
       return;
     }
     console.log(answers);
-    if (this.isInitial) {
-      // this.initialSurveyAnswers[this.currentQuestion] = answers;
-      if (this.currentQuestion == 8) {
-        if (answers.includes("No Preference")) {
-          this.reviewSurveyAnswers.newCuisine = ["No Preference"];
-        } else {
-          this.reviewSurveyAnswers.newCuisine = answers;
-        }
+
+    if (this.currentQuestion == 8 || 9) {
+      if (answers.includes("No Preference")) {
+        this.reviewSurveyAnswers[this.currentQuestion] = ["No Preference"];
+      } else {
+        this.reviewSurveyAnswers[this.currentQuestion] = answers;
       }
-      if (this.currentQuestion == 9) {
-        if (answers.includes("No Preference")) {
-          this.reviewSurveyAnswers.newProtien = ["No Preference"];
-        } else {
-          this.reviewSurveyAnswers.newProtien = answers;
-        }
-      }
-    } else {
-      this.returnSurveyAnswers[this.currentQuestion] = answers;
     }
+
     this.getNextQuestion();
   }
 
