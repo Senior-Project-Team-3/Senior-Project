@@ -8,7 +8,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { request } = require('express');
 // used as a fail safe when creating a user
-var userid = "shouild be overwritten"; 
+var userid = "shouild be overwritten";
 
 app.use(express.json())
 app.use(cors({
@@ -106,7 +106,6 @@ saveUserPreferences = function (userid, vegetarian, proteins, cuisines, cookTime
         sql1 = "CALL saveUserPreferences(" + userid + ',' + JSON.stringify(vegetarian) + ',' + JSON.stringify(proteins) + ',' +
             JSON.stringify(cuisines) + ',"' + cookTime + '",' + JSON.stringify(appliances) + ',' + JSON.stringify(intolerant) + ',' +
             JSON.stringify(intolerances) + ")";
-        console.log(sql1)
         db.query(sql1, (err, resultsForUser, fields) => {
             if (err) {
                 throw err;
@@ -128,18 +127,16 @@ saveUserPreferences = function (userid, vegetarian, proteins, cuisines, cookTime
  */
 updateUserPreferences = function (userIDCookies, newCuisine, newProtein, newCookTime) {
     newCuisine = objToString(newCuisine)
-    //newPortein = objToString(newProtein).split(":")
-    console.log("NEW_CUSINE: " + newCuisine)
+    newProtein = objToString(newProtein)
     setTimeout(() => {
         sql = "CALL updateUserPreferences(" + userIDCookies + ',' + JSON.stringify(newCuisine) + ',' +
             JSON.stringify(newProtein) + ',' + JSON.stringify(newCookTime) + ")";
-        console.log(sql)
-        // db.query(sql, (err, resultsForUser, fields) => {
-        //     if (err) {
-        //         throw err;
-        //     }
-        //     console.log("Writing user preferences data for user in db")
-        // });
+        db.query(sql, (err, resultsForUser, fields) => {
+            if (err) {
+                throw err;
+            }
+            console.log("updatting user preferences")
+        });
 
     }, 200)
 }
@@ -153,7 +150,35 @@ updateUserPreferences = function (userIDCookies, newCuisine, newProtein, newCook
  * @param {String} improvement any extra ingreditnes. etc. used when following a recipe 
  * @param {String} recommend a reason why a user would recommened this recipe to their friend or not 
  */
-saveUserRecipeReview = function (reviewedRecipe_id, rating, substitutes, improvement, recommend) {
+saveUserRecipeReview = function (reviewedRecipe_id, userIDCookies, rating, substitutes, improvement, recommend, difficulty) {
+    reviewString = ""
+    reviewString += "I rated this recipe a " + rating + " out of 5. The recipe was " + difficulty + " to follow "
+    if (recommend.includes('Yes')) {
+        reviewString += " I would recommend this recipe to a friend"
+    } else {
+        reviewString += "I would not recommend this recipe to a friend"
+    }
+    if (substitutes) {
+        reviewString += substitutes
+    }
+    if (improvement) {
+        reviewString += improvement
+    }
+
+    todaysDate = getTodaysDateInCorrectFormat()
+
+    setTimeout(() => {
+        sql = "CALL saveUserReview(" + reviewedRecipe_id + ',' + userIDCookies + ',' + JSON.stringify(reviewString) + ',' +
+            JSON.stringify(rating) + ',' + JSON.stringify(todaysDate) + ")";
+        db.query(sql, (err, results) => {
+            if (err) {
+                throw err;
+            }
+            console.log("saving user review of recipe")
+        });
+    }, 200)
+
+
 
 }
 
@@ -171,6 +196,21 @@ function objToString(obj) {
         }
     }
     return str;
+}
+
+/**
+ * this function gets the current date and formates it
+ * to match the date formatting in the database
+ * 
+ * @returns {String} formatted date to match the database
+ */
+function getTodaysDateInCorrectFormat() {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var yyyy = today.getFullYear();
+    today = yyyy + '-' + mm + '-' + dd;
+    return today
 }
 
 require('dotenv').config();
@@ -525,16 +565,17 @@ app.put('/review_results/:recipe_id', function (req, res) {
     let results = JSON.parse(req.body.data)
     decoded = jwt.verify(req.cookies.jwtoken, secret);
     var userIDCookies = decoded.userid;
+    console.log(results)
 
     let rating = results.rating // used for user recipe review
     let realCookTime = results.realCookTime
-    let substitutes = results.substitutes // used for user recipe review
+    let substitutes = results.substitutes // used for user recipe review can be null 
     let prefMatch = results.prefMatch
     let difficulty = results.difficulty
-    let improvement = results.improvement // used for user recipe review
+    let improvement = results.improvement // used for user recipe review can be null 
     let recommend = results.recommend // used for user recipe review 
     let prefChange = results.prefChange // if yes: update user preferences if no: just query DB to recommmend recipe 
-    let newProtein = 'testProtein' //  used for updating user preferences 
+    let newProtein = results.newProtein //  used for updating user preferences 
     let newCuisine = results.newCuisine //  used for updating user preferences 
     let newCookTime = results.newCookTime //  used for updating user preferences 
 
@@ -552,8 +593,8 @@ app.put('/review_results/:recipe_id', function (req, res) {
     if (prefChange === 'Yes') {
         updateUserPreferences(userIDCookies, newCuisine, newProtein, newCookTime);
     }
+    saveUserRecipeReview(reviewedRecipe_id, userIDCookies, rating, substitutes, improvement, recommend, difficulty)
     setTimeout(() => {
-        saveUserRecipeReview(reviewedRecipe_id, rating, substitutes, improvement, recommend)
         let selectUserPreferencesQuery = 'call selectUserPreferences(' + userIDCookies + ');'
         let selectQuery = db.query(selectUserPreferencesQuery, (err, UserResults) => {
             if (err) {
@@ -636,8 +677,9 @@ app.put('/review_results/:recipe_id', function (req, res) {
                         throw err;
                     }
                     res.send(recResults)
+                    console.log("recomneding a user recipes based of prefs")
                 })
-            }, 500)
+            }, 750)
 
         })
     })
