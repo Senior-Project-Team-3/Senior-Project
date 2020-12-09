@@ -19,7 +19,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SearchResultsComponent } from './search-results/search-results.component';
 =======
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
->>>>>>> 13ef2cc2b6bbfdbe84f12e2b917822a142e42532
+>>>>>>> 08028dd13d39c199fc30bc439ebd4071fce999a4
 
 @NgModule({
   declarations: [

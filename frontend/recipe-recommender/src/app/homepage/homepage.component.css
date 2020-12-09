@@ -15,6 +15,13 @@ p {
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
+#goToButton {
+    width: 70%;
+    color: white;
+    background-color: #ec6941;
+    border: none;
+}
+
 button {
     width: 150px;
     color: white;

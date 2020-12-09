@@ -8,7 +8,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { request } = require('express');
 // used as a fail safe when creating a user
-var userid = "shouild be overwritten"; 
+var userid = "shouild be overwritten";
 
 app.use(express.json())
 app.use(cors({
@@ -36,7 +36,6 @@ createuser = function (userRecipeID) {
         }
         console.log(userid)
         userid = JSON.stringify(resultsForUser[0][0]).split(':')[1].split('}')[0]
-        console.log("Writing survey data into database and creating a user")
     });
 }
 
@@ -80,14 +79,6 @@ insertUserReconnemdedRecipe = function (returningUserId, userRecipeID) {
  * @param {Object} intolerances An array of selected intolerances by the user 
  */
 saveUserPreferences = function (userid, vegetarian, proteins, cuisines, cookTime, appliances, intolerant, intolerances) {
-    console.log("User: " + userid); /**user id */
-    console.log("Vegetarian?: " + vegetarian); // can be yes or no /**queston ID: 1 */
-    console.log("Proteins: " + proteins); //list of proteins , could be null /**queston ID: 2 */
-    console.log("Cuisines: " + cuisines); //list of cusines  /**queston ID: 3 */
-    console.log("Cook time: " + cookTime); /**queston ID: 4 */
-    console.log("Appliances: " + appliances); // list of appliances /**queston ID: 5 */
-    console.log("Intolerant?: " + intolerant); // yes or no /**queston ID: 6 */
-    console.log("Intolerances: " + intolerances); // if intolreant is yes, list of inrolerances  /**queston ID: 7 */
 
     if (intolerant === 'No') {
         intolerances = 'No'
@@ -106,7 +97,6 @@ saveUserPreferences = function (userid, vegetarian, proteins, cuisines, cookTime
         sql1 = "CALL saveUserPreferences(" + userid + ',' + JSON.stringify(vegetarian) + ',' + JSON.stringify(proteins) + ',' +
             JSON.stringify(cuisines) + ',"' + cookTime + '",' + JSON.stringify(appliances) + ',' + JSON.stringify(intolerant) + ',' +
             JSON.stringify(intolerances) + ")";
-        console.log(sql1)
         db.query(sql1, (err, resultsForUser, fields) => {
             if (err) {
                 throw err;
@@ -128,18 +118,16 @@ saveUserPreferences = function (userid, vegetarian, proteins, cuisines, cookTime
  */
 updateUserPreferences = function (userIDCookies, newCuisine, newProtein, newCookTime) {
     newCuisine = objToString(newCuisine)
-    //newPortein = objToString(newProtein).split(":")
-    console.log("NEW_CUSINE: " + newCuisine)
+    newProtein = objToString(newProtein)
     setTimeout(() => {
         sql = "CALL updateUserPreferences(" + userIDCookies + ',' + JSON.stringify(newCuisine) + ',' +
             JSON.stringify(newProtein) + ',' + JSON.stringify(newCookTime) + ")";
-        console.log(sql)
-        // db.query(sql, (err, resultsForUser, fields) => {
-        //     if (err) {
-        //         throw err;
-        //     }
-        //     console.log("Writing user preferences data for user in db")
-        // });
+        db.query(sql, (err, resultsForUser, fields) => {
+            if (err) {
+                throw err;
+            }
+            console.log("updatting user preferences")
+        });
 
     }, 200)
 }
@@ -153,7 +141,34 @@ updateUserPreferences = function (userIDCookies, newCuisine, newProtein, newCook
  * @param {String} improvement any extra ingreditnes. etc. used when following a recipe 
  * @param {String} recommend a reason why a user would recommened this recipe to their friend or not 
  */
-saveUserRecipeReview = function (reviewedRecipe_id, rating, substitutes, improvement, recommend) {
+saveUserRecipeReview = function (reviewedRecipe_id, userIDCookies, rating, substitutes, improvement, recommend, difficulty) {
+    reviewString = ""
+    reviewString += "I rated this recipe a " + rating + " out of 5. The recipe was " + difficulty + " to follow "
+    if (recommend.includes('Yes')) {
+        reviewString += " I would recommend this recipe to a friend"
+    } else {
+        reviewString += "I would not recommend this recipe to a friend"
+    }
+    if (substitutes) {
+        reviewString += substitutes
+    }
+    if (improvement) {
+        reviewString += improvement
+    }
+
+    todaysDate = getTodaysDateInCorrectFormat()
+
+    setTimeout(() => {
+        sql = "CALL saveUserReview(" + reviewedRecipe_id + ',' + userIDCookies + ',' + JSON.stringify(reviewString) + ',' +
+            JSON.stringify(rating) + ',' + JSON.stringify(todaysDate) + ")";
+        db.query(sql, (err, results) => {
+            if (err) {
+                throw err;
+            }
+        });
+    }, 200)
+
+
 
 }
 
@@ -171,6 +186,21 @@ function objToString(obj) {
         }
     }
     return str;
+}
+
+/**
+ * this function gets the current date and formates it
+ * to match the date formatting in the database
+ * 
+ * @returns {String} formatted date to match the database
+ */
+function getTodaysDateInCorrectFormat() {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var yyyy = today.getFullYear();
+    today = yyyy + '-' + mm + '-' + dd;
+    return today
 }
 
 require('dotenv').config();
@@ -230,7 +260,6 @@ app.get('/recipes/search-results/:str', function (req, res) {
         if (err) {
             throw err;
         }
-        console.log(results);
         res.send(results);
     })
 })
@@ -252,7 +281,6 @@ app.get('/recipes/review/top_rated', function (req, res) {
         if (err) {
             throw err;
         }
-        console.log(results);
         res.send(results);
     });
 });
@@ -265,7 +293,6 @@ app.get('/recipes/review/top_rated', function (req, res) {
  */
 app.get('/recipe/:recipe_id', function (req, res) {
     var recipe_id = req.params.recipe_id;
-    console.log(recipe_id);
     console.log(req.params.recipe_id)
     let sql = "SELECT * FROM recipes " +
         "INNER JOIN nutrition " +
@@ -277,7 +304,6 @@ app.get('/recipe/:recipe_id', function (req, res) {
         if (err) {
             throw err;
         }
-        console.log(results);
         res.send(results);
     })
 })
@@ -298,7 +324,6 @@ app.get('/recipes/random/:amount', function (req, res) {
         if (err) {
             throw err;
         }
-        console.log(results);
         res.send(results);
     });
 });
@@ -329,7 +354,6 @@ app.get('/recipes/my_recipes', function (req, res) {
         } catch (err) {
             // bad token
             data = []
-            console.log("Invalid token")
             // res.status(401).send("Invalid token")
             res.status(200).send(data);
         }
@@ -353,7 +377,6 @@ app.put('/survey_results/:user_id', function (req, res) {
     var user_id = req.params.user_id;
     console.log(req.body.data);
     let results = JSON.parse(req.body.data);
-    // console.log(results);
     // This is for initial survey so far...
     let vegetarian = results.vegetarian;
     let proteins = results.proteins;
@@ -381,7 +404,6 @@ app.put('/survey_results/:user_id', function (req, res) {
             let splitProteins = String(proteins).split(',');
             for (let i = 0; i < splitProteins.length; i++) {
                 let element = splitProteins[i];
-                // console.log(element);
                 if (i == splitProteins.length - 1) {
                     sql += "mealmateSQL.recipes.ingredients like \"%" + element.toLowerCase() + "%\" AND "
                 } else {
@@ -394,7 +416,6 @@ app.put('/survey_results/:user_id', function (req, res) {
         let splitCuisines = String(cuisines).split(',');
         for (let i = 0; i < splitCuisines.length; i++) {
             let element = splitCuisines[i];
-            // console.log(element);
             if (i == splitCuisines.length - 1) {
                 sql += "mealmateSQL.recipes.tags like \"%" + element.toLowerCase() + "%\" AND "
             } else {
@@ -455,7 +476,6 @@ app.put('/survey_results/:user_id', function (req, res) {
         if (err) {
             throw err;
         }
-        console.log(results)
         res.send(results);
     });
 });
@@ -489,11 +509,9 @@ app.put('/survey_results/save/:recipe_id', function (req, res) {
         var returnUserID = decoded.userid;
         userid = returnUserID;
         insertUserReconnemdedRecipe(returnUserID, userRecipeID)
-        console.log('cookies are set. this is a returning user')
     }
     if (!returningUser) { // cookies are not set 
         createuser(userRecipeID)
-        console.log('cookeis are not set. creating a new user in the db')
     }
     // used a timeout to ensure that the functions above run
     //before setting a coookie and sending the results(recommended recipe)
@@ -520,40 +538,28 @@ app.put('/survey_results/save/:recipe_id', function (req, res) {
  * @returns {Response} recipe's results are sent back in JSON format.
  */
 app.put('/review_results/:recipe_id', function (req, res) {
-    console.log('entering the results endpoint')
     var reviewedRecipe_id = req.params.recipe_id
     let results = JSON.parse(req.body.data)
     decoded = jwt.verify(req.cookies.jwtoken, secret);
     var userIDCookies = decoded.userid;
 
-    let rating = results.rating // used for user recipe review
+    let rating = results.rating 
     let realCookTime = results.realCookTime
-    let substitutes = results.substitutes // used for user recipe review
+    let substitutes = results.substitutes 
     let prefMatch = results.prefMatch
     let difficulty = results.difficulty
-    let improvement = results.improvement // used for user recipe review
-    let recommend = results.recommend // used for user recipe review 
-    let prefChange = results.prefChange // if yes: update user preferences if no: just query DB to recommmend recipe 
-    let newProtein = 'testProtein' //  used for updating user preferences 
-    let newCuisine = results.newCuisine //  used for updating user preferences 
-    let newCookTime = results.newCookTime //  used for updating user preferences 
-
-    console.log("Rating: " + rating)
-    console.log("Real Cook Time: " + realCookTime)
-    console.log("Substitutes: " + substitutes)
-    console.log("Preferences Match: " + prefMatch)
-    console.log("Difficulty: " + difficulty)
-    console.log("Improvement: " + improvement)
-    console.log("Recommend: " + recommend)
-    console.log("Preference Change: " + prefChange)
-    console.log("New Cuisine: " + newCuisine)
-    console.log("New Cook Time: " + newCookTime)
+    let improvement = results.improvement 
+    let recommend = results.recommend  
+    let prefChange = results.prefChange 
+    let newProtein = results.newProtein 
+    let newCuisine = results.newCuisine 
+    let newCookTime = results.newCookTime 
 
     if (prefChange === 'Yes') {
         updateUserPreferences(userIDCookies, newCuisine, newProtein, newCookTime);
     }
+    saveUserRecipeReview(reviewedRecipe_id, userIDCookies, rating, substitutes, improvement, recommend, difficulty)
     setTimeout(() => {
-        saveUserRecipeReview(reviewedRecipe_id, rating, substitutes, improvement, recommend)
         let selectUserPreferencesQuery = 'call selectUserPreferences(' + userIDCookies + ');'
         let selectQuery = db.query(selectUserPreferencesQuery, (err, UserResults) => {
             if (err) {
@@ -636,8 +642,9 @@ app.put('/review_results/:recipe_id', function (req, res) {
                         throw err;
                     }
                     res.send(recResults)
+                    console.log("recomneding a user recipes based of prefs")
                 })
-            }, 500)
+            }, 750)
 
         })
     })
@@ -647,7 +654,7 @@ app.put('/review_results/:recipe_id', function (req, res) {
  * This endpoint will select the users most recent saved/recommended recipe.
  * The recipe is sent back in JSON format. 
  * 
- * @returns {Response} if cookies are set, ueser most recent recipe is sent back in JSON format. 
+ * @returns {Response} if cookies are set, uesers most recent recipe is sent back in JSON format. 
  */
 app.put('/review/user/recent', function (req, res) {
     console.log(req.cookies)
@@ -676,6 +683,29 @@ app.put('/review/user/recent', function (req, res) {
         data = []
         res.status(200).send(data);
     }
+});
+
+/**
+ * This endpoint will delete a recipe from the users my recipes page
+ * and remove the recipe from the recommened recipes table in
+ * our database
+ * 
+ * @returns {Response} sends back sql packet message that notifes the frontend if 
+ *                     the row was affected or not 
+ */
+app.delete('/recipes/my_recipes/:recipe_id', function (req, res) {
+    let recipeID = req.params.recipe_id;
+    decoded = jwt.verify(req.cookies.jwtoken, secret);
+    var userID = decoded.userid;
+    sql = 'CALL deleteUserRecipe(' + userID + ', ' + recipeID + ')';
+    db.query(sql, (err, results) => {
+        if (err) {
+            res.send("404");
+            throw err;
+        }
+        res.send(results);
+
+    })
 });
 
 app.listen(3000, () => console.log("Server Connected on Port 3000"))
