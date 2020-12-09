@@ -234,7 +234,6 @@ export class ReviewComponent implements OnInit {
     } else {
       this.isTextArea = false;
     }
-    
   }
 
   // Place radio selection into answers array, continue to next question
