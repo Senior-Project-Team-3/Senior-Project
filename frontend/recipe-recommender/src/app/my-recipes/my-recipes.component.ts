@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { DataService } from '../data.service';
 
-import {faChevronLeft, faChevronRight, faAngleDoubleLeft, faAngleDoubleRight, faEllipsisH} from '@fortawesome/free-solid-svg-icons'
+import {faChevronLeft, faChevronRight, faAngleDoubleLeft, faAngleDoubleRight, faEllipsisH, faTimes} from '@fortawesome/free-solid-svg-icons'
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-my-recipes',
@@ -23,6 +23,7 @@ export class MyRecipesComponent implements OnInit {
   faAngleDoubleLeft = faAngleDoubleLeft;
   faAngleDoubleRight = faAngleDoubleRight;
   faEllipsisH = faEllipsisH;
+  faTimes = faTimes;
 
   loading = true;
 
@@ -135,5 +136,23 @@ export class MyRecipesComponent implements OnInit {
   goToReview(recipeId) {
     console.log(recipeId);
     this.router.navigateByUrl('/review/' + recipeId);
+  }
+
+  deleteRecipe(recipeId) {
+    this.dataService.deleteUserRecipe(recipeId).subscribe((data: any[]) => {
+      // Remove from view if its successful
+      try {
+        console.log(data['affectedRows']);
+        if (data['affectedRows'] == 1) {
+          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            this.router.navigate(['/my-recipes']); // navigate to same route
+          }); 
+        }
+      } catch (error) {
+        
+      }
+      console.log(data['affectedRows']);
+    
+    });
   }
 }

@@ -45,4 +45,8 @@ export class DataService {
   public getUserRecentRecipe() {
     return this.httpClient.put(this.REST_API_SERVER + '/review/user/recent', { withCredentials: true});
   }
+
+  public deleteUserRecipe(recipeID: number) {
+    return this.httpClient.delete(this.REST_API_SERVER + '/recipes/my_recipes/' + recipeID, { withCredentials: true });
+  }
 }
