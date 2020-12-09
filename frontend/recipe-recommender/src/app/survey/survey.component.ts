@@ -26,15 +26,15 @@ export class SurveyComponent implements OnInit {
   radioIndicators = [];
   // Indicates the question the user is currently on
   currentQuestion: number;
-  // Indicates if the current survey is the users initial survey
-  isInitial: boolean;
   // Indicates if the current question is single or multiple choice
   isRadio: boolean;
   // Holds the options selected by the user when they finish a question
   radioSelected: any;
   // Indicate end of survey
   isComplete: boolean;
+  // Indicate that the user forgot to select an option
   errorMessage: string;
+  // Hold recipes that are recommended after survey completes
   recommendedRecipes = [];
   
   constructor(
@@ -52,8 +52,10 @@ export class SurveyComponent implements OnInit {
     this.populateInitialSurvey();
   }
 
+  /**
+   * Fill survey arrays with questions and options
+   */
   populateInitialSurvey() {
-    this.isInitial = true;
     this.isRadio = true;
     this.initialSurveyAnswers = {
       "vegetarian": null,
@@ -194,50 +196,33 @@ export class SurveyComponent implements OnInit {
   }
 
   /**
-   * This function will tell the backend to generate a new survey. The backend should provide
-   * a question, option, and radioIndicator array. A survey can take a bit of time, so the 
-   * backend should ?store these questions in the DB? and when the user is done, reference the 
-   * stored questions to relate to their new survey results
+   * Run after user submits answers to a question, and figure out if there are any questions left.
+   * Check if next question is a multiple or single choice.
+   * Also checks for questions that should be skipped based on previous answers.
    */
-  populateReturnSurvey() {
-    this.isInitial = false;
-  }
-
   getNextQuestion() {
     this.currentQuestion++;
     this.radioSelected = undefined;
     this.errorMessage = undefined;
 
-    if (this.isInitial) {
+    // Survey complete
+    if (this.currentQuestion == this.initialSurveyQuestions.length) {
+      // Finish the survey
+      this.completeSurvey();
+      return;
+    }
 
-      // Survey complete
-      if (this.currentQuestion == this.initialSurveyQuestions.length) {
-        // Finish the survey
-        this.completeSurvey();
-        return;
-      }
-
-      // Check for dependant questions...
-      // Skip preferred source of meat for vegetarians
-      if (this.currentQuestion == 1 && this.initialSurveyAnswers.vegetarian == 'Yes') {
-        this.getNextQuestion();
-        return;
-      }
-      // Skip allergy intolerence question for those who select no
-      if (this.currentQuestion == 6 && this.initialSurveyAnswers.intolerant == 'No') {
-        this.initialSurveyAnswers[this.currentQuestion] = null;
-        this.getNextQuestion();
-        return;
-      }
-
-    } else {
-
-      // Survey complete
-      if (this.currentQuestion == this.returnSurveyQuestions.length) {
-        // Finish the survey
-        this.completeSurvey();
-        return;
-      }
+    // Check for dependant questions...
+    // Skip preferred source of meat for vegetarians
+    if (this.currentQuestion == 1 && this.initialSurveyAnswers.vegetarian == 'Yes') {
+      this.getNextQuestion();
+      return;
+    }
+    // Skip allergy intolerence question for those who select no
+    if (this.currentQuestion == 6 && this.initialSurveyAnswers.intolerant == 'No') {
+      this.initialSurveyAnswers[this.currentQuestion] = null;
+      this.getNextQuestion();
+      return;
     }
     
     // Check if next question is single or multiple choice
@@ -248,31 +233,33 @@ export class SurveyComponent implements OnInit {
     }
   }
 
-  // Place radio selection into answers array, continue to next question
+  /**
+   *  Place radio selection into answers array, continue to next question
+   */
   submitRadio() {
-      console.log(this.radioSelected);
-      if (this.radioSelected == undefined) {
-        this.errorMessage = "You must select an option before continuing";
-        return;
-      }
-      if (this.isInitial) {
-        // this.initialSurveyAnswers[this.currentQuestion] = this.radioSelected;
-        if (this.currentQuestion == 0) {
-          this.initialSurveyAnswers.vegetarian = this.radioSelected;
-        }
-        if (this.currentQuestion == 3) {
-          this.initialSurveyAnswers.cookTime = this.radioSelected;
-        }
-        if (this.currentQuestion == 5) {
-          this.initialSurveyAnswers.intolerant = this.radioSelected;
-        }
-      } else {
-        this.returnSurveyAnswers[this.currentQuestion] = this.radioSelected;
+    console.log(this.radioSelected);
+    if (this.radioSelected == undefined) {
+      this.errorMessage = "You must select an option before continuing";
+      return;
+    }
+    // this.initialSurveyAnswers[this.currentQuestion] = this.radioSelected;
+    if (this.currentQuestion == 0) {
+      this.initialSurveyAnswers.vegetarian = this.radioSelected;
+    }
+    if (this.currentQuestion == 3) {
+      this.initialSurveyAnswers.cookTime = this.radioSelected;
+    }
+    if (this.currentQuestion == 5) {
+      this.initialSurveyAnswers.intolerant = this.radioSelected;
     }
     this.getNextQuestion();
   }
 
+  /**
+   * Place checkbox selections into answers array and continue to next question.
+   */
   submitCheckbox() {
+    // This filter figures out which checkboxes are selected. 
     let answersList = this.initialSurveyOptions[this.currentQuestion].filter(item => item.checked);
     let answers = [];
     for (let i = 0; i < answersList.length; i++) {
@@ -283,81 +270,46 @@ export class SurveyComponent implements OnInit {
       return;
     }
     console.log(answers);
-    if (this.isInitial) {
-      // this.initialSurveyAnswers[this.currentQuestion] = answers;
-      if (this.currentQuestion == 1) {
-        if (answers.includes("No Preference")) {
-          this.initialSurveyAnswers.proteins = ["No Preference"];
-        } else {
-          this.initialSurveyAnswers.proteins = answers;
-        }
+    
+    // this.initialSurveyAnswers[this.currentQuestion] = answers;
+    if (this.currentQuestion == 1) {
+      if (answers.includes("No Preference")) {
+        this.initialSurveyAnswers.proteins = ["No Preference"];
+      } else {
+        this.initialSurveyAnswers.proteins = answers;
       }
-      if (this.currentQuestion == 2) {
-        if (answers.includes("No Preference")) {
-          this.initialSurveyAnswers.cuisines = ["No Preference"];
-        } else {
-          this.initialSurveyAnswers.cuisines = answers;
-        }
-      }         
-      if (this.currentQuestion == 4) {
-        this.initialSurveyAnswers.appliances = answers;
+    }
+    if (this.currentQuestion == 2) {
+      if (answers.includes("No Preference")) {
+        this.initialSurveyAnswers.cuisines = ["No Preference"];
+      } else {
+        this.initialSurveyAnswers.cuisines = answers;
       }
-      if (this.currentQuestion == 6) {
-        this.initialSurveyAnswers.intolerances = answers;
-      }
-    } else {
-      this.returnSurveyAnswers[this.currentQuestion] = answers;
+    }         
+    if (this.currentQuestion == 4) {
+      this.initialSurveyAnswers.appliances = answers;
+    }
+    if (this.currentQuestion == 6) {
+      this.initialSurveyAnswers.intolerances = answers;
     }
     this.getNextQuestion();
   }
   
+  /**
+   * Query DB based on provided answers and populate recommended array
+   */
   completeSurvey() {
-    // /* This post call us used past the access and refresh tokens generated */
-    // //FETCH METHOD that works to pass the user a cookie
-    // const userInfo = "Kyle"
-    // const urlPOST = 'http://localhost:3000/survey' // /auth/login
-    // const optionsPOST = {
-    //   method: 'POST',
-    //   body: JSON.stringify({userInfo}), // {} is used to store objects
-    //   header: {'Content-Type': 'application/json'},
-    //   credentials: 'include' //need to fix promise errors, but this allows for cookies to be created
-    // }
-    // fetch(urlPOST,optionsPOST)
-    //   .then (console.error)
-    
-    // /* Further method needs to fix bugs to GET request from server
-    // .then(fetchUsers)
-    // .then (console.log)
-    // .then (console.error)
-
-    // function fetchUser() {
-    //   const urlGET = 'http://localhost:3000/posts'
-    //   method: 'GET',
-    //   const optionsGET = {
-    //     credentials: 'include'
-    //   }
-    //   fetch(urlGET, optionsGET)
-    //   .then(response => response.json())
-    //   .then (console.error)
-    // }*/
     console.log(document.cookie)
     this.isComplete = true;
-    if (this.isInitial) {
-      this.dataService.putSurveyResults(JSON.stringify(this.initialSurveyAnswers), 10).subscribe((data: any[]) => {
-        console.log(data);
-        this.recommendedRecipes = data;
-      });
-    } else {
-      // this.dataService.putSurveyResults(this.returnSurveyAnswers, 10).subscribe((data: any[]) => {
-      //   console.log(data);
-      // });
-    }
+    this.dataService.putSurveyResults(JSON.stringify(this.initialSurveyAnswers), 10).subscribe((data: any[]) => {
+      console.log(data);
+      this.recommendedRecipes = data;
+    });
   }
 
-  goToRecipe(recipe_id: number) {
-    this.router.navigateByUrl('/recipe/' + recipe_id);
-  }
-
+  /**
+   * Save selected recipe to users "My Recipes" page
+   */
   addToMyRecipes(recipe_id: number) {
     this.dataService.saveRecipe(JSON.stringify(this.initialSurveyAnswers), recipe_id).subscribe((data: any[]) => {
       console.log(data);
