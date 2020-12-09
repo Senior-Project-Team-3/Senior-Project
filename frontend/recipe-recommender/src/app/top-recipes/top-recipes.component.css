@@ -11,6 +11,13 @@ h4 {
     font-family: Arial, Helvetica, sans-serif
 }
 
+#viewRecipeButton {
+    width: 70%;
+    color: white;
+    background-color: #ec6941;
+    border: none;
+}
+
 [type=radio] {
     position: absolute;
     opacity: 0;

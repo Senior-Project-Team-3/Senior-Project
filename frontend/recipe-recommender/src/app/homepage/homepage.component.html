@@ -10,7 +10,7 @@
                 <p>{{ recipe.name | uppercase }} </p>
                 <img src="{{ recipe.imageLink }}" class="img-responsive" style="width:70%">
                 <div class="card-footer" style="border-top: 0">
-                    <a type="button" class="btn btn-primary" (click)="goToRecipe(recipe.recipe_id)">View Recipe Details</a>
+                    <button type="button" class="btn btn-light" (click)="goToRecipe(recipe.recipe_id)" id="goToButton">View Recipe Details</button>
                 </div>
             </div>
         </div>
