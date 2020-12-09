@@ -94,8 +94,7 @@ export class ReviewComponent implements OnInit {
       "prefChange": null,
       "newCuisine": null,
       "newProtien": null,
-      "newCookTime": null,
-      "testQuestion": null
+      "newCookTime": null
     };
     console.log(this.recipe[0]);
 
@@ -106,8 +105,8 @@ export class ReviewComponent implements OnInit {
       this.recipe[0].minutes + ", was this accurate? If not, how long did it take? ";
     this.reviewSurveyOptions[1] = ['15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', '4-hours-or-less'];
 
-    this.reviewSurveyQuestions[2] = 'Did you use any substitutes?';
-    this.reviewSurveyOptions[2] = ['Yes/if so what','No'];
+    this.reviewSurveyQuestions[2] = 'Please list all substitutions used within this recipe.';
+    this.reviewSurveyOptions[2] = [""];
 
     this.reviewSurveyQuestions[3] = 'Did the recipes match your preferences?';
     this.reviewSurveyOptions[3] = ['Yes','Mostly','Kind Of','Not Really','No'];
@@ -115,8 +114,8 @@ export class ReviewComponent implements OnInit {
     this.reviewSurveyQuestions[4] = 'How difficult was the recipe to follow?';
     this.reviewSurveyOptions[4] = ['Easy','Somewhat','Difficult','Impossible'];
     
-    this.reviewSurveyQuestions[5] = 'Could the recipe be improved?';
-    this.reviewSurveyOptions[5] = ['Yes (with reason?)', 'No'];
+    this.reviewSurveyQuestions[5] = 'Please describe how this recipe can be improved.';
+    this.reviewSurveyOptions[5] = [""];
     
     this.reviewSurveyQuestions[6] = 'Would you recommend this recipe to a friend?';
     this.reviewSurveyOptions[6] = ['Yes (if yes ask if they want to provide a review?)','No'];
@@ -180,13 +179,10 @@ export class ReviewComponent implements OnInit {
     this.reviewSurveyQuestions[10] = "Which length of cooking do you prefer?";
     this.reviewSurveyOptions[10] = ['15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', '4-hours-or-less'];
 
-    this.reviewSurveyQuestions[11] = "testArea"
-    this.reviewSurveyOptions[11] =[]
-
 
     // Always this for review survey
-    this.radioIndicators = [true, true, true, true, true, true, true, true, false, false, true, false]
-    this.textAreaIndicators = [false,false,false,false,false,false,false,false,false,false,false,true]
+    this.radioIndicators = [true, true, false, true, true, false, true, true, false, false, true]
+    this.textAreaIndicators = [false,false,true,false,false,true,false,false,false,false,false]
   }
 
   /**
@@ -318,11 +314,9 @@ export class ReviewComponent implements OnInit {
 
   submitTextArea() {
     var textAreaResponse = document.getElementById("comment")
-    var textAreaValue = textAreaResponse.
+    var textAreaValue = textAreaResponse.nodeValue
 
     console.log(textAreaValue)
-
-    this.returnSurveyAnswers[this.currentQuestion] = textAreaValue;
 
     this.getNextQuestion()
   }
