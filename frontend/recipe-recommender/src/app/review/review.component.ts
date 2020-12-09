@@ -36,6 +36,7 @@ export class ReviewComponent implements OnInit {
   isTextArea: boolean;
   // Holds the options selected by the user when they finish a question
   radioSelected: any;
+  textAreaValue: any;
   // Indicate end of survey
   isComplete: boolean;
   errorMessage: string;
@@ -118,7 +119,7 @@ export class ReviewComponent implements OnInit {
     this.reviewSurveyOptions[5] = [""];
     
     this.reviewSurveyQuestions[6] = 'Would you recommend this recipe to a friend?';
-    this.reviewSurveyOptions[6] = ['Yes (if yes ask if they want to provide a review?)','No'];
+    this.reviewSurveyOptions[6] = ['Yes','No'];
 
     this.reviewSurveyQuestions[7] = 'Would you like to change your preferences?';
     this.reviewSurveyOptions[7] = ['Yes','No'];
@@ -181,8 +182,8 @@ export class ReviewComponent implements OnInit {
 
 
     // Always this for review survey
-    this.radioIndicators = [true, true, false, true, true, false, true, true, false, false, true]
-    this.textAreaIndicators = [false,false,true,false,false,true,false,false,false,false,false]
+    this.radioIndicators =    [true, true, false, true, true, false, true, true, false, false, true]
+    this.textAreaIndicators = [false, false, true, false, false, true, false, false, false, false, false]
   }
 
   /**
@@ -198,6 +199,7 @@ export class ReviewComponent implements OnInit {
   getNextQuestion() { //TODO: Remove redundent else condition
     this.currentQuestion++;
     this.radioSelected = undefined;
+    this.textAreaValue = null;
     this.errorMessage = undefined;
     if (this.isInitial) {
       // Survey complete
@@ -211,12 +213,12 @@ export class ReviewComponent implements OnInit {
         this.completeSurvey();
         return;
       }
-    } else {
-      if (this.currentQuestion == this.reviewSurveyQuestions.length) {
-        // Finish the survey
-        this.completeSurvey();
-        return;
-      }  
+    // } else {
+    //   if (this.currentQuestion == this.reviewSurveyQuestions.length) {
+    //     // Finish the survey
+    //     this.completeSurvey();
+    //     return;
+    //   }  
     }
 
     // Check if next question is single or multiple choice
@@ -250,9 +252,9 @@ export class ReviewComponent implements OnInit {
         if (this.currentQuestion == 1) {
           this.reviewSurveyAnswers.realCookTime = this.radioSelected;
         }
-        if (this.currentQuestion == 2) {
-          this.reviewSurveyAnswers.substitutes = this.radioSelected;
-        }
+        // if (this.currentQuestion == 2) {
+        //   this.reviewSurveyAnswers.substitutes = this.radioSelected;
+        // }
         if (this.currentQuestion == 3) {
           this.reviewSurveyAnswers.prefMatch = this.radioSelected;
         }
@@ -313,10 +315,18 @@ export class ReviewComponent implements OnInit {
   }
 
   submitTextArea() {
-    var textAreaResponse = document.getElementById("comment")
-    var textAreaValue = textAreaResponse.nodeValue
+    //var textAreaResponse = document.getElementById('textarea')[0].value
+    //var textAreaValue = textAreaResponse.value
 
-    console.log(textAreaValue)
+    if (this.currentQuestion == 2) {
+      this.reviewSurveyAnswers.substitutes = this.textAreaValue
+      console.log(this.reviewSurveyAnswers.substitutes)
+    }
+
+    if (this.currentQuestion == 5) {
+      this.reviewSurveyAnswers.improvement = this.textAreaValue
+      console.log(this.reviewSurveyAnswers.improvement)
+    }
 
     this.getNextQuestion()
   }
