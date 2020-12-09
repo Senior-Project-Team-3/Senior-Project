@@ -162,9 +162,6 @@ saveUserRecipeReview = function (reviewedRecipe_id, userIDCookies, rating, subst
             }
         });
     }, 200)
-
-
-
 }
 
 /**
@@ -265,13 +262,8 @@ app.get('/recipes/:recipe_name/search', function (req, res) {
  * @returns {Response} send back the recipe's back in JSON format 
  */
 app.get('/recipes/review/top_rated', function (req, res) {
-    let sql = "select * from recipes " +
-        "INNER JOIN nutrition " +
-        "ON recipes.recipe_id = nutrition.recipe_id " +
-        "INNER JOIN steps " +
-        "ON recipes.recipe_id = steps.recipe_id " +
-        "limit 8;"
-    let query = db.query(sql, (err, results) => {
+    let sql = "call selectRandomRecipes();"
+    db.query(sql, (err, results) => {
         if (err) {
             throw err;
         }
