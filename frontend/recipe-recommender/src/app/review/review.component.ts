@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+//import { Console } from 'console';
 
 import { DataService } from '../data.service';
 
@@ -24,14 +25,18 @@ export class ReviewComponent implements OnInit {
   //    For example, if our question array is [single choice, multiple choice, single choice], 
   //    this should be [true, false, true]
   radioIndicators = [];
+  textAreaIndicators = [];
   // Indicates the question the user is currently on
   currentQuestion: number;
   // Indicates if the current survey is the users initial survey
   isInitial: boolean;
   // Indicates if the current question is single or multiple choice
   isRadio: boolean;
+  // Indicates if the current question is text area
+  isTextArea: boolean;
   // Holds the options selected by the user when they finish a question
   radioSelected: any;
+  textAreaValue: any;
   // Indicate end of survey
   isComplete: boolean;
   errorMessage: string;
@@ -78,6 +83,7 @@ export class ReviewComponent implements OnInit {
   populateInitialSurvey() {
     this.isInitial = true
     this.isRadio = true
+    this.isTextArea = false
     this.reviewSurveyAnswers = {
       "rating": null,
       "realCookTime": null,
@@ -88,7 +94,8 @@ export class ReviewComponent implements OnInit {
       "recommend": null,
       "prefChange": null,
       "newCuisine": null,
-      "newCookTime": null,
+      "newProtien": null,
+      "newCookTime": null
     };
     console.log(this.recipe[0]);
 
@@ -99,8 +106,8 @@ export class ReviewComponent implements OnInit {
       this.recipe[0].minutes + ", was this accurate? If not, how long did it take? ";
     this.reviewSurveyOptions[1] = ['15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', '4-hours-or-less'];
 
-    this.reviewSurveyQuestions[2] = 'Did you use any substitutes?';
-    this.reviewSurveyOptions[2] = ['Yes/if so what','No'];
+    this.reviewSurveyQuestions[2] = 'Please list all substitutions used within this recipe.';
+    this.reviewSurveyOptions[2] = [""];
 
     this.reviewSurveyQuestions[3] = 'Did the recipes match your preferences?';
     this.reviewSurveyOptions[3] = ['Yes','Mostly','Kind Of','Not Really','No'];
@@ -108,11 +115,11 @@ export class ReviewComponent implements OnInit {
     this.reviewSurveyQuestions[4] = 'How difficult was the recipe to follow?';
     this.reviewSurveyOptions[4] = ['Easy','Somewhat','Difficult','Impossible'];
     
-    this.reviewSurveyQuestions[5] = 'Could the recipe be improved?';
-    this.reviewSurveyOptions[5] = ['Yes (with reason?)', 'No'];
+    this.reviewSurveyQuestions[5] = 'Please describe how this recipe can be improved.';
+    this.reviewSurveyOptions[5] = [""];
     
     this.reviewSurveyQuestions[6] = 'Would you recommend this recipe to a friend?';
-    this.reviewSurveyOptions[6] = ['Yes (if yes ask if they want to provide a review?)','No'];
+    this.reviewSurveyOptions[6] = ['Yes','No'];
 
     this.reviewSurveyQuestions[7] = 'Would you like to change your preferences?';
     this.reviewSurveyOptions[7] = ['Yes','No'];
@@ -150,11 +157,33 @@ export class ReviewComponent implements OnInit {
       },
     ];
 
-    this.reviewSurveyQuestions[9] = "Which length of cooking do you prefer?";
-    this.reviewSurveyOptions[9] = ['15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', '4-hours-or-less'];
+    this.reviewSurveyQuestions[9] = "What main source of meat do you prefer?";
+    this.reviewSurveyOptions[9] = [
+      {
+        title: 'Beef',
+        checked: false,
+      },
+      {
+        title: 'Chicken',
+        checked: false,
+      },
+      {
+        title: 'Pork',
+        checked: false,
+      },
+      {
+        title: 'No Preference',
+        checked: false,
+      },
+    ];
+
+    this.reviewSurveyQuestions[10] = "Which length of cooking do you prefer?";
+    this.reviewSurveyOptions[10] = ['15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', '4-hours-or-less'];
+
 
     // Always this for review survey
-    this.radioIndicators = [true, true, true, true, true, true, true, true,false, true];
+    this.radioIndicators =    [true, true, false, true, true, false, true, true, false, false, true]
+    this.textAreaIndicators = [false, false, true, false, false, true, false, false, false, false, false]
   }
 
   /**
@@ -167,9 +196,10 @@ export class ReviewComponent implements OnInit {
     this.isInitial = false;
   }
 
-  getNextQuestion() {
+  getNextQuestion() { //TODO: Remove redundent else condition
     this.currentQuestion++;
     this.radioSelected = undefined;
+    this.textAreaValue = null;
     this.errorMessage = undefined;
     if (this.isInitial) {
       // Survey complete
@@ -183,12 +213,12 @@ export class ReviewComponent implements OnInit {
         this.completeSurvey();
         return;
       }
-    } else {
-      if (this.currentQuestion == this.reviewSurveyQuestions.length) {
-        // Finish the survey
-        this.completeSurvey();
-        return;
-      }  
+    // } else {
+    //   if (this.currentQuestion == this.reviewSurveyQuestions.length) {
+    //     // Finish the survey
+    //     this.completeSurvey();
+    //     return;
+    //   }  
     }
 
     // Check if next question is single or multiple choice
@@ -197,6 +227,14 @@ export class ReviewComponent implements OnInit {
     } else {
       this.isRadio = false;
     }
+
+    // Check if next question is single or multiple choice
+    if (this.textAreaIndicators[this.currentQuestion]) {
+      this.isTextArea = true;
+    } else {
+      this.isTextArea = false;
+    }
+    
   }
 
   // Place radio selection into answers array, continue to next question
@@ -214,9 +252,9 @@ export class ReviewComponent implements OnInit {
         if (this.currentQuestion == 1) {
           this.reviewSurveyAnswers.realCookTime = this.radioSelected;
         }
-        if (this.currentQuestion == 2) {
-          this.reviewSurveyAnswers.substitutes = this.radioSelected;
-        }
+        // if (this.currentQuestion == 2) {
+        //   this.reviewSurveyAnswers.substitutes = this.radioSelected;
+        // }
         if (this.currentQuestion == 3) {
           this.reviewSurveyAnswers.prefMatch = this.radioSelected;
         }
@@ -233,7 +271,7 @@ export class ReviewComponent implements OnInit {
         if (this.currentQuestion == 7) {
           this.reviewSurveyAnswers.prefChange = this.radioSelected;
         }
-        if (this.currentQuestion == 9) {
+        if (this.currentQuestion == 10) {
           this.reviewSurveyAnswers.newCookTime = this.radioSelected;
           /*TODO: call new recipe recommendation */
         }
@@ -262,14 +300,35 @@ export class ReviewComponent implements OnInit {
         } else {
           this.reviewSurveyAnswers.newCuisine = answers;
         }
-      }    
-      /*if (this.currentQuestion == 4) {
-        this.reviewSurveyAnswers.appliances = answers;
-      }*/
+      }
+      if (this.currentQuestion == 9) {
+        if (answers.includes("No Preference")) {
+          this.reviewSurveyAnswers.newProtien = ["No Preference"];
+        } else {
+          this.reviewSurveyAnswers.newProtien = answers;
+        }
+      }
     } else {
       this.returnSurveyAnswers[this.currentQuestion] = answers;
     }
     this.getNextQuestion();
+  }
+
+  submitTextArea() {
+    //var textAreaResponse = document.getElementById('textarea')[0].value
+    //var textAreaValue = textAreaResponse.value
+
+    if (this.currentQuestion == 2) {
+      this.reviewSurveyAnswers.substitutes = this.textAreaValue
+      console.log(this.reviewSurveyAnswers.substitutes)
+    }
+
+    if (this.currentQuestion == 5) {
+      this.reviewSurveyAnswers.improvement = this.textAreaValue
+      console.log(this.reviewSurveyAnswers.improvement)
+    }
+
+    this.getNextQuestion()
   }
   
   completeSurvey() {
