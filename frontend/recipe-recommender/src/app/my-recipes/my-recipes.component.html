@@ -84,7 +84,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{recipes[i*slideLength+j].name}} </h5>
                                 <p class="card-text"> Cook Time: {{recipes[i*slideLength+j].minutes}} minutes </p>
-                                <p class="card-text"> {{i*slideLength+j}} </p>
+                                <p class="card-text"> Recipe {{i*slideLength+j+1}} </p>
                             </div>
                             <div class="card-footer">
                                 <a type="button" class="btn btn-primary" (click)="goToRecipe(recipes[i*slideLength+j].recipe_id)">View Recipe Details</a>

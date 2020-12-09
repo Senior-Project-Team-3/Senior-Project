@@ -3,14 +3,14 @@
 </div>
 
 <div class="container-fluid bg-3 text-center">
-    <h1>Personalized Recipe Recommendations</h1><br>
+    <h1>Search Results</h1><br>
     <div *ngIf='!loading'>
         <div class="row">
             <div class="col-sm-3" *ngFor="let recipe of recipes" style="padding-bottom:15px;">
                 <p>{{ recipe.name | uppercase }} </p>
                 <img src="{{ recipe.imageLink }}" class="img-responsive" style="width:70%">
-                <div class="card-footer" style="border-top: 0">
-                    <button type="button" class="btn btn-light" (click)="goToRecipe(recipe.recipe_id)" id="goToButton">View Recipe Details</button>
+                <div class="card-footer">
+                    <a type="button" class="btn btn-primary" (click)="goToRecipe(recipe.recipe_id)">View Recipe Details</a>
                 </div>
             </div>
         </div>

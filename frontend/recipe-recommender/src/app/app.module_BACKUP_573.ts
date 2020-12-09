@@ -15,8 +15,11 @@ import { MyRecipesComponent } from './my-recipes/my-recipes.component';
 import { RecipeComponent } from './recipe/recipe.component';
 import { ReviewComponent } from './review/review.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+<<<<<<< HEAD
 import { SearchResultsComponent } from './search-results/search-results.component';
+=======
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+>>>>>>> 08028dd13d39c199fc30bc439ebd4071fce999a4
 
 @NgModule({
   declarations: [

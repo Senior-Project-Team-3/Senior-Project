@@ -15,7 +15,6 @@ import { MyRecipesComponent } from './my-recipes/my-recipes.component';
 import { RecipeComponent } from './recipe/recipe.component';
 import { ReviewComponent } from './review/review.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SearchResultsComponent } from './search-results/search-results.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
@@ -29,8 +28,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     RegisterComponent,
     MyRecipesComponent,
     RecipeComponent,
-    ReviewComponent,
-    SearchResultsComponent
+    ReviewComponent
   ],
   imports: [
     AppRoutingModule,
