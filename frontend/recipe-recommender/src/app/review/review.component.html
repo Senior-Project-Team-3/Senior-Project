@@ -20,36 +20,45 @@
                         {{ option }}
                     </label>
                     </div>
-                    <div *ngIf="isRadio == false">
+                    <div *ngIf="isRadio == false && isTextArea == false">
                         <label for="checkbox_{{option}}">
                         <input id="checkbox_{{option}}" type="checkbox" name="checkboxes" [(ngModel)]="option.checked">
                         {{ option.title }}
                     </label>
                     </div>
+                    <div *ngIf="isTextArea">
+                        <!-- <p>Please insert applicable comments below:</p> -->
+                        <label for="comment">Comment:</label>
+                        <textarea class="form-control" id="comment">test area value</textarea>
+                    </div>
                 </div>
             </div>
-            <div *ngIf="isInitial == false">
+            <!-- <div *ngIf="isInitial == false">
                 <h5 class="card-title">{{ returnSurveyQuestions[currentQuestion] }}</h5>
                 <div *ngFor="let option of returnSurveyOptions[currentQuestion]">
                     <div *ngIf="isRadio">
-                        <label for="radio_{{option}}">
-                        <input id="radio_{{option}}" type="radio" [value]="option" name="radios" [(ngModel)]="radioSelected">
-                        {{ option }}
-                    </label>
+                        <div class="textarea">
+                            <label for="comment">Comment:</label>
+                            <textarea class="form-control" rows="5" cols="50" id="comment" name="text"></textarea>
+                            <button type="submit" class="btn btn-primary">Next</button>
+                        </div>
                     </div>
                     <div *ngIf="isRadio == false">
 
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
                 {{errorMessage}}
             </div>
             <div *ngIf="isRadio">
                 <button type="button" class="btn btn-primary" id="continueButton" (click)="submitRadio()">Next</button>
             </div>
-            <div *ngIf="isRadio == false">
+            <div *ngIf="isRadio == false && isTextArea == false">
                 <button type="button" class="btn btn-primary" id="continueButton" (click)="submitCheckbox()">Next</button>
+            </div>
+            <div *ngIf="isTextArea">
+                <button type="button" class="btn btn-primary" id="continueButton" (click)="submitTextArea()">Next</button>
             </div>
         </div>
     </div>
@@ -65,7 +74,6 @@
             </div>
         </div>
     </div>
-
 </body>
 
 </html>
