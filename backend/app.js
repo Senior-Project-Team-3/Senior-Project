@@ -222,10 +222,10 @@ app.get('/clear', (req, res) => {
  * 
  * @returns {Response} send recipts results back in JSON format
  */
-app.get('/recipes/:recipe_name/search', function (req, res) {
-    var recipe_name = req.params.recipe_name;
-    console.log(req.params.recipe_name)
-    let sql = "SELECT * FROM recipe WHERE recipe_name = '" + recipe_name + "'";
+app.get('/recipes/search-results/:str', function (req, res) {
+    var str = req.params.str;
+    console.log(req.params.str)
+    let sql = "SELECT * FROM recipes WHERE name LIKE '%" + str + "%' ORDER BY RAND() LIMIT 8";
     let query = db.query(sql, (err, results) => {
         if (err) {
             throw err;

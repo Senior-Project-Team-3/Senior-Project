@@ -15,6 +15,7 @@ import { MyRecipesComponent } from './my-recipes/my-recipes.component';
 import { RecipeComponent } from './recipe/recipe.component';
 import { ReviewComponent } from './review/review.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SearchResultsComponent } from './search-results/search-results.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     RegisterComponent,
     MyRecipesComponent,
     RecipeComponent,
-    ReviewComponent
+    ReviewComponent,
+    SearchResultsComponent
   ],
   imports: [
     AppRoutingModule,

@@ -45,4 +45,8 @@ export class DataService {
   public getUserRecentRecipe() {
     return this.httpClient.put(this.REST_API_SERVER + '/review/user/recent', { withCredentials: true});
   }
+
+  public getSearchResults(str: String) {
+    return this.httpClient.get(this.REST_API_SERVER + '/recipes/search-results/' + str);
+  }
 }

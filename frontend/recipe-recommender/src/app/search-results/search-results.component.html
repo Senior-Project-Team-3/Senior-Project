@@ -1,0 +1,28 @@
+<div class="row" style="margin-top: 75px; margin-bottom: 75px;">
+    <img class="mx-auto d-block" src="./../../assets/mealmate_logo.PNG">
+</div>
+
+<div class="container-fluid bg-3 text-center">
+    <h1>Search Results</h1><br>
+    <div *ngIf='!loading'>
+        <div class="row">
+            <div class="col-sm-3" *ngFor="let recipe of recipes" style="padding-bottom:15px;">
+                <p>{{ recipe.name | uppercase }} </p>
+                <img src="{{ recipe.imageLink }}" class="img-responsive" style="width:70%">
+                <div class="card-footer">
+                    <a type="button" class="btn btn-primary" (click)="goToRecipe(recipe.recipe_id)">View Recipe Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="loading" class="d-flex justify-content-center mt-">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid bg-3 text-center">
+    <h5>Ready to get a recommendation?</h5>
+    <button type="button" class="btn btn-light" (click)="goToSurvey();">Take a Survey</button>
+</div>
