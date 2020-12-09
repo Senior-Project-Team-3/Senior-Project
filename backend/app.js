@@ -34,7 +34,6 @@ createuser = function (userRecipeID) {
         if (err) {
             throw err;
         }
-        console.log(userid)
         userid = JSON.stringify(resultsForUser[0][0]).split(':')[1].split('}')[0]
     });
 }
@@ -45,7 +44,6 @@ createuser = function (userRecipeID) {
  * @returns {jwtoken} a jwt signed token.
  */
 createjwt = function () {
-    console.log(userid)
     return jwt.sign({ "userid": userid }, secret);
 }
 
@@ -61,8 +59,6 @@ insertUserReconnemdedRecipe = function (returningUserId, userRecipeID) {
         if (err) {
             throw err;
         }
-
-        console.log("Writing recipe data for returning user in db")
     });
 }
 
@@ -101,7 +97,6 @@ saveUserPreferences = function (userid, vegetarian, proteins, cuisines, cookTime
             if (err) {
                 throw err;
             }
-            console.log("Writing user preferences data for user in db")
         });
 
     }, 200)
@@ -254,7 +249,6 @@ app.get('/clear', (req, res) => {
  */
 app.get('/recipes/:recipe_name/search', function (req, res) {
     var recipe_name = req.params.recipe_name;
-    console.log(req.params.recipe_name)
     let sql = "SELECT * FROM recipe WHERE recipe_name = '" + recipe_name + "'";
     let query = db.query(sql, (err, results) => {
         if (err) {
@@ -293,7 +287,6 @@ app.get('/recipes/review/top_rated', function (req, res) {
  */
 app.get('/recipe/:recipe_id', function (req, res) {
     var recipe_id = req.params.recipe_id;
-    console.log(req.params.recipe_id)
     let sql = "SELECT * FROM recipes " +
         "INNER JOIN nutrition " +
         "ON recipes.recipe_id = nutrition.recipe_id " +
@@ -345,10 +338,8 @@ app.get('/recipes/my_recipes', function (req, res) {
             let sql = 'call selectRecipesRecommendedToUserByUserId(' + userID + ');'
             let query = db.query(sql, (err, results) => {
                 if (err) {
-                    console.log(err);
                     throw err;
                 }
-                console.log(results);
                 res.send(results);
             });
         } catch (err) {
@@ -375,7 +366,6 @@ app.get('/recipes/my_recipes', function (req, res) {
  */
 app.put('/survey_results/:user_id', function (req, res) {
     var user_id = req.params.user_id;
-    console.log(req.body.data);
     let results = JSON.parse(req.body.data);
     // This is for initial survey so far...
     let vegetarian = results.vegetarian;
@@ -385,13 +375,7 @@ app.put('/survey_results/:user_id', function (req, res) {
     let appliances = results.appliances;
     let intolerant = results.intolerant;
     let intolerances = results.intolerances;
-    console.log("Vegetarian?: " + vegetarian);
-    console.log("Proteins: " + proteins);
-    console.log("Cuisines: " + cuisines);
-    console.log("Cook time: " + cookTime);
-    console.log("Appliances: " + appliances);
-    console.log("Intolerant?: " + intolerant);
-    console.log("Intolerances: " + intolerances);
+
     let sql = "select name, minutes, recipes.recipe_id, imageLink, tags " +
         "from mealmateSQL.recipes " +
         "join mealmateSQL.steps on mealmateSQL.steps.recipe_id = mealmateSQL.recipes.recipe_id " +
@@ -636,7 +620,6 @@ app.put('/review_results/:recipe_id', function (req, res) {
             }
 
             setTimeout(() => {
-                console.log(recommendSQL)
                 db.query(recommendSQL, (err, recResults) => {
                     if (err) {
                         throw err;
@@ -657,7 +640,6 @@ app.put('/review_results/:recipe_id', function (req, res) {
  * @returns {Response} if cookies are set, uesers most recent recipe is sent back in JSON format. 
  */
 app.put('/review/user/recent', function (req, res) {
-    console.log(req.cookies)
     if (req.cookies.jwtoken) { // jwtoken cookie is set
         try {
             decoded = jwt.verify(req.cookies.jwtoken, secret);
@@ -668,13 +650,11 @@ app.put('/review/user/recent', function (req, res) {
                     console.log(err);
                     throw err;
                 }
-                console.log(results);
                 res.send(results);
             });
         } catch (err) {
             // bad token
             data = []
-            console.log("Invalid token")
             // res.status(401).send("Invalid token")
             res.status(200).send(data);
         }
