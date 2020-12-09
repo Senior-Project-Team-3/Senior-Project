@@ -10,35 +10,31 @@
 <body>
     <div class="card mx-auto" id="surveyCard" *ngIf="isComplete == false">
         <div class="card-body">
-            <div *ngIf="isInitial">
-                <h5 class="card-title">{{ initialSurveyQuestions[currentQuestion] }}</h5>
-                <div *ngFor="let option of initialSurveyOptions[currentQuestion]">
-                    <div *ngIf="isRadio">
-                        <label for="radio_{{option}}">
+            <h5 class="card-title">{{ initialSurveyQuestions[currentQuestion] }}</h5>
+            <div *ngFor="let option of initialSurveyOptions[currentQuestion]">
+                <div *ngIf="isRadio">
+                    <label for="radio_{{option}}">
                         <input id="radio_{{option}}" type="radio" [value]="option" name="radios" [(ngModel)]="radioSelected">
                         {{ option }}
                     </label>
-                    </div>
-                    <div *ngIf="isRadio == false">
-                        <label for="checkbox_{{option}}">
+                </div>
+                <div *ngIf="isRadio == false">
+                    <label for="checkbox_{{option}}">
                         <input id="checkbox_{{option}}" type="checkbox" name="checkboxes" [(ngModel)]="option.checked">
                         {{ option.title }}
                     </label>
-                    </div>
                 </div>
             </div>
-            <div *ngIf="isInitial == false">
-                <h5 class="card-title">{{ returnSurveyQuestions[currentQuestion] }}</h5>
-                <div *ngFor="let option of returnSurveyOptions[currentQuestion]">
-                    <div *ngIf="isRadio">
-                        <label for="radio_{{option}}">
+            <h5 class="card-title">{{ returnSurveyQuestions[currentQuestion] }}</h5>
+            <div *ngFor="let option of returnSurveyOptions[currentQuestion]">
+                <div *ngIf="isRadio">
+                    <label for="radio_{{option}}">
                         <input id="radio_{{option}}" type="radio" [value]="option" name="radios" [(ngModel)]="radioSelected">
                         {{ option }}
                     </label>
-                    </div>
-                    <div *ngIf="isRadio == false">
+                </div>
+                <div *ngIf="isRadio == false">
 
-                    </div>
                 </div>
             </div>
             <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
