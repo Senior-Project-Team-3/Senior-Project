@@ -246,7 +246,7 @@ app.get('/clear', (req, res) => {
  */
 app.get('/recipes/search-results/:str', function (req, res) {
     var str = req.params.str;
-    let sql = "SELECT * FROM recipes WHERE name LIKE '%" + str + "%'";
+    let sql = "SELECT * FROM recipes WHERE name LIKE '%" + str + "%' ORDER BY RAND() LIMIT 20";
     let query = db.query(sql, (err, results) => {
         if (err) {
             throw err;
@@ -604,7 +604,7 @@ app.put('/review_results/:recipe_id', function (req, res) {
                     let allergy = selectedAllergiesOrIntolerancesArray[i]
                     if (!(allergy === "")) {
                         if (i == selectedAllergiesOrIntolerancesArray.length - 1) {
-                            recommendSQL += "mealmateSQL.recipes.tags NOT like \"%" + allergy.toLowerCase() + "%\" LIMIT 10; "
+                            recommendSQL += "mealmateSQL.recipes.tags NOT like \"%" + allergy.toLowerCase() + "%\" LIMIT 20; "
                         } else {
                             recommendSQL += "mealmateSQL.recipes.tags  NOT like \"%" + allergy.toLowerCase() + "%\" AND "
                         }
@@ -612,7 +612,7 @@ app.put('/review_results/:recipe_id', function (req, res) {
                 }
             } else {
                 var n = recommendSQL.lastIndexOf("AND");
-                recommendSQL = recommendSQL.slice(0, n) + recommendSQL.slice(n).replace("AND", "LIMIT 10;");
+                recommendSQL = recommendSQL.slice(0, n) + recommendSQL.slice(n).replace("AND", "LIMIT 20;");
             }
 
             setTimeout(() => {
