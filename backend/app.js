@@ -434,7 +434,6 @@ app.put('/survey_results/:user_id', function (req, res) {
         let splitIntolerances = String(intolerances).split(',');
         for (let i = 0; i < splitIntolerances.length; i++) {
             let element = splitIntolerances[i];
-            console.log(element);
             if (i == splitIntolerances.length - 1) {
                 sql += "mealmateSQL.recipes.ingredients NOT like \"%" + element.toLowerCase() + "%\" LIMIT 1;";
             } else {
@@ -489,7 +488,6 @@ app.put('/survey_results/save/:recipe_id', function (req, res) {
     // used a timeout to ensure that the functions above run
     //before setting a coookie and sending the results(recommended recipe)
     setTimeout(() => {
-        console.log(returningUser)
         if (!returningUser) { // will only set the cookies if its a new user taking the survey
             // cookie set to expire in a year 
             res.cookie('jwtoken', jwt.sign({ "userid": userid }, secret), { expires: new Date(Date.now() + 31556952000) })
