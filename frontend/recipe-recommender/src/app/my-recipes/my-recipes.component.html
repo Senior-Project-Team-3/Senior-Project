@@ -1,5 +1,6 @@
 <!-- <div class="container my-4"> -->
 <div *ngIf='!loading'>
+
     <!--Carousel Wrapper-->
     <div *ngIf="recipes.length != 0" id="multi-item-example" class="carousel slide carousel-multi-item" data-ride="carousel" data-interval="false">
 
@@ -12,12 +13,12 @@
             Slide {{slideCounter + 1}}  | Recipe {{slideCounter*slideLength + 1}} 
             of {{recipes.length}} 
         </div>
+
         <!--Controls-->
         <div class="controls-top d-flex justify-content-center m-2">
             <a class="btn btn-primary mr-2" href="#multi-item-example" [attr.data-slide-to]="slideCounter" (click)="changeCounter('prev');">
                 <fa-icon [icon]="faChevronLeft"></fa-icon>
             </a>
-
 
             <div class="btn-group mr-2">
                 <a class="btn btn-primary startThing" *ngIf="slideCounter > 2 && recipesSmall.length > 6" href="#multi-item-example" data-slide-to="0" (click)="changeCounter('first');">1</a>
@@ -30,46 +31,27 @@
                 <a class="btn btn-primary endThing" *ngIf="slideCounter <= recipesSmall.length-4 && recipesSmall.length > 6" href="#multi-item-example" data-slide-to="0" (click)="changeCounter('last');">{{recipesSmall.length}}</a>
             </div>
 
-
             <a class="btn btn-primary mr-2" href="#multi-item-example" [attr.data-slide-to]="slideCounter" (click)="changeCounter('next');">
                 <fa-icon [icon]="faChevronRight"></fa-icon>
             </a>
         </div>
 
+
         <div class="controls-top  m-2 d-flex justify-content-center">
-            <input class="form-control mr-sm-2" type="number" #search placeholder="go to a slide" aria-label="Search" style="width: 5em;" value="1" min="1" [attr.max]="recipesSmall.length">
+            <input class="form-control mr-sm-2" id="slideSearchForm" type="number" #slideSearch placeholder="go to a slide" aria-label="Search" style="width: 5em;" value="1" min="1" [attr.max]="recipesSmall.length">
             <!-- <button class="btn btn-secondary my-2 my-sm-0" id="searchButton" (click)="changeCounter(search.value);">Go</button> -->
             <a class="btn btn-primary" href="#multi-item-example" 
-                [attr.data-slide-to]="(search.value - 1 >= 0 ? (search.value - 1 < recipesSmall.length ? search.value - 1 : recipesSmall.length - 1) : 0)" 
-                (click)="changeCounter(search.value - 1);">Go to slide</a>
+                [attr.data-slide-to]="(slideSearch.value - 1 >= 0 ? (slideSearch.value - 1 < recipesSmall.length ? slideSearch.value - 1 : recipesSmall.length - 1) : 0)" 
+                (click)="changeCounterCheck(slideSearch.value - 1);">
+                Go to slide
+            </a>
         </div>
 
         <div class="controls-top m-2 d-flex justify-content-center">
-            <input class="form-control mr-sm-2" type="number" #slideL placeholder="Change Slide Length" aria-label="Search" style="width: 5em;" value="1" min="1" max="10">
+            <input class="form-control mr-sm-2" id="slideLengthForm" type="number" #slideL placeholder="Change Slide Length" aria-label="Search" style="width: 5em;" value="1" min="1" max="10">
             <a class="btn btn-primary" href="#multi-item-example" data-slide-to="0" (click)="timeoutSetSlideLength(slideL.value);">Change # recipes per slide</a>
         </div>
-        <!-- <nav aria-label="Page navigation example">
-            <ul class="pagination">
-              <li class="page-item"><a class="page-link" href="#multi-item-example" data-slide-to="0">Previous</a></li>
-              <li class="page-item"><a class="page-link" href="#multi-item-example">1</a></li>
-              <li class="page-item"><a class="page-link" href="#multi-item-example">2</a></li>
-              <li class="page-item"><a class="page-link" href="#multi-item-example">3</a></li>
-              <li class="page-item"><a class="page-link" href="#multi-item-example">Next</a></li>
-            </ul>
-          </nav> -->
         <!--/.Controls-->
-
-        <!--Indicators-->
-        <!-- <ol class="carousel-indicators">
-        <ng-container *ngFor="let recipe of recipesSmall; index as i; let isFirst = first" >
-            <li data-target="#multi-item-example" [attr.data-slide-to]="i" 
-                *ngIf="i > -1" [class]="'' + i" 
-                [ngClass]="{active:isFirst}" (click)="checkliIndex(i)"></li>
-        </ng-container>
-            
-
-      </ol> -->
-        <!--/.Indicators-->
 
         <!--Slides-->
         <div class="carousel-inner h-100" role="listbox">
@@ -95,15 +77,7 @@
                 </div>
             </div>
         </div>
-
         <!--/.Slides-->
-
-        <!--Controls-->
-        <!-- <div class="controls-top">
-        <a class="btn btn-primary" href="#multi-item-example" data-slide="prev"><fa-icon [icon]="faChevronLeft"></fa-icon></a>
-        <a class="btn btn-primary" href="#multi-item-example" data-slide="next"><fa-icon [icon]="faChevronRight"></fa-icon></a>
-      </div> -->
-        <!--/.Controls-->
 
     </div>
     <!--/.Carousel Wrapper-->
