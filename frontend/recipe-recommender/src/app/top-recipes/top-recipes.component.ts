@@ -24,13 +24,12 @@ export class TopRecipesComponent implements OnInit {
 
   getTopRecipes() {
     this.dataService.getTopRecipes().subscribe((data: any[]) => {
-      console.log(data);
+      console.log(data[0]);
       this.recipes = data[0];
-      for (let index = 0; index < (3 - (this.recipes.length % 3) + this.recipes.length)/3 ; index++) {
+      for (let index = 0; index < Math.ceil(this.recipes.length/3) ; index++) {
         this.recipesSmall.push("test");
       }
     })
-    
   }
 
 }
