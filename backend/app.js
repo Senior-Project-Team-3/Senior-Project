@@ -246,7 +246,6 @@ app.get('/clear', (req, res) => {
  */
 app.get('/recipes/search-results/:str', function (req, res) {
     var str = req.params.str;
-    console.log(req.params.str)
     let sql = "SELECT * FROM recipes WHERE name LIKE '%" + str + "%'";
     let query = db.query(sql, (err, results) => {
         if (err) {
@@ -323,7 +322,6 @@ app.get('/recipes/random/:amount', function (req, res) {
  * @returns {Response} if cookies are set, send the recipe results back in JSON format
  */
 app.get('/recipes/my_recipes', function (req, res) {
-    console.log(req.cookies)
     if (req.cookies.jwtoken) { // jwtoken cookie is set
         try {
             decoded = jwt.verify(req.cookies.jwtoken, secret);
@@ -404,7 +402,6 @@ app.put('/survey_results/:user_id', function (req, res) {
         sql += "mealmateSQL.recipes.tags like \"%" + cookTime + "%\" AND ";
     }
     let splitAppliances = String(appliances).split(',');
-    console.log(splitAppliances);
     if (splitAppliances.indexOf("Oven") < 0) {
         sql += "mealmateSQL.recipes.tags NOT like \"%oven%\" AND ";
 
@@ -448,7 +445,6 @@ app.put('/survey_results/:user_id', function (req, res) {
         var n = sql.lastIndexOf("AND");
         sql = sql.slice(0, n) + sql.slice(n).replace("AND", "LIMIT 5;");
     }
-    console.log(sql);
     let query = db.query(sql, (err, results) => {
         if (err) {
             throw err;
@@ -519,18 +515,17 @@ app.put('/review_results/:recipe_id', function (req, res) {
     let results = JSON.parse(req.body.data)
     decoded = jwt.verify(req.cookies.jwtoken, secret);
     var userIDCookies = decoded.userid;
-    console.log(results)
-    let rating = results.rating 
+    let rating = results.rating
     let realCookTime = results.realCookTime
-    let substitutes = results.substitutes 
+    let substitutes = results.substitutes
     let prefMatch = results.prefMatch
     let difficulty = results.difficulty
-    let improvement = results.improvement 
-    let recommend = results.recommend  
-    let prefChange = results.prefChange 
-    let newProtein = results.newProtein 
-    let newCuisine = results.newCuisine 
-    let newCookTime = results.newCookTime 
+    let improvement = results.improvement
+    let recommend = results.recommend
+    let prefChange = results.prefChange
+    let newProtein = results.newProtien
+    let newCuisine = results.newCuisine
+    let newCookTime = results.newCookTime
 
     if (prefChange === 'Yes') {
         updateUserPreferences(userIDCookies, newCuisine, newProtein, newCookTime);
@@ -562,10 +557,12 @@ app.put('/review_results/:recipe_id', function (req, res) {
                     proteinsArray = mainSourceOfMeat.split(':')
                     for (let i = 0; i < proteinsArray.length; i++) {
                         let protein = proteinsArray[i]
-                        if (i == proteinsArray.length - 1) {
-                            recommendSQL += "mealmateSQL.recipes.tags like \"%" + protein.toLowerCase() + "%\" AND "
-                        } else {
-                            recommendSQL += "mealmateSQL.recipes.tags like \"%" + protein.toLowerCase() + "%\" OR "
+                        if (!(protein === "")) {
+                            if (i == proteinsArray.length - 1) {
+                                recommendSQL += "mealmateSQL.recipes.tags like \"%" + protein.toLowerCase() + "%\" AND "
+                            } else {
+                                recommendSQL += "mealmateSQL.recipes.tags like \"%" + protein.toLowerCase() + "%\" OR "
+                            }
                         }
                     }
                 }
@@ -575,25 +572,29 @@ app.put('/review_results/:recipe_id', function (req, res) {
                 cuisinesArray = cuisines.split(':')
                 for (let i = 0; i < cuisinesArray.length; i++) {
                     let cusine = cuisinesArray[i]
-                    if (i == cuisinesArray.length - 1) {
-                        recommendSQL += "mealmateSQL.recipes.tags like \"%" + cusine.toLowerCase() + "%\" AND "
-                    } else {
-                        recommendSQL += "mealmateSQL.recipes.tags like \"%" + cusine.toLowerCase() + "%\" OR "
+                    if (!(cusine === "")) {
+                        if (i == cuisinesArray.length - 1) {
+                            recommendSQL += "mealmateSQL.recipes.tags like \"%" + cusine.toLowerCase() + "%\" AND "
+                        } else {
+                            recommendSQL += "mealmateSQL.recipes.tags like \"%" + cusine.toLowerCase() + "%\" OR "
+                        }
                     }
                 }
             }
 
             if ((!lengthOfCooking.includes("No Preference")) && (!lengthOfCooking.includes("No"))) {
-                recommendSQL += "mealmateSQL.recipes.tags like \"%" + lengthOfCooking + "%\" AND ";
+                recommendSQL += "mealmateSQL.recipes.tags like \"%" + lengthOfCooking + "%\" AND "
             }
 
             appliancesArray = appliances.split(":")
             for (let i = 0; i < appliancesArray.length; i++) {
                 let appliance = appliancesArray[i]
-                if (i == appliancesArray.length - 1) {
-                    recommendSQL += "mealmateSQL.recipes.tags like \"%" + appliance.toLowerCase() + "%\" AND "
-                } else {
-                    recommendSQL += "mealmateSQL.recipes.tags like \"%" + appliance.toLowerCase() + "%\" OR "
+                if (!(appliance === "")) {
+                    if (i == appliancesArray.length - 1) {
+                        recommendSQL += "mealmateSQL.recipes.tags like \"%" + appliance.toLowerCase() + "%\" AND "
+                    } else {
+                        recommendSQL += "mealmateSQL.recipes.tags like \"%" + appliance.toLowerCase() + "%\" OR "
+                    }
                 }
             }
 
@@ -601,29 +602,31 @@ app.put('/review_results/:recipe_id', function (req, res) {
                 selectedAllergiesOrIntolerancesArray = selectedAllergiesOrIntolerances.split(":")
                 for (let i = 0; i < selectedAllergiesOrIntolerancesArray.length; i++) {
                     let allergy = selectedAllergiesOrIntolerancesArray[i]
-                    if (i == selectedAllergiesOrIntolerancesArray.length - 1) {
-                        recommendSQL += "mealmateSQL.recipes.tags like \"%" + allergy.toLowerCase() + "%\" LIMIT 5; "
-                    } else {
-                        recommendSQL += "mealmateSQL.recipes.tags like \"%" + allergy.toLowerCase() + "%\" OR "
+                    if (!(allergy === "")) {
+                        if (i == selectedAllergiesOrIntolerancesArray.length - 1) {
+                            recommendSQL += "mealmateSQL.recipes.tags NOT like \"%" + allergy.toLowerCase() + "%\" LIMIT 10; "
+                        } else {
+                            recommendSQL += "mealmateSQL.recipes.tags  NOT like \"%" + allergy.toLowerCase() + "%\" AND "
+                        }
                     }
                 }
             } else {
                 var n = recommendSQL.lastIndexOf("AND");
-                recommendSQL = recommendSQL.slice(0, n) + recommendSQL.slice(n).replace("AND", "LIMIT 5;");
+                recommendSQL = recommendSQL.slice(0, n) + recommendSQL.slice(n).replace("AND", "LIMIT 10;");
             }
 
             setTimeout(() => {
+                console.log(recommendSQL)
                 db.query(recommendSQL, (err, recResults) => {
                     if (err) {
                         throw err;
                     }
                     res.send(recResults)
-                    console.log("recomneding a user recipes based of prefs")
                 })
-            }, 750)
+            }, 400)
 
         })
-    })
+    }, 300)
 });
 
 /**
