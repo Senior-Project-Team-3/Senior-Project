@@ -519,7 +519,7 @@ app.put('/review_results/:recipe_id', function (req, res) {
     let results = JSON.parse(req.body.data)
     decoded = jwt.verify(req.cookies.jwtoken, secret);
     var userIDCookies = decoded.userid;
-
+    console.log(results)
     let rating = results.rating 
     let realCookTime = results.realCookTime
     let substitutes = results.substitutes 
