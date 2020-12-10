@@ -247,7 +247,7 @@ app.get('/clear', (req, res) => {
 app.get('/recipes/search-results/:str', function (req, res) {
     var str = req.params.str;
     console.log(req.params.str)
-    let sql = "SELECT * FROM recipes WHERE name LIKE '%" + str + "%' ORDER BY RAND() LIMIT 8";
+    let sql = "SELECT * FROM recipes WHERE name LIKE '%" + str + "%'";
     let query = db.query(sql, (err, results) => {
         if (err) {
             throw err;
