@@ -100,8 +100,12 @@ export class MyRecipesComponent implements OnInit {
     this.slideLength = parseInt(newLength);
     if (this.slideLength > 10) {
       this.slideLength = 10;
-    } else if(this.slideLength < 0) {
-      this.slideLength = 0;
+      var tempInput = (<HTMLInputElement>document.getElementById("slideLengthForm"));
+      tempInput.value = "10";
+    } else if(this.slideLength < 1) {
+      this.slideLength = 1;
+      var tempInput = (<HTMLInputElement>document.getElementById("slideLengthForm"));
+      tempInput.value = "1";
     }
     console.log(this.slideLength + this.slideLength);
     this.recipesSmall.length = 0;
@@ -112,6 +116,19 @@ export class MyRecipesComponent implements OnInit {
     } 
     for(let index = 0; index < this.slideLength; index++){
       this.slides.push("test");
+    }
+  }
+
+  changeCounterCheck(slideChange: string) {
+    var tempCounter = parseInt(slideChange);
+    if(tempCounter > this.recipesSmall.length - 1) {
+      tempCounter = this.recipesSmall.length - 1;
+      var tempInput = (<HTMLInputElement>document.getElementById("slideSearchForm"));
+      tempInput.value = this.recipesSmall.length.toString();
+    } else if(tempCounter < 0) {
+      tempCounter = 0;
+      var tempInput = (<HTMLInputElement>document.getElementById("slideSearchForm"));
+      tempInput.value = "0";
     }
   }
 
@@ -149,7 +166,6 @@ export class MyRecipesComponent implements OnInit {
         }
         this.slideCounter = tempCounter;
     }
-    
   }
 
   goToRecipe(recipeId) {
