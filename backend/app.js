@@ -614,7 +614,6 @@ app.put('/review_results/:recipe_id', function (req, res) {
             }
 
             setTimeout(() => {
-                console.log(recommendSQL)
                 db.query(recommendSQL, (err, recResults) => {
                     if (err) {
                         throw err;
