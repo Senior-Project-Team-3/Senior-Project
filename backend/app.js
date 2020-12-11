@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { request } = require('express');
+const fs = require('fs');
 // used as a fail safe when creating a user
 var userid = "shouild be overwritten";
 
@@ -677,6 +678,31 @@ app.delete('/recipes/my_recipes/:recipe_id', function (req, res) {
             throw err;
         }
         res.send(results);
+
+    })
+});
+
+/**
+ * This endpoint will only be called and used by an admin.
+ * The admin will be able to download every survey response
+ * made by all the users on the website.
+ * 
+ * @returns {Response} a file that containds all users results
+ */
+app.get('/download', function (req, res) {
+    sql = "select qua_user_id, question_text, answer_text from question_user_answer " +
+        " INNER JOIN question ON question_user_answer.qua_question_id = question.question_id;"
+    db.query(sql, (err, results) => {
+        // write to a new file named 2pac.txt
+        fs.writeFile('mealMateAdmin.txt', JSON.stringify(results), (err) => {
+            // throws an error, you could also catch it here
+            if (err) throw err;
+            // success case, the file was saved
+            console.log('fiileSaved');
+        });
+        setTimeout(() => {
+            res.download('mealMateAdmin.txt'); // Set disposition and send it.
+        }, 300)
 
     })
 });
