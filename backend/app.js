@@ -693,7 +693,7 @@ app.get('/download', function (req, res) {
     sql = "select qua_user_id, question_text, answer_text from question_user_answer " +
         " INNER JOIN question ON question_user_answer.qua_question_id = question.question_id;"
     db.query(sql, (err, results) => {
-        // write to a new file named 2pac.txt
+        // write to a new file
         fs.writeFile('mealMateAdmin.txt', JSON.stringify(results), (err) => {
             // throws an error, you could also catch it here
             if (err) throw err;
